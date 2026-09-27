@@ -1,14 +1,96 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <title>PG Login</title>
-    body {
-        background-image: url("imagem.jpg");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080d16" />
+    <title>Entrar | AcessoCar</title>
+    <link rel="stylesheet" href="PG_LOGIN.css" />
 </head>
-    <body>
-    </body>
+<body>
+    <main class="login-page">
+        <header class="topbar">
+            <a class="brand" href="#inicio" aria-label="AcessoCar, início">
+                <span class="brand-mark" aria-hidden="true"><span>A</span><span>C</span></span>
+                <span class="brand-name">Acesso<span>Car</span></span>
+            </a>
+
+            <label class="theme-control" for="theme-toggle">
+                <span class="theme-label" id="theme-label">Tema escuro</span>
+                <span class="switch">
+                    <input id="theme-toggle" type="checkbox" role="switch" aria-label="Ativar tema claro" />
+                    <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+                </span>
+            </label>
+        </header>
+
+        <section class="login-content" aria-labelledby="login-title">
+            <div class="welcome-copy">
+                <p class="eyebrow"><span class="status-dot"></span> MOBILIDADE COM CONFIANÇA</p>
+                <h1>Seu próximo<br />destino começa <span>aqui.</span></h1>
+            </div>
+
+            <form class="login-panel" id="login-form" action="#" method="get">
+                <div class="panel-heading">
+                    <p class="panel-kicker">BEM-VINDO DE VOLTA</p>
+                    <h2 id="login-title">Entrar na sua conta</h2>
+                    <p class="panel-description">Informe seus dados para continuar.</p>
+                </div>
+
+                <div class="form-fields">
+                    <label class="field-label" for="login">Login</label>
+                    
+                    <div class="input-wrap">
+                        <svg class="field-icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="8" r="3.5"></circle>
+                            <path d="M5 20c.5-3.4 3.1-5.5 7-5.5s6.5 2.1 7 5.5"></path>
+                        </svg>
+                        <input id="login" name="login" type="text" placeholder="Digite seu login" autocomplete="username" inputmode="numeric" pattern="[0-9]+" title="Use somente números no login." required />
+                    </div>
+
+                    <label class="field-label password-label" for="password">Senha</label>
+                    <div class="input-wrap">
+                        <svg class="field-icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <rect x="5" y="10" width="14" height="11" rx="2"></rect>
+                            <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+                            <path d="M12 14v3"></path>
+                        </svg>
+                        <input id="password" name="password" type="password" placeholder="Digite sua senha" autocomplete="current-password" pattern="(?=.*[A-Z])(?=.*[^A-Za-z0-9\s]).+" title="Use ao menos uma letra maiúscula e um caractere especial." required />
+                    </div>
+                </div>
+
+                <button class="submit-button" type="submit">
+                    <span>Acessar minha conta</span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"></path></svg>
+                </button>
+            </form>
+        </section>
+
+        <footer class="page-footer"><span>© 2026 AcessoCar</span><span>Uma viagem melhor começa com acesso.</span></footer>
+    </main>
+
+    <script>
+        const themeToggle = document.querySelector("#theme-toggle");
+        const themeLabel = document.querySelector("#theme-label");
+        const savedTheme = localStorage.getItem("acessocar-theme");
+
+        function setTheme(isLight) {
+            document.documentElement.dataset.theme = isLight ? "light" : "dark";
+            themeToggle.checked = isLight;
+            themeToggle.setAttribute("aria-label", isLight ? "Ativar tema escuro" : "Ativar tema claro");
+            themeLabel.textContent = isLight ? "Tema claro" : "Tema escuro";
+        }
+
+        setTheme(savedTheme === "light");
+        themeToggle.addEventListener("change", () => {
+            setTheme(themeToggle.checked);
+            localStorage.setItem("acessocar-theme", themeToggle.checked ? "light" : "dark");
+        });
+
+        document.querySelector("#login-form").addEventListener("submit", (event) => {
+            event.preventDefault();
+            window.location.href = "PG_HOME.html";
+        });
+    </script>
+</body>
 </html>
