@@ -83,12 +83,12 @@
 					</article>
 					<article class="metric-card">
 						<div class="metric-topline"><span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"></circle><path d="M3 20c.4-3.4 2.5-5.5 6-5.5s5.6 2.1 6 5.5M17 8h5m-2.5-2.5v5"></path></svg></span><span class="metric-caption">Pagamentos pendentes</span></div>
-						<h3>A receber</h3><p class="metric-value"><span id="receivable-count">08</span> <span class="metric-unit">clientes</span></p>
+						<h3>A receber</h3><p class="metric-demo">Valor de demonstração</p><p class="metric-value metric-total" id="receivable-total">R$ 12.800,00</p><p class="metric-detail"><span id="receivable-count">08</span> clientes com pagamentos pendentes</p>
 						<a class="view-link" href="clientes-a-receber.html">Visualizar<span class="visually-hidden"> clientes com pagamentos pendentes</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"></path></svg></a>
 					</article>
 					<article class="metric-card">
 						<div class="metric-topline"><span class="metric-icon warning-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 2.8 19a1.4 1.4 0 0 0 1.2 2h16a1.4 1.4 0 0 0 1.2-2L12 3zM12 9v5m0 3h.01"></path></svg></span><span class="metric-caption">Pagamento vencido</span></div>
-						<h3>Em atraso</h3><p class="metric-value"><span id="overdue-count">03</span> <span class="metric-unit">clientes</span></p>
+						<h3>Em atraso</h3><p class="metric-demo">Valor de demonstração</p><p class="metric-value metric-total" id="overdue-total">R$ 3.750,00</p><p class="metric-detail"><span id="overdue-count">03</span> clientes com pagamentos vencidos</p>
 						<a class="view-link" href="clientes-em-atraso.html">Visualizar<span class="visually-hidden"> clientes com pagamentos em atraso</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"></path></svg></a>
 					</article>
 				</div>
@@ -114,7 +114,7 @@
 
 			<section class="chart-panel" aria-labelledby="chart-title">
 				<div class="chart-heading"><div><p class="panel-kicker">RESUMO FINANCEIRO</p><h2 id="chart-title">Faturamento por mês</h2></div><span class="chart-period">Últimos 6 meses</span></div>
-				<div class="chart" id="revenue-chart" aria-hidden="true"></div>
+				<div class="chart" id="revenue-chart" role="list" aria-label="Faturamento dos últimos seis meses"></div>
 				<ul class="visually-hidden" id="chart-description" aria-label="Valores do faturamento por mês"></ul>
 			</section>
 			<footer class="page-footer"><span>© 2026 accessoCar</span><span>Uma viagem melhor começa com acesso.</span></footer>

@@ -1,7 +1,9 @@
 const dashboardData = {
     revenue: "R$ 25.400,00",
     receivableClients: 8,
+    receivableTotal: 12800,
     overdueClients: 3,
+    overdueTotal: 3750,
     availableCars: 8,
     rentedCars: 4,
     carsInMaintenance: 2,
@@ -27,9 +29,13 @@ function setTheme(isLight) {
 }
 
 function renderDashboard() {
+    const formatCurrency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+
     document.querySelector("#revenue-value").textContent = dashboardData.revenue;
     document.querySelector("#receivable-count").textContent = String(dashboardData.receivableClients).padStart(2, "0");
+    document.querySelector("#receivable-total").textContent = formatCurrency.format(dashboardData.receivableTotal);
     document.querySelector("#overdue-count").textContent = String(dashboardData.overdueClients).padStart(2, "0");
+    document.querySelector("#overdue-total").textContent = formatCurrency.format(dashboardData.overdueTotal);
     document.querySelector("#available-count").textContent = String(dashboardData.availableCars).padStart(2, "0");
     document.querySelector("#rented-count").textContent = String(dashboardData.rentedCars).padStart(2, "0");
     document.querySelector("#maintenance-count").textContent = String(dashboardData.carsInMaintenance).padStart(2, "0");
@@ -37,11 +43,11 @@ function renderDashboard() {
     const chart = document.querySelector("#revenue-chart");
     const chartDescription = document.querySelector("#chart-description");
     const highestRevenue = Math.max(...dashboardData.monthlyRevenue.map((item) => item.value));
-    const formatCurrency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
-
-    dashboardData.monthlyRevenue.forEach((item) => {
+    dashboardData.monthlyRevenue.forEach((item, index) => {
         const column = document.createElement("div");
         column.className = "chart-column";
+        column.tabIndex = 0;
+        column.setAttribute("role", "listitem");
 
         const bar = document.createElement("span");
         bar.className = "chart-bar";
@@ -51,7 +57,28 @@ function renderDashboard() {
         month.className = "chart-month";
         month.textContent = item.month;
 
-        column.append(bar, month);
+        const tooltip = document.createElement("span");
+        tooltip.className = "chart-tooltip";
+
+        const tooltipMonth = document.createElement("strong");
+        tooltipMonth.textContent = item.month;
+
+        const tooltipRevenue = document.createElement("span");
+        tooltipRevenue.textContent = formatCurrency.format(item.value);
+
+        const previousMonth = dashboardData.monthlyRevenue[index - 1];
+        const tooltipVariation = document.createElement("span");
+        if (previousMonth) {
+            const variation = ((item.value - previousMonth.value) / previousMonth.value) * 100;
+            const direction = variation > 0 ? "aumento" : variation < 0 ? "queda" : "sem variação";
+            tooltipVariation.textContent = `${direction} de ${Math.abs(variation).toFixed(1).replace(".", ",")}% vs. ${previousMonth.month}`;
+        } else {
+            tooltipVariation.textContent = "Início do período";
+        }
+
+        tooltip.append(tooltipMonth, tooltipRevenue, tooltipVariation);
+        column.setAttribute("aria-label", `${item.month}: ${formatCurrency.format(item.value)}; ${tooltipVariation.textContent}`);
+        column.append(bar, month, tooltip);
         chart.append(column);
 
         const description = document.createElement("li");
