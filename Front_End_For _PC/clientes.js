@@ -29,7 +29,16 @@ const tableBody = document.querySelector("#customer-table-body");
 const customerCount = document.querySelector("#customer-count");
 const filterButtons = document.querySelectorAll(".filter-button");
 const newCustomerLink = document.querySelector("#new-customer-link");
-let activeFilter = "all";
+const requestedFilter = new URLSearchParams(window.location.search).get("filter");
+let activeFilter = ["pending", "overdue"].includes(requestedFilter) ? requestedFilter : "all";
+
+function updateActiveFilterButton() {
+	filterButtons.forEach((button) => {
+		const isActive = button.dataset.filter === activeFilter;
+		button.classList.toggle("is-active", isActive);
+		button.setAttribute("aria-pressed", String(isActive));
+	});
+}
 
 function setTheme(isLight) {
 	document.documentElement.dataset.theme = isLight ? "light" : "dark";
@@ -95,6 +104,7 @@ function renderCustomers() {
 
 setTheme(savedTheme === "light");
 newCustomerLink.href = CUSTOMER_CREATE_PAGE;
+updateActiveFilterButton();
 renderCustomers();
 
 themeToggle.addEventListener("change", () => {
@@ -105,11 +115,7 @@ themeToggle.addEventListener("change", () => {
 filterButtons.forEach((button) => {
 	button.addEventListener("click", () => {
 		activeFilter = button.dataset.filter;
-		filterButtons.forEach((filterButton) => {
-			const isActive = filterButton === button;
-			filterButton.classList.toggle("is-active", isActive);
-			filterButton.setAttribute("aria-pressed", String(isActive));
-		});
+		updateActiveFilterButton();
 		renderCustomers();
 	});
 });
