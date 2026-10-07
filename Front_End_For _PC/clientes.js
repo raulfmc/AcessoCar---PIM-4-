@@ -1,24 +1,27 @@
 const CUSTOMER_CREATE_PAGE = "CadastroCliente.html";
 
-// Troque estes registros demonstrativos pelos dados recebidos do banco de dados.
-let customers = [
-	{ id: "CLI-001", name: "Ana Beatriz Lima", cid: "CID-8401", vehiclePlate: null, status: "ok", paymentStatus: "paid" },
-	{ id: "CLI-002", name: "Bruno Martins", cid: "CID-8402", vehiclePlate: "FRT-2A41", status: "rented", paymentStatus: "paid" },
-	{ id: "CLI-003", name: "Camila Ferreira", cid: "CID-8403", vehiclePlate: null, status: "owing", paymentStatus: "pending" },
-	{ id: "CLI-004", name: "Diego Nascimento", cid: "CID-8404", vehiclePlate: "GKN-5B27", status: "owing", paymentStatus: "overdue" },
-	{ id: "CLI-005", name: "Elisa Carvalho", cid: "CID-8405", vehiclePlate: "MTQ-9C14", status: "rented", paymentStatus: "paid" },
-	{ id: "CLI-006", name: "Felipe Ribeiro", cid: "CID-8406", vehiclePlate: null, status: "ok", paymentStatus: "paid" },
-	{ id: "CLI-007", name: "Gabriela Souza", cid: "CID-8407", vehiclePlate: null, status: "owing", paymentStatus: "pending" },
-	{ id: "CLI-008", name: "Henrique Alves", cid: "CID-8408", vehiclePlate: null, status: "owing", paymentStatus: "overdue" },
-	{ id: "CLI-009", name: "Isabela Rocha", cid: "CID-8409", vehiclePlate: "PRX-4D83", status: "rented", paymentStatus: "paid" },
-	{ id: "CLI-010", name: "João Pedro Costa", cid: "CID-8410", vehiclePlate: null, status: "ok", paymentStatus: "paid" },
-	{ id: "CLI-011", name: "Karen Oliveira", cid: "CID-8411", vehiclePlate: "LVB-7E62", status: "owing", paymentStatus: "pending" },
-	{ id: "CLI-012", name: "Leonardo Mendes", cid: "CID-8412", vehiclePlate: null, status: "ok", paymentStatus: "paid" }
-];
+function loadCustomers() {
+	const state = AccessoCarData.read();
+	return state.customers.map((customer) => {
+		const installments = state.installments.filter((item) => item.customerId === customer.id && item.status !== "paid");
+		const hasActiveRental = state.rentals.some((rental) => rental.customerId === customer.id && rental.status === "active");
+		return {
+			...customer,
+			status: installments.some((item) => item.status === "overdue")
+				? "owing"
+				: hasActiveRental ? "rented" : installments.length > 0 ? "pending" : "ok",
+			hasPending: installments.some((item) => item.status === "pending"),
+			hasOverdue: installments.some((item) => item.status === "overdue")
+		};
+	});
+}
+
+let customers = loadCustomers();
 
 const statusLabels = {
 	ok: { label: "OK", className: "status-ok" },
 	rented: { label: "LOCADO", className: "status-rented" },
+	pending: { label: "PENDENTE", className: "status-pending" },
 	owing: { label: "DEVENDO", className: "status-owing" }
 };
 
@@ -55,8 +58,11 @@ function createCell(text, className = "") {
 }
 
 function renderCustomers() {
+	customers = loadCustomers();
 	const visibleCustomers = customers.filter((customer) => {
-		return activeFilter === "all" || customer.paymentStatus === activeFilter;
+		return activeFilter === "all"
+			|| (activeFilter === "pending" && customer.hasPending)
+			|| (activeFilter === "overdue" && customer.hasOverdue);
 	});
 	tableBody.replaceChildren();
 
@@ -127,8 +133,15 @@ tableBody.addEventListener("click", (event) => {
 	const customer = customers.find((item) => item.id === deleteButton.dataset.deleteCustomer);
 	if (!customer || !window.confirm(`Deseja excluir o cliente ${customer.name}?`)) return;
 
-	customers = customers.filter((item) => item.id !== customer.id);
-	renderCustomers();
+	const state = AccessoCarData.read();
+	const hasRentalHistory = state.rentals.some((rental) => rental.customerId === customer.id)
+		|| state.installments.some((installment) => installment.customerId === customer.id);
+	if (hasRentalHistory) {
+		window.alert("Este cliente possui registros financeiros ou de locação e não pode ser excluído.");
+		return;
+	}
+	state.customers = state.customers.filter((item) => item.id !== customer.id);
+	AccessoCarData.write(state);
 });
 
 const sidebar = document.querySelector("#sidebar");
@@ -138,4 +151,9 @@ menuToggle.addEventListener("click", () => {
 	const isOpen = sidebar.classList.toggle("is-open");
 	menuToggle.setAttribute("aria-expanded", String(isOpen));
 	menuToggle.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
+});
+
+window.addEventListener("accessocar:data-changed", renderCustomers);
+window.addEventListener("storage", (event) => {
+	if (event.key === "accessocar-management-v1") renderCustomers();
 });

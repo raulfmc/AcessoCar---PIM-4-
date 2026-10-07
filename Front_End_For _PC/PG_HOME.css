@@ -57,6 +57,11 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .menu-toggle svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 1.8; }
 .sidebar-content { display: flex; min-height: 0; flex: 1; flex-direction: column; }
 .primary-nav { display: grid; gap: 6px; }
+.nav-group { display: grid; gap: 4px; }
+.nav-submenu { display: grid; gap: 2px; margin: 0 0 3px 32px; padding-left: 12px; border-left: 1px solid var(--panel-border); }
+.nav-sub-link { min-height: 31px; padding: 7px 8px; border-radius: 5px; color: var(--muted); font-size: 11px; text-decoration: none; }
+.nav-sub-link:hover, .nav-sub-link.is-active { background: rgba(104, 153, 205, 0.1); color: var(--accent-bright); }
+.nav-group.is-active > .nav-link { border-color: rgba(98, 172, 245, 0.24); background: rgba(45, 129, 211, 0.2); color: var(--accent-bright); }
 .nav-link, .logout-link { display: flex; min-height: 46px; align-items: center; gap: 13px; padding: 0 13px; border: 1px solid transparent; border-radius: 7px; color: var(--muted); font-size: 14px; font-weight: 550; text-decoration: none; transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease; }
 .nav-link:hover, .logout-link:hover { background: rgba(104, 153, 205, 0.1); color: var(--ink); }
 .nav-link.is-active { border-color: rgba(98, 172, 245, 0.24); background: rgba(45, 129, 211, 0.2); color: var(--accent-bright); }
@@ -130,6 +135,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 :root[data-theme="light"] .brand-mark span + span { color: #1b2a3a; }
 :root[data-theme="light"] .nav-link.is-active { border-color: rgba(18, 105, 199, 0.18); background: #e5f1fb; }
 :root[data-theme="light"] .nav-link:hover, :root[data-theme="light"] .logout-link:hover { background: #edf4f9; }
+:root[data-theme="light"] .nav-sub-link:hover, :root[data-theme="light"] .nav-sub-link.is-active { background: #edf4f9; }
 :root[data-theme="light"] .user-avatar { border-color: rgba(18, 105, 199, 0.25); background: #e5f1fb; color: #075da9; }
 :root[data-theme="light"] .switch-track { border-color: #aab9c8; background: #e2eaf1; }
 :root[data-theme="light"] .metric-icon { border-color: rgba(18, 105, 199, 0.18); background: #eaf3fa; color: #176fbd; }

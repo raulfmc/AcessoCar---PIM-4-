@@ -1,21 +1,10 @@
-// Troque estes registros demonstrativos pelos dados recebidos do banco de dados.
-let vehicles = [
-	{ id: "VEI-001", name: "Chevrolet Onix LT", plate: "FRT-2A41", year: "2024", category: "Hatch", dailyRate: 149.9, status: "available" },
-	{ id: "VEI-002", name: "Hyundai HB20 Comfort", plate: "GKN-5B27", year: "2023", category: "Hatch", dailyRate: 139.9, status: "rented" },
-	{ id: "VEI-003", name: "Jeep Renegade Sport", plate: "MTQ-9C14", year: "2024", category: "SUV", dailyRate: 229.9, status: "maintenance" },
-	{ id: "VEI-004", name: "Volkswagen Polo TSI", plate: "PRX-4D83", year: "2023", category: "Hatch", dailyRate: 159.9, status: "available" },
-	{ id: "VEI-005", name: "Toyota Corolla GLi", plate: "LVB-7E62", year: "2024", category: "Sedã", dailyRate: 269.9, status: "rented" },
-	{ id: "VEI-006", name: "Fiat Argo Drive", plate: "QAZ-8F35", year: "2022", category: "Hatch", dailyRate: 129.9, status: "available" },
-	{ id: "VEI-007", name: "Honda HR-V EX", plate: "RMT-3G76", year: "2023", category: "SUV", dailyRate: 249.9, status: "maintenance" },
-	{ id: "VEI-008", name: "Renault Kwid Zen", plate: "SBC-6H19", year: "2022", category: "Compacto", dailyRate: 109.9, status: "available" },
-	{ id: "VEI-009", name: "Nissan Versa Sense", plate: "TDP-1J52", year: "2024", category: "Sedã", dailyRate: 179.9, status: "rented" },
-	{ id: "VEI-010", name: "Fiat Mobi Like", plate: "UFK-4K28", year: "2023", category: "Compacto", dailyRate: 99.9, status: "available" }
-];
+let vehicles = [];
 
 const statusLabels = {
 	available: { label: "DISPONÍVEL", className: "vehicle-status-available" },
 	rented: { label: "LOCADO", className: "vehicle-status-rented" },
-	maintenance: { label: "EM MANUTENÇÃO", className: "vehicle-status-maintenance" }
+	maintenance: { label: "EM MANUTENÇÃO", className: "vehicle-status-maintenance" },
+	unavailable: { label: "INDISPONÍVEL", className: "vehicle-status-unavailable" }
 };
 
 const themeToggle = document.querySelector("#theme-toggle");
@@ -41,6 +30,7 @@ function createCell(text, className = "") {
 }
 
 function renderVehicles() {
+	vehicles = AccessoCarData.read().vehicles;
 	const visibleVehicles = vehicles.filter((vehicle) => activeFilter === "all" || vehicle.status === activeFilter);
 	tableBody.replaceChildren();
 
@@ -115,8 +105,13 @@ tableBody.addEventListener("click", (event) => {
 	const vehicle = vehicles.find((item) => item.id === deleteButton.dataset.deleteVehicle);
 	if (!vehicle || !window.confirm(`Deseja excluir o veículo ${vehicle.name}?`)) return;
 
-	vehicles = vehicles.filter((item) => item.id !== vehicle.id);
-	renderVehicles();
+	const state = AccessoCarData.read();
+	if (state.rentals.some((rental) => rental.vehicleId === vehicle.id)) {
+		window.alert("Este veículo possui registros de locação e não pode ser excluído.");
+		return;
+	}
+	state.vehicles = state.vehicles.filter((item) => item.id !== vehicle.id);
+	AccessoCarData.write(state);
 });
 
 const sidebar = document.querySelector("#sidebar");
@@ -126,4 +121,9 @@ menuToggle.addEventListener("click", () => {
 	const isOpen = sidebar.classList.toggle("is-open");
 	menuToggle.setAttribute("aria-expanded", String(isOpen));
 	menuToggle.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
+});
+
+window.addEventListener("accessocar:data-changed", renderVehicles);
+window.addEventListener("storage", (event) => {
+	if (event.key === "accessocar-management-v1") renderVehicles();
 });

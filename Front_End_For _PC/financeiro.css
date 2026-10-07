@@ -1,0 +1,95 @@
+.finance-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: -9px 0 26px; }
+.summary-card { display: grid; min-height: 86px; align-content: center; gap: 6px; padding: 15px 18px; border: 1px solid var(--panel-border); border-radius: 8px; background: var(--panel); }
+.summary-label { color: var(--muted); font-size: 12px; }
+.summary-card strong { color: var(--warning); font-size: 21px; font-variant-numeric: tabular-nums; }
+.summary-overdue strong { color: #ff8585; }
+.summary-receivable strong { color: var(--ink); }
+:root[data-theme="light"] .summary-overdue strong { color: #b42318; }
+.finance-section { margin-bottom: 28px; }
+.finance-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 15px; }
+.finance-heading h2 { margin: 0; color: var(--ink); font-size: 19px; font-weight: 650; }
+.finance-heading p { margin: 7px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.demo-note { flex: 0 0 auto; padding: 5px 8px; border: 1px solid var(--panel-border); border-radius: 5px; color: var(--muted); font-size: 10px; font-weight: 600; }
+.finance-panel { padding: 18px 20px 20px; border: 1px solid var(--panel-border); border-radius: 10px; background: var(--panel); box-shadow: 0 14px 38px rgba(0, 0, 0, 0.12), inset 0 1px rgba(255, 255, 255, 0.04); backdrop-filter: blur(14px); }
+.filter-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 14px; }
+.status-filters { display: flex; flex-wrap: wrap; gap: 7px; }
+.status-filter { min-height: 35px; padding: 0 11px; border: 1px solid var(--panel-border); border-radius: 6px; background: transparent; color: var(--muted); cursor: pointer; font-size: 11px; font-weight: 550; }
+.status-filter:hover { border-color: var(--accent); color: var(--ink); }
+.status-filter.is-active { border-color: rgba(98, 172, 245, 0.4); background: rgba(45, 129, 211, 0.14); color: var(--accent-bright); }
+.installment-count { flex: 0 0 auto; margin: 0; color: var(--muted); font-size: 12px; }
+.advanced-filters { display: grid; grid-template-columns: minmax(220px, 1.5fr) repeat(3, minmax(130px, 1fr)); gap: 11px; margin-bottom: 16px; }
+.customer-filters { margin-bottom: 10px; }
+.advanced-filters .field { gap: 6px; }
+.advanced-filters .field label { font-size: 10px; }
+.advanced-filters .field input, .advanced-filters .field select { min-height: 38px; padding: 7px 9px; font-size: 11px; }
+.installment-table-scroll { max-height: min(55vh, 560px); min-height: 240px; overflow: auto; border: 1px solid var(--panel-border); border-radius: 7px; scrollbar-color: var(--muted) transparent; scrollbar-width: thin; }
+.customer-table-scroll { max-height: min(55vh, 500px); min-height: 170px; overflow: auto; border: 1px solid var(--panel-border); border-radius: 7px; scrollbar-color: var(--muted) transparent; scrollbar-width: thin; }
+.installment-table { width: 100%; min-width: 1120px; border-collapse: separate; border-spacing: 0; text-align: left; }
+.customer-installment-table { min-width: 820px; }
+.installment-table th { position: sticky; z-index: 1; top: 0; padding: 12px 11px; border-bottom: 1px solid var(--panel-border); background: var(--panel); color: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0.55px; text-transform: uppercase; }
+.installment-table td { min-height: 52px; padding: 10px 11px; border-bottom: 1px solid var(--panel-border); color: var(--ink); font-size: 11px; }
+.installment-table tbody tr:last-child td { border-bottom: 0; }
+.installment-table tbody tr:hover { background: rgba(104, 153, 205, 0.06); }
+.table-id { color: var(--muted) !important; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.table-primary { font-weight: 600; }
+.table-number, .table-value { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.table-note { max-width: 140px; overflow-wrap: anywhere; color: var(--muted) !important; }
+.status-badge { display: inline-flex; min-height: 24px; align-items: center; gap: 6px; padding: 0 8px; border: 1px solid transparent; border-radius: 5px; font-size: 9px; font-weight: 750; letter-spacing: 0.25px; white-space: nowrap; }
+.status-badge::before { width: 6px; height: 6px; border-radius: 50%; background: currentColor; content: ""; }
+.status-pending { border-color: rgba(255, 195, 111, 0.22); background: rgba(255, 195, 111, 0.11); color: var(--warning); }
+.status-paid { border-color: rgba(91, 214, 170, 0.2); background: rgba(91, 214, 170, 0.1); color: var(--success); }
+.status-overdue { border-color: rgba(255, 116, 116, 0.22); background: rgba(255, 116, 116, 0.1); color: #ff8585; }
+:root[data-theme="light"] .status-overdue { border-color: rgba(180, 35, 24, 0.18); background: #fff0ee; color: #b42318; }
+.confirm-button { min-height: 32px; padding: 0 9px; border: 1px solid rgba(98, 172, 245, 0.32); border-radius: 5px; background: rgba(45, 129, 211, 0.13); color: var(--accent-bright); cursor: pointer; font-size: 10px; font-weight: 650; white-space: nowrap; }
+.confirm-button:hover { background: rgba(45, 129, 211, 0.24); }
+.confirmed-label { color: var(--success) !important; font-size: 10px !important; font-weight: 650; white-space: nowrap; }
+.empty-cell { height: 90px; color: var(--muted) !important; text-align: center; }
+.customer-detail { padding-top: 5px; }
+.customer-detail[hidden] { display: none; }
+.detail-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 14px; }
+.detail-heading h3 { margin: 0; color: var(--ink); font-size: 17px; }
+.detail-heading p { margin: 5px 0 0; color: var(--muted); font-size: 11px; }
+.secondary-button { min-height: 34px; padding: 0 11px; border: 1px solid var(--panel-border); border-radius: 5px; background: transparent; color: var(--muted); cursor: pointer; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.secondary-button:hover { border-color: var(--accent); color: var(--accent-bright); }
+.confirm-dialog { width: min(460px, calc(100% - 28px)); padding: 0; border: 1px solid var(--panel-border); border-radius: 10px; background: var(--panel); color: var(--ink); box-shadow: 0 22px 70px rgba(0, 0, 0, 0.45); }
+.confirm-dialog::backdrop { background: rgba(2, 7, 13, 0.72); backdrop-filter: blur(3px); }
+.confirm-dialog form { padding: 24px; }
+.confirm-dialog h2 { margin: 9px 0 8px; font-size: 20px; }
+.dialog-description { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.confirmation-details { display: grid; gap: 0; margin: 19px 0; border: 1px solid var(--panel-border); border-radius: 7px; }
+.confirmation-details div { display: flex; justify-content: space-between; gap: 15px; padding: 11px 12px; border-bottom: 1px solid var(--panel-border); font-size: 12px; }
+.confirmation-details div:last-child { border-bottom: 0; }
+.confirmation-details dt { color: var(--muted); }
+.confirmation-details dd { margin: 0; text-align: right; font-weight: 650; }
+.dialog-error { min-height: 16px; margin: 0; color: #ff8585; font-size: 12px; }
+:root[data-theme="light"] .dialog-error { color: #b42318; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 7px; }
+:root[data-theme="light"] .finance-panel, :root[data-theme="light"] .summary-card { box-shadow: 0 10px 28px rgba(36, 61, 87, 0.08), inset 0 1px rgba(255, 255, 255, 0.8); }
+:root[data-theme="light"] .status-filter.is-active { border-color: rgba(18, 105, 199, 0.22); background: #e5f1fb; }
+
+@media (max-width: 1000px) {
+	.advanced-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+	.search-field { grid-column: span 2; }
+}
+
+@media (max-width: 760px) {
+	.filter-bar { align-items: flex-start; flex-direction: column; }
+	.installment-count { align-self: flex-end; }
+	.finance-panel { padding: 15px 12px; }
+}
+
+@media (max-width: 560px) {
+	.finance-summary { grid-template-columns: 1fr; gap: 8px; }
+	.summary-card { min-height: 68px; }
+	.finance-heading { align-items: flex-start; flex-direction: column; gap: 8px; }
+	.finance-heading h2 { font-size: 17px; }
+	.status-filters { display: grid; width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.status-filter { text-align: left; }
+	.advanced-filters { grid-template-columns: 1fr; }
+	.search-field { grid-column: auto; }
+	.installment-table-scroll { max-height: 55vh; min-height: 200px; }
+	.customer-table-scroll { max-height: 55vh; min-height: 180px; }
+	.detail-heading { align-items: flex-start; flex-direction: column; }
+	.confirm-dialog form { padding: 19px; }
+	.dialog-actions { align-items: stretch; flex-direction: column-reverse; }
+}
