@@ -1,23 +1,23 @@
 const CUSTOMER_CREATE_PAGE = "CadastroCliente.html";
 
-function loadCustomers() {
-	const state = AccessoCarData.read();
-	return state.customers.map((customer) => {
-		const installments = state.installments.filter((item) => item.customerId === customer.id && item.status !== "paid");
-		const hasActiveRental = state.rentals.some((rental) => rental.customerId === customer.id && rental.status === "active");
-		return {
-			...customer,
-			status: installments.some((item) => item.status === "overdue")
-				? "owing"
-				: hasActiveRental ? "rented" : installments.length > 0 ? "pending" : "ok",
-			hasPending: installments.some((item) => item.status === "pending"),
-			hasOverdue: installments.some((item) => item.status === "overdue")
-		};
-	});
+async function loadCustomers() {
+	const resposta = await fetch('http://localhost:5104/api/Cliente');
+        
+        if (!resposta.ok) {
+            throw new Error(`Erro HTTP: ${resposta.status}`);
+        }
+
+        customers = await resposta.json();
+	//const dados = await resposta.json();
+
+    console.log("Clientes recebidos da API:", customers);
+
+    return customers;
 }
 
 let customers = loadCustomers();
 
+//Puxar o status do banco, vai ter que ter condições pro front saber as labels de acordo com o status do banco
 const statusLabels = {
 	ok: { label: "OK", className: "status-ok" },
 	rented: { label: "LOCADO", className: "status-rented" },
@@ -57,13 +57,16 @@ function createCell(text, className = "") {
 	return cell;
 }
 
-function renderCustomers() {
-	customers = loadCustomers();
+async function renderCustomers() {
+	customers = await loadCustomers();
+    
+	console.log("customers:", customers);
+    console.log("É array?", Array.isArray(customers));
 	const visibleCustomers = customers.filter((customer) => {
 		return activeFilter === "all"
 			|| (activeFilter === "pending" && customer.hasPending)
 			|| (activeFilter === "overdue" && customer.hasOverdue);
-	});
+	 });
 	tableBody.replaceChildren();
 
 	if (visibleCustomers.length === 0) {
@@ -75,28 +78,32 @@ function renderCustomers() {
 	} else {
 		visibleCustomers.forEach((customer) => {
 			const row = document.createElement("tr");
-			const status = statusLabels[customer.status];
+			//const status = statusLabels[customer.status];
 			row.append(
-				createCell(customer.id, "customer-id"),
-				createCell(customer.name, "customer-name"),
-				createCell(customer.cid, "customer-cid"),
-				createCell(customer.vehiclePlate || "—", "customer-plate")
+				createCell(customer.id, "id"),
+				createCell(customer.nome, "nome"),
+				createCell(customer.cpf, "cpf"),
+				createCell(customer.telefone, "telefone"),
+				createCell(customer.email, "email"),
+				createCell(customer.endereco, "endereco"),
+
+				//createCell(customer.vehiclePlate || "—", "customer-plate")
 			);
 
 			const statusCell = document.createElement("td");
 			const statusBadge = document.createElement("span");
-			statusBadge.className = `status-badge ${status.className}`;
-			statusBadge.textContent = status.label;
-			statusCell.append(statusBadge);
-			row.append(statusCell);
+			// statusBadge.className = `status-badge ${status.className}`;
+			// statusBadge.textContent = status.label;
+			// statusCell.append(statusBadge);
+			// row.append(statusCell);
 
 			const actionsCell = document.createElement("td");
 			const deleteButton = document.createElement("button");
 			deleteButton.className = "customer-delete";
 			deleteButton.type = "button";
 			deleteButton.dataset.deleteCustomer = customer.id;
-			deleteButton.setAttribute("aria-label", `Excluir cliente ${customer.name}`);
-			deleteButton.title = `Excluir ${customer.name}`;
+			deleteButton.setAttribute("aria-label", `Excluir cliente ${customer.nome}`);
+			deleteButton.title = `Excluir ${customer.nome}`;
 			deleteButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6m4-6v6M5 7l1 14h12l1-14M9 7V4h6v3"></path></svg>';
 			actionsCell.append(deleteButton);
 			row.append(actionsCell);
@@ -112,6 +119,9 @@ setTheme(savedTheme === "light");
 newCustomerLink.href = CUSTOMER_CREATE_PAGE;
 updateActiveFilterButton();
 renderCustomers();
+renderCustomers().catch((erro) => {
+    console.error("Erro ao carregar clientes:", erro);
+});
 
 themeToggle.addEventListener("change", () => {
 	setTheme(themeToggle.checked);
@@ -134,13 +144,13 @@ tableBody.addEventListener("click", (event) => {
 	if (!customer || !window.confirm(`Deseja excluir o cliente ${customer.name}?`)) return;
 
 	const state = AccessoCarData.read();
-	const hasRentalHistory = state.rentals.some((rental) => rental.customerId === customer.id)
-		|| state.installments.some((installment) => installment.customerId === customer.id);
+	const hasRentalHistory = state.rentals.some((rental) => rental.cliente_id === customer.id)
+		|| state.installments.some((installment) => installment.cliente_id === customer.id);
 	if (hasRentalHistory) {
 		window.alert("Este cliente possui registros financeiros ou de locação e não pode ser excluído.");
 		return;
 	}
-	state.customers = state.customers.filter((item) => item.id !== customer.id);
+	state.customers = state.customers.filter((item) => item.ID !== customer.ID);
 	AccessoCarData.write(state);
 });
 
