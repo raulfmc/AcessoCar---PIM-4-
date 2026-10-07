@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="theme-color" content="#080d16" />
+	<title>Manutenção | acessoCar</title>
+	<link rel="stylesheet" href="PG_HOME.css" />
+	<link rel="stylesheet" href="manutencao.css" />
+	<script src="accessocar-data.js" defer></script>
+	<script src="manutencao.js" defer></script>
+</head>
+<body>
+	<div class="app-shell">
+		<aside class="sidebar" id="sidebar" aria-label="Menu principal">
+			<div class="sidebar-top">
+				<a class="brand" href="PG_HOME.html" aria-label="acessoCar, página inicial">
+					<span class="brand-mark" aria-hidden="true"><span>A</span><span>C</span></span>
+					<span class="brand-name">acesso<span>Car</span></span>
+				</a>
+				<button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar-content" aria-label="Abrir menu">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+				</button>
+			</div>
+			<div class="sidebar-content" id="sidebar-content">
+				<nav class="primary-nav" aria-label="Navegação">
+					<a class="nav-link" href="PG_HOME.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path></svg><span>Home</span></a>
+					<a class="nav-link" href="clientes.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M3 20c.4-3.4 2.5-5.5 6-5.5s5.6 2.1 6 5.5M16 5.2a3.5 3.5 0 0 1 0 6.7M17 15c2.4.6 3.7 2.2 4 5"></path></svg><span>Clientes</span></a>
+					<a class="nav-link" href="veiculos.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 11 1.5-5h11L19 11M3 11h18v7H3zM6 18v2m12-2v2M6 14h.01M18 14h.01"></path><path d="M6.5 6 5 4H3m14 2 1.5-2H21"></path></svg><span>Veículos</span></a>
+					<a class="nav-link" href="locacoes.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="17" rx="2"></rect><path d="M8 2v4m8-4v4M4 9h16m-11 4h6m-6 4h4"></path></svg><span>Locações</span></a>
+					<div class="nav-group">
+						<a class="nav-link" href="financeiro.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 10h18m-12 5h3"></path></svg><span>Financeiro</span></a>
+						<div class="nav-submenu" aria-label="Opções do financeiro">
+							<a class="nav-sub-link" href="financeiro.html">Parcelas</a>
+							<a class="nav-sub-link" href="financeiro.html?filter=overdue">Pagamentos em atraso</a>
+						</div>
+					</div>
+					<a class="nav-link is-active" href="manutencao.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.2 5.2L4 17a2.1 2.1 0 0 0 3 3l5.3-5.3a4 4 0 0 0 5.2-5.2l-2.4 2.4-3-3z"></path><path d="m15 5 4-2 2 2-2 4"></path></svg><span>Manutenção</span></a>
+					<a class="nav-link" href="configuracoes.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="m19.4 15 .1.1 1.1.9-1.5 2.6-1.4-.5a2 2 0 0 0-1.7.2l-.3.2-.2 1.5h-3l-.2-1.5a2 2 0 0 0-2-.4l-1.4.5-1.5-2.6 1.1-.9a2 2 0 0 0 0-2.2l-1.1-.9 1.5-2.6 1.4.5a2 2 0 0 0 2-.4l.2-1.5h3l.2 1.5a2 2 0 0 0 2 .4l1.4-.5 1.5 2.6-1.1.9a2 2 0 0 0-.1 2.1z" transform="translate(-2 -2)"></path></svg><span>Configurações</span></a>
+				</nav>
+				<div class="sidebar-bottom">
+					<div class="user-info"><span class="user-avatar" aria-hidden="true">AD</span><span class="user-copy"><strong id="user-name">Administrador</strong><span>Usuário logado</span></span></div>
+					<a class="logout-link" href="PG_LOGIN.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5m5 5H3m9-9h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7"></path></svg><span>Sair</span></a>
+				</div>
+			</div>
+		</aside>
+
+		<main class="main-content">
+			<header class="page-header">
+				<div>
+					<p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> GESTÃO DA FROTA</p>
+					<h1>Controle de <span>manutenção</span></h1>
+					<p class="page-description">Acompanhe os veículos em manutenção, os motivos e os custos registrados.</p>
+				</div>
+				<label class="theme-control" for="theme-toggle">
+					<span class="theme-label" id="theme-label">Tema escuro</span>
+					<span class="switch"><input id="theme-toggle" type="checkbox" role="switch" aria-label="Ativar tema claro" /><span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span></span>
+				</label>
+			</header>
+
+			<section class="maintenance-section" aria-labelledby="maintenance-title">
+				<div class="maintenance-heading">
+					<div class="maintenance-title-group">
+						<h2 id="maintenance-title">Veículos em manutenção</h2>
+						<p id="maintenance-count" class="maintenance-count" aria-live="polite"></p>
+					</div>
+					<button class="new-maintenance-button" id="new-maintenance-button" type="button" aria-expanded="false" aria-controls="maintenance-form-panel">
+						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+						<span>Adicionar manutenção</span>
+					</button>
+				</div>
+
+				<div class="maintenance-message" id="maintenance-message" role="status" aria-live="polite"></div>
+
+				<section class="maintenance-form-panel" id="maintenance-form-panel" aria-labelledby="new-maintenance-title" hidden>
+					<div class="form-panel-heading">
+						<div>
+							<h3 id="new-maintenance-title">Registrar entrada na manutenção</h3>
+							<p>Informe o veículo, o motivo e o valor previsto ou realizado.</p>
+						</div>
+						<button class="form-close-button" id="close-maintenance-form" type="button" aria-label="Fechar formulário">×</button>
+					</div>
+					<form id="maintenance-form">
+						<div class="maintenance-form-grid">
+							<div class="maintenance-field">
+								<label for="maintenance-vehicle">Veículo</label>
+								<select id="maintenance-vehicle" name="vehicleId" required><option value="">Selecione um veículo disponível</option></select>
+							</div>
+							<div class="maintenance-field">
+								<label for="maintenance-date">Data de entrada</label>
+								<input id="maintenance-date" name="date" type="date" required />
+							</div>
+							<div class="maintenance-field">
+								<label for="maintenance-cost">Valor da manutenção (R$)</label>
+								<input id="maintenance-cost" name="cost" type="text" inputmode="numeric" maxlength="20" placeholder="R$ 0,00" aria-describedby="maintenance-cost-help" autocomplete="off" required />
+								<p class="maintenance-field-help" id="maintenance-cost-help">Digite os números; o valor será formatado automaticamente em reais.</p>
+							</div>
+							<div class="maintenance-field maintenance-field-wide">
+								<label for="maintenance-report">Relatório / motivo da manutenção</label>
+								<textarea id="maintenance-report" name="report" rows="4" maxlength="1000" placeholder="Descreva o problema, serviço solicitado ou realizado..." required></textarea>
+							</div>
+						</div>
+						<div class="maintenance-form-actions">
+							<p>Ao salvar, o veículo ficará indisponível para locações até ser liberado.</p>
+							<button class="maintenance-save-button" type="submit">Salvar manutenção</button>
+						</div>
+					</form>
+				</section>
+
+				<div class="maintenance-panel">
+					<div class="maintenance-table-scroll" tabindex="0" aria-label="Tabela rolável de veículos em manutenção">
+						<table class="maintenance-table">
+							<caption class="visually-hidden">Veículos em manutenção, motivo, valor e ações</caption>
+							<thead>
+								<tr>
+									<th scope="col">Veículo</th>
+									<th scope="col">Placa</th>
+									<th scope="col">Relatório / motivo</th>
+									<th scope="col">Valor</th>
+									<th scope="col">Entrada</th>
+									<th scope="col">Status</th>
+									<th scope="col">Ação</th>
+								</tr>
+							</thead>
+							<tbody id="maintenance-table-body"></tbody>
+						</table>
+					</div>
+				</div>
+			</section>
+			<footer class="page-footer"><span>© 2026 acessoCar</span><span>Uma viagem melhor começa com acesso.</span></footer>
+		</main>
+	</div>
+</body>
+</html>
