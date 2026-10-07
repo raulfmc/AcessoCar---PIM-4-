@@ -92,7 +92,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .switch input:checked + .switch-track .switch-thumb { transform: translateX(19px); background: #1269c7; }
 .switch input:focus-visible + .switch-track { outline: 3px solid rgba(112, 182, 255, 0.58); outline-offset: 3px; }
 
-.metric-section { margin-bottom: 29px; }
+.metric-section { margin-bottom: 10px; }
 .section-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
 .section-heading h2 { margin: 0; color: var(--ink); font-size: 17px; font-weight: 650; }
 .section-rule { height: 1px; flex: 1; background: rgba(154, 184, 220, 0.2); }

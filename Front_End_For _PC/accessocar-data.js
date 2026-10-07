@@ -65,7 +65,7 @@
 			{ id: `PAR-${year}-005`, customerId: "CLI-009", rentalId: `LOC-${year}-003`, number: 2, amount: 449.75, dueDate: addMonths(addDays(today, 14), 1), status: "pending", paidAt: null, notes: "" }
 		];
 
-		return { customers, vehicles, rentals: sampleRentals, installments };
+		return { customers, vehicles, rentals: sampleRentals, installments, maintenance: [] };
 	};
 
 	// Keep persistence behind one adapter so SQL Server can replace local storage later.
@@ -90,7 +90,9 @@
 	const read = () => {
 		const stored = localStorage.getItem(STORAGE_KEY);
 		const state = stored === null ? createInitialState() : JSON.parse(stored);
-		if (refreshInstallmentStatuses(state) || stored === null) persist(state);
+		const migrated = !Array.isArray(state.maintenance);
+		if (migrated) state.maintenance = [];
+		if (refreshInstallmentStatuses(state) || stored === null || migrated) persist(state);
 		return state;
 	};
 
