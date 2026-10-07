@@ -49,7 +49,7 @@ function renderVehicles() {
 				createCell(vehicle.name, "vehicle-name"),
 				createCell(vehicle.plate, "vehicle-plate"),
 				createCell(vehicle.year, "vehicle-year"),
-				createCell(vehicle.category),
+				createCell(vehicle.mainFeature || vehicle.category),
 				createCell(vehicle.dailyRate.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }), "vehicle-price")
 			);
 

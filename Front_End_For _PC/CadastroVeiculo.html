@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="theme-color" content="#080d16" />
+	<title>Novo veículo | acessoCar</title>
+	<link rel="stylesheet" href="PG_HOME.css" />
+	<link rel="stylesheet" href="cadastros.css" />
+	<script src="accessocar-data.js" defer></script>
+	<script src="cadastros.js" defer></script>
+</head>
+<body>
+	<div class="app-shell">
+		<aside class="sidebar" id="sidebar" aria-label="Menu principal">
+			<div class="sidebar-top">
+				<a class="brand" href="PG_HOME.html" aria-label="acessoCar, página inicial">
+					<span class="brand-mark" aria-hidden="true"><span>A</span><span>C</span></span>
+					<span class="brand-name">acesso<span>Car</span></span>
+				</a>
+				<button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar-content" aria-label="Abrir menu">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+				</button>
+			</div>
+			<div class="sidebar-content" id="sidebar-content">
+				<nav class="primary-nav" aria-label="Navegação">
+					<a class="nav-link" href="PG_HOME.html"><span>Home</span></a>
+					<a class="nav-link" href="clientes.html"><span>Clientes</span></a>
+					<a class="nav-link is-active" href="veiculos.html" aria-current="page"><span>Veículos</span></a>
+					<a class="nav-link" href="locacoes.html"><span>Locações</span></a>
+					<a class="nav-link" href="financeiro.html"><span>Financeiro</span></a>
+					<a class="nav-link" href="manutencao.html"><span>Manutenção</span></a>
+					<a class="nav-link" href="configuracoes.html"><span>Configurações</span></a>
+				</nav>
+				<div class="sidebar-bottom">
+					<div class="user-info"><span class="user-avatar" aria-hidden="true">AD</span><span class="user-copy"><strong>Administrador</strong><span>Usuário logado</span></span></div>
+					<a class="logout-link" href="PG_LOGIN.html"><span>Sair</span></a>
+				</div>
+			</div>
+		</aside>
+
+		<main class="main-content">
+			<header class="page-header">
+				<div>
+					<p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> GESTÃO DE VEÍCULOS</p>
+					<h1>Novo <span>veículo</span></h1>
+					<p class="page-description">Cadastre os dados do veículo, sua diária e a foto.</p>
+				</div>
+				<label class="theme-control" for="theme-toggle">
+					<span class="theme-label" id="theme-label">Tema escuro</span>
+					<span class="switch"><input id="theme-toggle" type="checkbox" role="switch" aria-label="Ativar tema claro" /><span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span></span>
+				</label>
+			</header>
+
+			<section class="registration-section" aria-labelledby="registration-title">
+				<div class="registration-card">
+					<div class="registration-heading">
+						<h2 id="registration-title">Dados do veículo</h2>
+						<p>O identificador é gerado automaticamente. A foto é opcional e pode ter até 1 MB.</p>
+					</div>
+					<div class="registration-message" id="registration-message" role="status" aria-live="polite"></div>
+					<form id="registration-form" data-kind="vehicle">
+						<div class="registration-grid">
+							<div class="registration-field">
+								<label for="registration-id">ID do veículo</label>
+								<input id="registration-id" name="id" type="text" readonly />
+							</div>
+							<div class="registration-field">
+								<label for="brand">Marca</label>
+								<input id="brand" name="brand" type="text" maxlength="60" placeholder="Ex.: Chevrolet" required />
+							</div>
+							<div class="registration-field">
+								<label for="model">Modelo</label>
+								<input id="model" name="model" type="text" maxlength="80" placeholder="Ex.: Onix" required />
+							</div>
+							<div class="registration-field">
+								<label for="year">Ano de fabricação</label>
+								<input id="year" name="year" type="number" min="1950" max="2100" step="1" placeholder="2026" required />
+							</div>
+							<div class="registration-field">
+								<label for="number">Número / chassi</label>
+								<input id="number" name="number" type="text" maxlength="40" placeholder="Número de identificação" required />
+							</div>
+							<div class="registration-field">
+								<label for="version">Versão</label>
+								<input id="version" name="version" type="text" maxlength="60" placeholder="Ex.: LT 1.0 Turbo" required />
+							</div>
+							<div class="registration-field">
+								<label for="transmission">Câmbio</label>
+								<select id="transmission" name="transmission" required>
+									<option value="">Selecione</option>
+									<option value="Manual">Manual</option>
+									<option value="Automático">Automático</option>
+									<option value="CVT">CVT</option>
+									<option value="Automatizado">Automatizado</option>
+								</select>
+							</div>
+							<div class="registration-field">
+								<label for="plate">Placa</label>
+								<input id="plate" name="plate" type="text" maxlength="8" placeholder="ABC-1D23" required />
+							</div>
+							<div class="registration-field">
+								<label for="color">Cor</label>
+								<input id="color" name="color" type="text" maxlength="40" placeholder="Ex.: Prata" required />
+							</div>
+							<div class="registration-field">
+								<label for="dailyRate">Valor da diária (R$)</label>
+								<input id="dailyRate" name="dailyRate" type="number" min="0.01" step="0.01" placeholder="150,00" required />
+							</div>
+							<div class="registration-field is-wide">
+								<label for="mainFeature">Principal característica do veículo</label>
+								<input id="mainFeature" name="mainFeature" type="text" maxlength="100" placeholder="Ex.: SUV, acessibilidade, porta-malas amplo" required />
+							</div>
+							<div class="registration-field">
+								<label for="accessibilityDifficulty">Dificuldade / necessidade de acessibilidade</label>
+								<select id="accessibilityDifficulty" name="accessibilityDifficulty">
+									<option value="">Selecione uma opção</option>
+									<option value="Braço esquerdo e perna direita">Braço esquerdo e perna direita</option>
+									<option value="Braço direito e perna esquerda">Braço direito e perna esquerda</option>
+									<option value="Braço e perna esquerda">Braço e perna esquerda</option>
+									<option value="Braço e perna direita">Braço e perna direita</option>
+								</select>
+							</div>
+							<div class="registration-field">
+								<label for="photo">Foto do veículo</label>
+								<input id="photo" name="photo" type="file" accept="image/*" aria-describedby="photo-help" />
+								<p class="registration-help" id="photo-help">Imagem de até 1 MB. Formatos aceitos conforme o navegador.</p>
+							</div>
+							<div class="registration-field is-wide">
+								<img class="photo-preview" id="photo-preview" alt="Pré-visualização da foto selecionada" />
+							</div>
+						</div>
+						<div class="registration-actions">
+							<a class="registration-button" href="veiculos.html">Cancelar</a>
+							<div class="registration-actions-group">
+								<a class="registration-button" id="view-records" href="veiculos.html">Ver veículos</a>
+								<button class="registration-button registration-button-primary" type="submit">Salvar veículo</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</section>
+			<footer class="page-footer"><span>© 2026 acessoCar</span><span>Uma viagem melhor começa com acesso.</span></footer>
+		</main>
+	</div>
+</body>
+</html>
