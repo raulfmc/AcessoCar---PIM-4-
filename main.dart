@@ -848,9 +848,7 @@ class _TelaDoisState extends State<tela_dois> {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // MODAL DE DETALHES
-  // ---------------------------------------------------------------------------
+
 
   void _abrirDetalhes(Aluguel a, Paleta p) {
     showGeneralDialog(
