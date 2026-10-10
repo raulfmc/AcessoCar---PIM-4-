@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "H5qiuMZOo/c=",
+  "dgSpecHash": "R25BQEG7J0g=",
   "success": true,
-  "projectFilePath": "C:\\Users\\muril\\Desktop\\Estudos\\PIM 4\\AcessoCar\\AcessoCar.csproj",
+  "projectFilePath": "C:\\Users\\muril\\Desktop\\Estudos\\PIM 4\\Backup PIM 4\\AcessoCar\\AcessoCar.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\muril\\.nuget\\packages\\azure.core\\1.50.0\\azure.core.1.50.0.nupkg.sha512",
     "C:\\Users\\muril\\.nuget\\packages\\azure.identity\\1.17.1\\azure.identity.1.17.1.nupkg.sha512",

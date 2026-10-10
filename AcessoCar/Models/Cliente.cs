@@ -12,7 +12,7 @@ public class Cliente
 
     [RegularExpression(@"^[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}")]
     public string CPF { get; set; } = string.Empty;
-
+    [Phone]
     public string Telefone { get; set; }  = string.Empty;
 
     [EmailAddress]

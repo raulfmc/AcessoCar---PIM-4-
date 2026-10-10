@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\muril\\Desktop\\Estudos\\PIM 4\\AcessoCar\\AcessoCar.csproj": {}
+    "C:\\Users\\muril\\Desktop\\Estudos\\PIM 4\\Backup PIM 4\\AcessoCar\\AcessoCar.csproj": {}
   },
   "projects": {
-    "C:\\Users\\muril\\Desktop\\Estudos\\PIM 4\\AcessoCar\\AcessoCar.csproj": {
+    "C:\\Users\\muril\\Desktop\\Estudos\\PIM 4\\Backup PIM 4\\AcessoCar\\AcessoCar.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\muril\\Desktop\\Estudos\\PIM 4\\AcessoCar\\AcessoCar.csproj",
+        "projectUniqueName": "C:\\Users\\muril\\Desktop\\Estudos\\PIM 4\\Backup PIM 4\\AcessoCar\\AcessoCar.csproj",
         "projectName": "AcessoCar",
-        "projectPath": "C:\\Users\\muril\\Desktop\\Estudos\\PIM 4\\AcessoCar\\AcessoCar.csproj",
+        "projectPath": "C:\\Users\\muril\\Desktop\\Estudos\\PIM 4\\Backup PIM 4\\AcessoCar\\AcessoCar.csproj",
         "packagesPath": "C:\\Users\\muril\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\muril\\Desktop\\Estudos\\PIM 4\\AcessoCar\\obj\\",
+        "outputPath": "C:\\Users\\muril\\Desktop\\Estudos\\PIM 4\\Backup PIM 4\\AcessoCar\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\muril\\AppData\\Roaming\\NuGet\\NuGet.Config"

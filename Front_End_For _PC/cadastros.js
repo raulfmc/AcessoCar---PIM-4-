@@ -8,7 +8,7 @@
 	const prefix = isCustomer ? "CLI" : "VEI";
 	const listPage = isCustomer ? "clientes.html" : "veiculos.html";
 	const message = document.querySelector("#registration-message");
-	const idField = document.querySelector("#registration-id");
+	//const idField = document.querySelector("#registration-id");
 	const photoField = document.querySelector("#photo");
 	const photoPreview = document.querySelector("#photo-preview");
 	const themeToggle = document.querySelector("#theme-toggle");
@@ -52,45 +52,148 @@
 		return form.elements.namedItem(name).value.trim();
 	}
 
-	function createCustomerRecord() {
-		return {
-			id: idField.value,
-			name: formValue("name"),
-			cpf: formValue("cpf"),
-			address: formValue("address"),
-			phone: formValue("phone"),
-			email: formValue("email"),
-			cnh: formValue("cnh"),
-			accessibilityDifficulty: formValue("accessibilityDifficulty"),
-			vehiclePlate: null
-		};
+	async function createCustomerRecord() {
+
+		const dados = {
+			Nome: document.getElementById("Nome").value,
+			CPF: document.getElementById("CPF").value,
+			Telefone: document.getElementById("Telefone").value,
+			Endereco: document.getElementById("Endereco").value,
+			Email: document.getElementById("Email").value,
+			Ativo: true
+		}
+
+		try {
+			const resposta = await fetch("http://localhost:5104/api/Cliente", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(dados)
+			});
+			console.log(resposta.status);
+			const texto = await resposta.text();
+
+			console.log("Status:", resposta.status);
+			console.log("Resposta:", texto);
+
+			if (resposta.ok) {
+				alert("Cliente cadastrado com sucesso!");
+
+			} else {
+				alert("Erro ao cadastrar cliente.");
+			}
+		}
+		catch (erro) {
+			console.error("Erro:", erro);
+			alert("Não foi possível conectar com a API.");
+		}
+		console.log(document.getElementById("Nome"));
+		console.log(document.getElementById("CPF"));
+		console.log(document.getElementById("Telefone"));
+		console.log(document.getElementById("Email"));
+		console.log(document.getElementById("Endereco"));
+
+
+		// return {
+		// 	id: idField.value,
+		// 	name: formValue("name"),
+		// 	cpf: formValue("cpf"),
+		// 	address: formValue("address"),
+		// 	phone: formValue("phone"),
+		// 	email: formValue("email"),
+		// 	cnh: formValue("cnh"), 
+		// 	accessibilityDifficulty: formValue("accessibilityDifficulty"),
+		// 	vehiclePlate: null
+		// };
 	}
 
-	function createVehicleRecord() {
-		const brand = formValue("brand");
-		const model = formValue("model");
-		const version = formValue("version");
-		return {
-			id: idField.value,
-			brand,
-			model,
-			name: [brand, model, version].filter(Boolean).join(" "),
-			year: formValue("year"),
-			number: formValue("number"),
-			version,
-			transmission: formValue("transmission"),
-			plate: formValue("plate").toUpperCase(),
-			color: formValue("color"),
-			dailyRate: Number(formValue("dailyRate")),
-			mainFeature: formValue("mainFeature"),
-			category: formValue("mainFeature") || "Não informada",
-			accessibilityDifficulty: formValue("accessibilityDifficulty"),
-			photo: photoData,
-			status: "available"
+	async function createVehicleRecord() {
+		const dados = {
+			Marca: document.getElementById("Marca").value,
+			Modelo: document.getElementById("Modelo").value,
+			Ano_Fabricacao: parseInt(document.getElementById("Ano_Fabricacao").value),
+			Numero: parseInt(document.getElementById("Numero").value),
+			Versao: document.getElementById("Versao").value,
+			Cambio: document.getElementById("Cambio").value,
+			Placa: document.getElementById("Placa").value,
+			Cor: document.getElementById("Cor").value,
+			Valor_Diaria: parseFloat(document.getElementById("Valor_Diaria").value),
+			Ativo: true
 		};
+
+
+
+		try {
+			const resposta = await fetch("http://localhost:5104/api/Carro", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(dados)
+			});
+			console.log(resposta.status);
+			const texto = await resposta.text();
+
+			console.log("Status:", resposta.status);
+			console.log("Resposta:", texto);
+
+			if (resposta.ok) {
+				alert("Carro cadastrado com sucesso!");
+
+			} else {
+				alert("Erro ao cadastrar carro.");
+			}
+		}
+		catch (erro) {
+			console.error("Erro:", erro);
+			alert("Não foi possível conectar com a API.");
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		// const brand = formValue("brand");
+		// const model = formValue("model");
+		// const version = formValue("version");
+		// return {
+		// 	id: idField.value,
+		// 	brand,
+		// 	model,
+		// 	name: [brand, model, version].filter(Boolean).join(" "),
+		// 	year: formValue("year"),
+		// 	number: formValue("number"),
+		// 	version,
+		// 	transmission: formValue("transmission"),
+		// 	plate: formValue("plate").toUpperCase(),
+		// 	color: formValue("color"),
+		// 	dailyRate: Number(formValue("dailyRate")),
+		// 	mainFeature: formValue("mainFeature"),
+		// 	category: formValue("mainFeature") || "Não informada",
+		// 	accessibilityDifficulty: formValue("accessibilityDifficulty"),
+		// 	photo: photoData,
+		// 	status: "available"
+		// };
 	}
 
-	idField.value = nextId();
+	//idField.value = nextId();
 	setTheme(savedTheme === "light");
 
 	themeToggle.addEventListener("change", () => {
@@ -142,12 +245,12 @@
 			const record = isCustomer ? createCustomerRecord() : createVehicleRecord();
 			state[collectionName].push(record);
 			AccessoCarData.write(state);
-			showMessage(`${isCustomer ? "Cliente" : "Veículo"} ${record.id} cadastrado com sucesso.`);
+			showMessage(`${isCustomer ? "Cliente" : "Veículo"} cadastrado com sucesso.`);
 			form.reset();
 			photoData = "";
 			photoPreview.classList.remove("is-visible");
 			photoPreview.removeAttribute("src");
-			idField.value = nextId();
+			//idField.value = nextId();
 			document.querySelector("#view-records").href = listPage;
 		} catch (error) {
 			showMessage(`Não foi possível salvar o cadastro: ${error.message}`, true);
