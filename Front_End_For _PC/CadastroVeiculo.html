@@ -7,8 +7,7 @@
 	<title>Novo veículo | acessoCar</title>
 	<link rel="stylesheet" href="PG_HOME.css" />
 	<link rel="stylesheet" href="cadastros.css" />
-	<script src="accessocar-data.js" defer></script>
-	<script src="cadastros.js" defer></script>
+	<script src="cadastro-veiculo.js" defer></script>
 </head>
 <body>
 	<div class="app-shell">
@@ -30,12 +29,7 @@
 					<a class="nav-link" href="locacoes.html"><span>Locações</span></a>
 					<a class="nav-link" href="financeiro.html"><span>Financeiro</span></a>
 					<a class="nav-link" href="manutencao.html"><span>Manutenção</span></a>
-					<a class="nav-link" href="configuracoes.html"><span>Configurações</span></a>
 				</nav>
-				<div class="sidebar-bottom">
-					<div class="user-info"><span class="user-avatar" aria-hidden="true">AD</span><span class="user-copy"><strong>Administrador</strong><span>Usuário logado</span></span></div>
-					<a class="logout-link" href="PG_LOGIN.html"><span>Sair</span></a>
-				</div>
 			</div>
 		</aside>
 
@@ -56,26 +50,22 @@
 				<div class="registration-card">
 					<div class="registration-heading">
 						<h2 id="registration-title">Dados do veículo</h2>
-						<p>O identificador é gerado automaticamente. A foto é opcional e pode ter até 1 MB.</p>
+						<p>O identificador será gerado ao salvar. A foto é opcional e pode ter até 1 MB.</p>
 					</div>
 					<div class="registration-message" id="registration-message" role="status" aria-live="polite"></div>
 					<form id="registration-form" data-kind="vehicle">
 						<div class="registration-grid">
 							<div class="registration-field">
-								<label for="registration-id">ID do veículo</label>
-								<input id="registration-id" name="id" type="text" readonly />
-							</div>
-							<div class="registration-field">
 								<label for="brand">Marca</label>
-								<input id="brand" name="brand" type="text" maxlength="60" placeholder="Ex.: Chevrolet" required />
+								<input id="brand" name="brand" type="text" maxlength="60" placeholder="Marca do veículo" required />
 							</div>
 							<div class="registration-field">
 								<label for="model">Modelo</label>
-								<input id="model" name="model" type="text" maxlength="80" placeholder="Ex.: Onix" required />
+								<input id="model" name="model" type="text" maxlength="80" placeholder="Modelo do veículo" required />
 							</div>
 							<div class="registration-field">
 								<label for="year">Ano de fabricação</label>
-								<input id="year" name="year" type="number" min="1950" max="2100" step="1" placeholder="2026" required />
+								<input id="year" name="year" type="number" min="1950" max="2100" step="1" placeholder="Ano de fabricação" required />
 							</div>
 							<div class="registration-field">
 								<label for="number">Número / chassi</label>
@@ -83,7 +73,7 @@
 							</div>
 							<div class="registration-field">
 								<label for="version">Versão</label>
-								<input id="version" name="version" type="text" maxlength="60" placeholder="Ex.: LT 1.0 Turbo" required />
+								<input id="version" name="version" type="text" maxlength="60" placeholder="Versão do veículo" required />
 							</div>
 							<div class="registration-field">
 								<label for="transmission">Câmbio</label>
@@ -97,29 +87,36 @@
 							</div>
 							<div class="registration-field">
 								<label for="plate">Placa</label>
-								<input id="plate" name="plate" type="text" maxlength="8" placeholder="ABC-1D23" required />
+								<input id="plate" name="plate" type="text" maxlength="8" placeholder="Placa do veículo" required />
 							</div>
 							<div class="registration-field">
 								<label for="color">Cor</label>
-								<input id="color" name="color" type="text" maxlength="40" placeholder="Ex.: Prata" required />
+								<input id="color" name="color" type="text" maxlength="40" placeholder="Cor do veículo" required />
 							</div>
 							<div class="registration-field">
 								<label for="dailyRate">Valor da diária (R$)</label>
-								<input id="dailyRate" name="dailyRate" type="number" min="0.01" step="0.01" placeholder="150,00" required />
+								<input id="dailyRate" name="dailyRate" type="number" min="0.01" step="0.01" placeholder="Valor da diária" required />
 							</div>
 							<div class="registration-field is-wide">
-								<label for="mainFeature">Principal característica do veículo</label>
-								<input id="mainFeature" name="mainFeature" type="text" maxlength="100" placeholder="Ex.: SUV, acessibilidade, porta-malas amplo" required />
-							</div>
-							<div class="registration-field">
-								<label for="accessibilityDifficulty">Dificuldade / necessidade de acessibilidade</label>
-								<select id="accessibilityDifficulty" name="accessibilityDifficulty">
-									<option value="">Selecione uma opção</option>
-									<option value="Braço esquerdo e perna direita">Braço esquerdo e perna direita</option>
-									<option value="Braço direito e perna esquerda">Braço direito e perna esquerda</option>
-									<option value="Braço e perna esquerda">Braço e perna esquerda</option>
-									<option value="Braço e perna direita">Braço e perna direita</option>
-								</select>
+								<label>Identificador corporal</label>
+								<input id="body-regions" name="bodyRegions" type="hidden" value="" />
+								<p class="registration-help">Marque em verde os membros funcionais que o veículo atende.</p>
+								<div class="body-selector" aria-label="Identificador corporal do veículo">
+									<svg class="body-figure" viewBox="0 0 100 220" role="group" aria-label="Boneco interativo; selecione braços e pernas">
+										<g class="body-region" data-body-part="left-arm" role="button" tabindex="0" aria-label="Braço esquerdo" aria-pressed="false"><rect class="body-part part-left-arm" x="75" y="60" width="17" height="73" rx="8.5"></rect></g>
+										<g class="body-region" data-body-part="right-arm" role="button" tabindex="0" aria-label="Braço direito" aria-pressed="false"><rect class="body-part part-right-arm" x="10" y="60" width="17" height="73" rx="8.5"></rect></g>
+										<g class="body-region" data-body-part="left-leg" role="button" tabindex="0" aria-label="Perna esquerda" aria-pressed="false"><rect class="body-part part-left-leg" x="54" y="142" width="18" height="78" rx="9"></rect></g>
+										<g class="body-region" data-body-part="right-leg" role="button" tabindex="0" aria-label="Perna direita" aria-pressed="false"><rect class="body-part part-right-leg" x="28" y="142" width="18" height="78" rx="9"></rect></g>
+										<rect class="body-part part-torso" x="29" y="58" width="44" height="81" rx="12" aria-hidden="true"></rect>
+										<circle class="body-part part-head" cx="50" cy="30" r="23" aria-hidden="true"></circle>
+									</svg>
+									<div class="body-region-list" role="group" aria-label="Selecionar membros funcionais">
+										<button class="body-region-option" type="button" data-body-part="left-arm" aria-pressed="false">Braço esquerdo</button>
+										<button class="body-region-option" type="button" data-body-part="right-arm" aria-pressed="false">Braço direito</button>
+										<button class="body-region-option" type="button" data-body-part="left-leg" aria-pressed="false">Perna esquerda</button>
+										<button class="body-region-option" type="button" data-body-part="right-leg" aria-pressed="false">Perna direita</button>
+									</div>
+								</div>
 							</div>
 							<div class="registration-field">
 								<label for="photo">Foto do veículo</label>

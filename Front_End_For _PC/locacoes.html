@@ -7,7 +7,7 @@
 	<title>Locações | acessoCar</title>
 	<link rel="stylesheet" href="PG_HOME.css" />
 	<link rel="stylesheet" href="locacoes.css" />
-	<script src="accessocar-data.js" defer></script>
+	<script src="accessocar-utils.js" defer></script>
 	<script src="locacoes.js" defer></script>
 </head>
 <body>
@@ -36,12 +36,7 @@
 						</div>
 					</div>
 					<a class="nav-link" href="manutencao.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.2 5.2L4 17a2.1 2.1 0 0 0 3 3l5.3-5.3a4 4 0 0 0 5.2-5.2l-2.4 2.4-3-3z"></path><path d="m15 5 4-2 2 2-2 4"></path></svg><span>Manutenção</span></a>
-					<a class="nav-link" href="configuracoes.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="m19.4 15 .1.1 1.1.9-1.5 2.6-1.4-.5a2 2 0 0 0-1.7.2l-.3.2-.2 1.5h-3l-.2-1.5a2 2 0 0 0-2-.4l-1.4.5-1.5-2.6 1.1-.9a2 2 0 0 0 0-2.2l-1.1-.9 1.5-2.6 1.4.5a2 2 0 0 0 2-.4l.2-1.5h3l.2 1.5a2 2 0 0 0 2 .4l1.4-.5 1.5 2.6-1.1.9a2 2 0 0 0-.1 2.1z" transform="translate(-2 -2)"></path></svg><span>Configurações</span></a>
 				</nav>
-				<div class="sidebar-bottom">
-					<div class="user-info"><span class="user-avatar" aria-hidden="true">AD</span><span class="user-copy"><strong id="user-name">Administrador</strong><span>Usuário logado</span></span></div>
-					<a class="logout-link" href="PG_LOGIN.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5m5 5H3m9-9h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7"></path></svg><span>Sair</span></a>
-				</div>
 			</div>
 		</aside>
 
@@ -75,7 +70,7 @@
 			</section>
 
 			<section class="rental-section" id="new-rental-section" aria-labelledby="rental-form-title" hidden>
-				<div class="rental-heading"><div><h2 id="rental-form-title">Dados da nova locação</h2><span class="demo-note">Dados de demonstração salvos neste dispositivo</span></div><button class="secondary-button" id="cancel-rental-form" type="button">Voltar à lista</button></div>
+				<div class="rental-heading"><div><h2 id="rental-form-title">Dados da nova locação</h2></div><button class="secondary-button" id="cancel-rental-form" type="button">Voltar à lista</button></div>
 				<form class="rental-panel" id="rental-form" hidden>
 					<div class="form-grid">
 						<div class="field field-wide">
@@ -116,7 +111,7 @@
 						</div>
 						<div class="field">
 							<label for="rental-total">Valor total</label>
-							<input id="rental-total" type="text" readonly placeholder="R$ 0,00" />
+							<input id="rental-total" type="text" readonly placeholder="Calculado após a seleção" />
 						</div>
 						<div class="field">
 							<label for="payment-method">Forma de pagamento</label>

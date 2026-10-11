@@ -7,8 +7,7 @@
 	<title>Novo cliente | acessoCar</title>
 	<link rel="stylesheet" href="PG_HOME.css" />
 	<link rel="stylesheet" href="cadastros.css" />
-	<script src="accessocar-data.js" defer></script>
-	<script src="cadastros.js" defer></script>
+	<script src="cadastro-cliente.js" defer></script>
 </head>
 <body>
 	<div class="app-shell">
@@ -30,12 +29,7 @@
 					<a class="nav-link" href="locacoes.html"><span>Locações</span></a>
 					<a class="nav-link" href="financeiro.html"><span>Financeiro</span></a>
 					<a class="nav-link" href="manutencao.html"><span>Manutenção</span></a>
-					<a class="nav-link" href="configuracoes.html"><span>Configurações</span></a>
 				</nav>
-				<div class="sidebar-bottom">
-					<div class="user-info"><span class="user-avatar" aria-hidden="true">AD</span><span class="user-copy"><strong>Administrador</strong><span>Usuário logado</span></span></div>
-					<a class="logout-link" href="PG_LOGIN.html"><span>Sair</span></a>
-				</div>
 			</div>
 		</aside>
 
@@ -56,48 +50,63 @@
 				<div class="registration-card">
 					<div class="registration-heading">
 						<h2 id="registration-title">Dados do cliente</h2>
-						<p>O identificador é gerado automaticamente.</p>
+						<p>O identificador será gerado ao salvar.</p>
 					</div>
 					<div class="registration-message" id="registration-message" role="status" aria-live="polite"></div>
 					<form id="registration-form" data-kind="customer">
 						<div class="registration-grid">
-							<div class="registration-field">
-								<label for="registration-id">ID do cliente</label>
-								<input id="registration-id" name="id" type="text" readonly />
-							</div>
 							<div class="registration-field">
 								<label for="name">Nome completo</label>
 								<input id="name" name="name" type="text" autocomplete="name" maxlength="120" placeholder="Nome do cliente" required />
 							</div>
 							<div class="registration-field">
 								<label for="cpf">CPF</label>
-								<input id="cpf" name="cpf" type="text" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" required />
+								<input id="cpf" name="cpf" type="text" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="CPF do cliente" required />
 							</div>
 							<div class="registration-field">
 								<label for="phone">Telefone</label>
-								<input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="20" placeholder="(00) 00000-0000" required />
+								<input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="20" placeholder="Telefone do cliente" required />
 							</div>
 							<div class="registration-field is-wide">
 								<label for="address">Endereço</label>
-								<input id="address" name="address" type="text" autocomplete="street-address" maxlength="180" placeholder="Rua, número, bairro, cidade e CEP" required />
+								<input id="address" name="address" type="text" autocomplete="street-address" maxlength="180" placeholder="Endereço do cliente" required />
 							</div>
 							<div class="registration-field">
 								<label for="email">E-mail</label>
-								<input id="email" name="email" type="email" autocomplete="email" maxlength="120" placeholder="cliente@email.com" required />
+								<input id="email" name="email" type="email" autocomplete="email" maxlength="120" placeholder="E-mail do cliente" required />
 							</div>
 							<div class="registration-field">
 								<label for="cnh">CNH</label>
 								<input id="cnh" name="cnh" type="text" inputmode="numeric" maxlength="20" placeholder="Número da CNH" required />
 							</div>
+							<div class="registration-field is-wide">
+								<label>Identificador corporal</label>
+								<input id="body-regions" name="bodyRegions" type="hidden" value="" />
+								<p class="registration-help">Marque em verde os membros funcionais. Esquerda e direita são as do cliente, de frente para ele.</p>
+								<div class="body-selector" aria-label="Identificador corporal do cliente">
+									<svg class="body-figure" viewBox="0 0 100 220" role="group" aria-label="Boneco interativo; selecione braços e pernas">
+										<g class="body-region" data-body-part="left-arm" role="button" tabindex="0" aria-label="Braço esquerdo" aria-pressed="false"><rect class="body-part part-left-arm" x="75" y="60" width="17" height="73" rx="8.5"></rect></g>
+										<g class="body-region" data-body-part="right-arm" role="button" tabindex="0" aria-label="Braço direito" aria-pressed="false"><rect class="body-part part-right-arm" x="10" y="60" width="17" height="73" rx="8.5"></rect></g>
+										<g class="body-region" data-body-part="left-leg" role="button" tabindex="0" aria-label="Perna esquerda" aria-pressed="false"><rect class="body-part part-left-leg" x="54" y="142" width="18" height="78" rx="9"></rect></g>
+										<g class="body-region" data-body-part="right-leg" role="button" tabindex="0" aria-label="Perna direita" aria-pressed="false"><rect class="body-part part-right-leg" x="28" y="142" width="18" height="78" rx="9"></rect></g>
+										<rect class="body-part part-torso" x="29" y="58" width="44" height="81" rx="12" aria-hidden="true"></rect>
+										<circle class="body-part part-head" cx="50" cy="32" r="23" aria-hidden="true"></circle>
+									</svg>
+									<div class="body-region-list" role="group" aria-label="Selecionar membros funcionais">
+										<button class="body-region-option" type="button" data-body-part="left-arm" aria-pressed="false">Braço esquerdo</button>
+										<button class="body-region-option" type="button" data-body-part="right-arm" aria-pressed="false">Braço direito</button>
+										<button class="body-region-option" type="button" data-body-part="left-leg" aria-pressed="false">Perna esquerda</button>
+										<button class="body-region-option" type="button" data-body-part="right-leg" aria-pressed="false">Perna direita</button>
+									</div>
+								</div>
+							</div>
 							<div class="registration-field">
-								<label for="accessibilityDifficulty">Dificuldade / necessidade de acessibilidade</label>
-								<select id="accessibilityDifficulty" name="accessibilityDifficulty">
-									<option value="">Selecione uma opção</option>
-									<option value="Braço esquerdo e perna direita">Braço esquerdo e perna direita</option>
-									<option value="Braço direito e perna esquerda">Braço direito e perna esquerda</option>
-									<option value="Braço e perna esquerda">Braço e perna esquerda</option>
-									<option value="Braço e perna direita">Braço e perna direita</option>
-								</select>
+								<label for="photo">Foto CNH do Cliente</label>
+								<input id="photo" name="photo" type="file" accept="image/*" aria-describedby="photo-help" />
+								<p class="registration-help" id="photo-help">Imagem de até 1 MB. Formatos aceitos conforme o navegador.</p>
+							</div>
+							<div class="registration-field is-wide">
+								<img class="photo-preview" id="photo-preview" alt="Pré-visualização da foto selecionada" />
 							</div>
 						</div>
 						<div class="registration-actions">

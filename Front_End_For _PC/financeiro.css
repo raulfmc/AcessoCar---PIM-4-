@@ -9,7 +9,6 @@
 .finance-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 15px; }
 .finance-heading h2 { margin: 0; color: var(--ink); font-size: 19px; font-weight: 650; }
 .finance-heading p { margin: 7px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
-.demo-note { flex: 0 0 auto; padding: 5px 8px; border: 1px solid var(--panel-border); border-radius: 5px; color: var(--muted); font-size: 10px; font-weight: 600; }
 .finance-panel { padding: 18px 20px 20px; border: 1px solid var(--panel-border); border-radius: 10px; background: var(--panel); box-shadow: 0 14px 38px rgba(0, 0, 0, 0.12), inset 0 1px rgba(255, 255, 255, 0.04); backdrop-filter: blur(14px); }
 .filter-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 14px; }
 .status-filters { display: flex; flex-wrap: wrap; gap: 7px; }

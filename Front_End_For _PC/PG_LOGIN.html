@@ -30,7 +30,7 @@
                 <h1>Seu próximo<br />destino começa <span>aqui.</span></h1>
             </div>
 
-            <form class="login-panel" id="login-form" action="#" method="get">
+            <form class="login-panel" id="login-form" method="post">
                 <div class="panel-heading">
                     <p class="panel-kicker">BEM-VINDO DE VOLTA</p>
                     <h2 id="login-title">Entrar na sua conta</h2>
@@ -45,7 +45,7 @@
                             <circle cx="12" cy="8" r="3.5"></circle>
                             <path d="M5 20c.5-3.4 3.1-5.5 7-5.5s6.5 2.1 7 5.5"></path>
                         </svg>
-                        <input id="login" name="login" type="text" placeholder="Digite seu login" autocomplete="username" inputmode="numeric" pattern="[0-9]+" title="Use somente números no login." required />
+                        <input id="login" name="login" type="text" placeholder="Digite seu login" autocomplete="username" required />
                     </div>
 
                     <label class="field-label password-label" for="password">Senha</label>
@@ -55,10 +55,11 @@
                             <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
                             <path d="M12 14v3"></path>
                         </svg>
-                        <input id="password" name="password" type="password" placeholder="Digite sua senha" autocomplete="current-password" pattern="(?=.*[A-Z])(?=.*[^A-Za-z0-9\s]).+" title="Use ao menos uma letra maiúscula e um caractere especial." required />
+                        <input id="password" name="password" type="password" placeholder="Digite sua senha" autocomplete="current-password" required />
                     </div>
                 </div>
 
+                <p class="login-message" id="login-message" role="alert" hidden></p>
                 <button class="submit-button" type="submit">
                     <span>Acessar minha conta</span>
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"></path></svg>
@@ -69,28 +70,6 @@
         <footer class="page-footer"><span>© 2026 AcessoCar</span><span>Uma viagem melhor começa com acesso.</span></footer>
     </main>
 
-    <script>
-        const themeToggle = document.querySelector("#theme-toggle");
-        const themeLabel = document.querySelector("#theme-label");
-        const savedTheme = localStorage.getItem("acessocar-theme");
-
-        function setTheme(isLight) {
-            document.documentElement.dataset.theme = isLight ? "light" : "dark";
-            themeToggle.checked = isLight;
-            themeToggle.setAttribute("aria-label", isLight ? "Ativar tema escuro" : "Ativar tema claro");
-            themeLabel.textContent = isLight ? "Tema claro" : "Tema escuro";
-        }
-
-        setTheme(savedTheme === "light");
-        themeToggle.addEventListener("change", () => {
-            setTheme(themeToggle.checked);
-            localStorage.setItem("acessocar-theme", themeToggle.checked ? "light" : "dark");
-        });
-
-        document.querySelector("#login-form").addEventListener("submit", (event) => {
-            event.preventDefault();
-            window.location.href = "PG_HOME.html";
-        });
-    </script>
+    <script src="PG_LOGIN.js" defer></script>
 </body>
 </html>

@@ -1,116 +1,138 @@
-const themeToggle = document.querySelector("#theme-toggle");
-const themeLabel = document.querySelector("#theme-label");
-const savedTheme = localStorage.getItem("acessocar-theme");
+(() => {
+	"use strict";
 
-function setTheme(isLight) {
-    document.documentElement.dataset.theme = isLight ? "light" : "dark";
-    themeToggle.checked = isLight;
-    themeToggle.setAttribute("aria-label", isLight ? "Ativar tema escuro" : "Ativar tema claro");
-    themeLabel.textContent = isLight ? "Tema claro" : "Tema escuro";
-}
+	// A rota deve retornar os indicadores e monthlyPayments; veja API-INTEGRATION.md.
+	const API_BASE_URL = "";
+	const API_ROUTES = {
+		dashboard: ""
+	};
+	const themeToggle = document.querySelector("#theme-toggle");
+	const themeLabel = document.querySelector("#theme-label");
+	const main = document.querySelector(".main-content");
+	const statusMessage = document.createElement("p");
+	statusMessage.className = "api-error-message";
+	statusMessage.setAttribute("role", "alert");
+	statusMessage.hidden = true;
+	main.insertBefore(statusMessage, main.querySelector("section"));
 
-function renderDashboard() {
-    const formatCurrency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
-    const monthFormatter = new Intl.DateTimeFormat("pt-BR", { month: "long" });
-    const state = AccessoCarData.read();
-    const summary = AccessoCarData.summarize(state);
-    const availableCars = state.vehicles.filter((vehicle) => vehicle.status === "available").length;
-    const rentedCars = state.vehicles.filter((vehicle) => vehicle.status === "rented").length;
-    const maintenanceCars = state.vehicles.filter((vehicle) => vehicle.status === "maintenance").length;
+	async function request(routeName) {
+		const route = API_ROUTES[routeName];
+		if (!API_BASE_URL.trim() || !route.trim()) {
+			throw new Error(`Configure API_BASE_URL e API_ROUTES.${routeName} em PG_HOME.js.`);
+		}
 
-    document.querySelector("#pending-count").textContent = String(summary.pendingInstallments);
-    document.querySelector("#receivable-count").textContent = String(summary.pendingInstallments + summary.overdueInstallments);
-    document.querySelector("#receivable-total").textContent = formatCurrency.format(summary.receivableTotal);
-    document.querySelector("#overdue-count").textContent = String(summary.overdueCustomers).padStart(2, "0");
-    document.querySelector("#overdue-installment-count").textContent = String(summary.overdueInstallments);
-    document.querySelector("#overdue-total").textContent = formatCurrency.format(summary.overdueTotal);
-    document.querySelector("#confirmed-count").textContent = String(summary.confirmedPayments);
-    document.querySelector("#active-rentals").textContent = String(summary.activeRentals);
-    document.querySelector("#available-count").textContent = String(availableCars).padStart(2, "0");
-    document.querySelector("#rented-count").textContent = String(rentedCars).padStart(2, "0");
-    document.querySelector("#maintenance-count").textContent = String(maintenanceCars).padStart(2, "0");
+		const response = await fetch(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
+			credentials: "include"
+		});
+		const body = await response.json();
+		if (!response.ok) {
+			throw new Error(body.message || `A API respondeu com HTTP ${response.status}.`);
+		}
+		return body.data ?? body;
+	}
 
-    const chart = document.querySelector("#revenue-chart");
-    const chartDescription = document.querySelector("#chart-description");
-    chart.replaceChildren();
-    chartDescription.replaceChildren();
-    const now = new Date();
-    const months = Array.from({ length: 6 }, (_, index) => new Date(now.getFullYear(), now.getMonth() - 5 + index, 1, 12));
-    const monthlyPayments = months.map((month) => {
-        const key = `${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, "0")}`;
-        const value = state.installments
-            .filter((installment) => installment.status === "paid" && installment.paidAt && installment.paidAt.slice(0, 7) === key)
-            .reduce((total, installment) => total + installment.amount, 0);
-        const label = monthFormatter.format(month);
-        return { month: label.charAt(0).toLocaleUpperCase("pt-BR") + label.slice(1), value };
-    });
-    const highestRevenue = Math.max(1, ...monthlyPayments.map((item) => item.value));
-    monthlyPayments.forEach((item, index) => {
-        const column = document.createElement("div");
-        column.className = "chart-column";
-        column.tabIndex = 0;
-        column.setAttribute("role", "listitem");
+	function setTheme(isLight) {
+		document.documentElement.dataset.theme = isLight ? "light" : "dark";
+		themeToggle.checked = isLight;
+		themeToggle.setAttribute("aria-label", isLight ? "Ativar tema escuro" : "Ativar tema claro");
+		themeLabel.textContent = isLight ? "Tema claro" : "Tema escuro";
+	}
 
-        const bar = document.createElement("span");
-        bar.className = "chart-bar";
-        bar.style.setProperty("--bar-height", `${Math.max(12, (item.value / highestRevenue) * 100)}%`);
+	function requireNumber(data, key) {
+		if (typeof data[key] !== "number" || !Number.isFinite(data[key])) {
+			throw new Error(`A resposta da rota de dashboard deve conter o campo numérico "${key}".`);
+		}
+		return data[key];
+	}
 
-        const month = document.createElement("span");
-        month.className = "chart-month";
-        month.textContent = item.month;
+	async function renderDashboard() {
+		statusMessage.hidden = true;
+		try {
+			const summary = await request("dashboard");
+			const formatCurrency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+			const values = {
+				pendingInstallments: requireNumber(summary, "pendingInstallments"),
+				receivableCount: requireNumber(summary, "receivableCount"),
+				receivableTotal: requireNumber(summary, "receivableTotal"),
+				overdueCustomers: requireNumber(summary, "overdueCustomers"),
+				overdueInstallments: requireNumber(summary, "overdueInstallments"),
+				overdueTotal: requireNumber(summary, "overdueTotal"),
+				confirmedPayments: requireNumber(summary, "confirmedPayments"),
+				activeRentals: requireNumber(summary, "activeRentals"),
+				availableVehicles: requireNumber(summary, "availableVehicles"),
+				rentedVehicles: requireNumber(summary, "rentedVehicles"),
+				maintenanceVehicles: requireNumber(summary, "maintenanceVehicles")
+			};
 
-        const tooltip = document.createElement("span");
-        tooltip.className = "chart-tooltip";
+			document.querySelector("#pending-count").textContent = String(values.pendingInstallments);
+			document.querySelector("#receivable-count").textContent = String(values.receivableCount);
+			document.querySelector("#receivable-total").textContent = formatCurrency.format(values.receivableTotal);
+			document.querySelector("#overdue-count").textContent = String(values.overdueCustomers);
+			document.querySelector("#overdue-installment-count").textContent = String(values.overdueInstallments);
+			document.querySelector("#overdue-total").textContent = formatCurrency.format(values.overdueTotal);
+			document.querySelector("#confirmed-count").textContent = String(values.confirmedPayments);
+			document.querySelector("#active-rentals").textContent = String(values.activeRentals);
+			document.querySelector("#available-count").textContent = String(values.availableVehicles);
+			document.querySelector("#rented-count").textContent = String(values.rentedVehicles);
+			document.querySelector("#maintenance-count").textContent = String(values.maintenanceVehicles);
 
-        const tooltipMonth = document.createElement("strong");
-        tooltipMonth.textContent = item.month;
+			if (!Array.isArray(summary.monthlyPayments)) {
+				throw new Error('A resposta da rota de dashboard deve conter "monthlyPayments" como uma lista.');
+			}
+			renderRevenueChart(summary.monthlyPayments, formatCurrency);
+		} catch (error) {
+			statusMessage.textContent = `Não foi possível carregar os indicadores: ${error.message}`;
+			statusMessage.hidden = false;
+		}
+	}
 
-        const tooltipRevenue = document.createElement("span");
-        tooltipRevenue.textContent = formatCurrency.format(item.value);
+	function renderRevenueChart(payments, formatCurrency) {
+		const chart = document.querySelector("#revenue-chart");
+		const chartDescription = document.querySelector("#chart-description");
+		chart.replaceChildren();
+		chartDescription.replaceChildren();
+		const highestRevenue = Math.max(1, ...payments.map((payment) => payment.value));
+		payments.forEach((payment) => {
+			if (typeof payment.month !== "string" || typeof payment.value !== "number" || !Number.isFinite(payment.value)) {
+				throw new Error('Cada item de "monthlyPayments" deve conter "month" (texto) e "value" (número).');
+			}
+			const column = document.createElement("div");
+			column.className = "chart-column";
+			column.tabIndex = 0;
+			column.setAttribute("role", "listitem");
+			const bar = document.createElement("span");
+			bar.className = "chart-bar";
+			bar.hidden = payment.value === 0;
+			bar.style.setProperty("--bar-height", payment.value > 0 ? `${Math.max(12, (payment.value / highestRevenue) * 100)}%` : "0%");
+			const month = document.createElement("span");
+			month.className = "chart-month";
+			month.textContent = payment.month;
+			const tooltip = document.createElement("span");
+			tooltip.className = "chart-tooltip";
+			tooltip.textContent = `${payment.month}: ${formatCurrency.format(payment.value)}`;
+			column.setAttribute("aria-label", tooltip.textContent);
+			column.append(bar, month, tooltip);
+			chart.append(column);
+			const description = document.createElement("li");
+			description.textContent = tooltip.textContent;
+			chartDescription.append(description);
+		});
+	}
 
-        const previousMonth = monthlyPayments[index - 1];
-        const tooltipVariation = document.createElement("span");
-        if (previousMonth) {
-            if (previousMonth.value === 0) {
-                tooltipVariation.textContent = item.value > 0 ? `Recebimentos iniciados vs. ${previousMonth.month}` : `Sem recebimentos confirmados vs. ${previousMonth.month}`;
-            } else {
-                const variation = ((item.value - previousMonth.value) / previousMonth.value) * 100;
-                const direction = variation > 0 ? "aumento" : variation < 0 ? "queda" : "sem variação";
-                tooltipVariation.textContent = `${direction} de ${Math.abs(variation).toFixed(1).replace(".", ",")}% vs. ${previousMonth.month}`;
-            }
-        } else {
-            tooltipVariation.textContent = "Início do período";
-        }
+	const savedTheme = localStorage.getItem("acessocar-theme");
+	setTheme(savedTheme === "light");
+	themeToggle.addEventListener("change", () => {
+		setTheme(themeToggle.checked);
+		localStorage.setItem("acessocar-theme", themeToggle.checked ? "light" : "dark");
+	});
 
-        tooltip.append(tooltipMonth, tooltipRevenue, tooltipVariation);
-        column.setAttribute("aria-label", `${item.month}: ${formatCurrency.format(item.value)}; ${tooltipVariation.textContent}`);
-        column.append(bar, month, tooltip);
-        chart.append(column);
+	const sidebar = document.querySelector("#sidebar");
+	const menuToggle = document.querySelector("#menu-toggle");
+	menuToggle.addEventListener("click", () => {
+		const isOpen = sidebar.classList.toggle("is-open");
+		menuToggle.setAttribute("aria-expanded", String(isOpen));
+		menuToggle.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
+	});
 
-        const description = document.createElement("li");
-        description.textContent = `${item.month}: ${formatCurrency.format(item.value)}`;
-        chartDescription.append(description);
-    });
-}
-
-setTheme(savedTheme === "light");
-renderDashboard();
-
-themeToggle.addEventListener("change", () => {
-    setTheme(themeToggle.checked);
-    localStorage.setItem("acessocar-theme", themeToggle.checked ? "light" : "dark");
-});
-
-const sidebar = document.querySelector("#sidebar");
-const menuToggle = document.querySelector("#menu-toggle");
-
-menuToggle.addEventListener("click", () => {
-    const isOpen = sidebar.classList.toggle("is-open");
-    menuToggle.setAttribute("aria-expanded", String(isOpen));
-    menuToggle.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
-});
-
-window.addEventListener("accessocar:data-changed", renderDashboard);
-window.addEventListener("storage", (event) => {
-    if (event.key === "accessocar-management-v1") renderDashboard();
-});
+	renderDashboard();
+})();

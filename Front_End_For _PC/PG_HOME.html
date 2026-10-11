@@ -6,7 +6,6 @@
 	<meta name="theme-color" content="#080d16" />
 	<title>Home | acessoCar</title>
 	<link rel="stylesheet" href="PG_HOME.css" />
-	<script src="accessocar-data.js" defer></script>
 	<script src="PG_HOME.js" defer></script>
 </head>
 <body>
@@ -48,20 +47,8 @@
 					<a class="nav-link" href="manutencao.html">
 						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.2 5.2L4 17a2.1 2.1 0 0 0 3 3l5.3-5.3a4 4 0 0 0 5.2-5.2l-2.4 2.4-3-3z"></path><path d="m15 5 4-2 2 2-2 4"></path></svg><span>Manutenção</span>
 					</a>
-					<a class="nav-link" href="configuracoes.html">
-
-					</a>
 				</nav>
 
-				<div class="sidebar-bottom">
-					<div class="user-info">
-						<span class="user-avatar" aria-hidden="true">AD</span>
-						<span class="user-copy"><strong id="user-name">Administrador</strong><span>Usuário logado</span></span>
-					</div>
-					<a class="logout-link" href="PG_LOGIN.html">
-						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5m5 5H3m9-9h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7"></path></svg><span>Sair</span>
-					</a>
-				</div>
 			</div>
 		</aside>
 
@@ -86,25 +73,25 @@
 				<div class="metric-grid">
 					<article class="metric-card">
 						<div class="metric-topline"><span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 9h8m-8 4h5"></path></svg></span><span class="metric-caption">Aguardando confirmação</span></div>
-						<h3>Parcelas pendentes</h3><p class="metric-value"><span id="pending-count">0</span> <span class="metric-unit">parcelas</span></p>
+						<h3>Parcelas pendentes</h3><p class="metric-value"><span id="pending-count">—</span> <span class="metric-unit">parcelas</span></p>
 					</article>
 					<article class="metric-card">
 						<div class="metric-topline"><span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"></circle><path d="M3 20c.4-3.4 2.5-5.5 6-5.5s5.6 2.1 6 5.5M17 8h5m-2.5-2.5v5"></path></svg></span><span class="metric-caption">Pagamentos pendentes</span></div>
-						<h3>A receber</h3><p class="metric-demo"></p><p class="metric-value metric-total" id="receivable-total">R$ 0,00</p><p class="metric-detail"><span id="receivable-count">0</span> parcelas não confirmadas</p>
+						<h3>A receber</h3><p class="metric-value metric-total" id="receivable-total">—</p><p class="metric-detail"><span id="receivable-count">—</span> parcelas não confirmadas</p>
 						<a class="view-link" href="financeiro.html?filter=unpaid">Visualizar<span class="visually-hidden"> parcelas a receber</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"></path></svg></a>
 					</article>
 					<article class="metric-card">
 						<div class="metric-topline"><span class="metric-icon warning-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 2.8 19a1.4 1.4 0 0 0 1.2 2h16a1.4 1.4 0 0 0 1.2-2L12 3zM12 9v5m0 3h.01"></path></svg></span><span class="metric-caption">Pagamento vencido</span></div>
-						<h3>Em atraso</h3><p class="metric-demo"></p><p class="metric-value metric-total" id="overdue-total">R$ 0,00</p><p class="metric-detail"><span id="overdue-count">0</span> clientes · <span id="overdue-installment-count">0</span> parcelas vencidas</p>
+						<h3>Em atraso</h3><p class="metric-value metric-total" id="overdue-total">—</p><p class="metric-detail"><span id="overdue-count">—</span> clientes · <span id="overdue-installment-count">—</span> parcelas vencidas</p>
 						<a class="view-link" href="financeiro.html?filter=overdue">Visualizar<span class="visually-hidden"> parcelas de clientes em atraso</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"></path></svg></a>
 					</article>
 					<article class="metric-card">
-						<div class="metric-topline"><span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"></path></svg></span><span class="metric-caption">Recebidos fora do sistema</span></div>
-						<h3>Pagamentos confirmados</h3><p class="metric-value"><span id="confirmed-count">0</span> <span class="metric-unit">parcelas</span></p>
+						<div class="metric-topline"><span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"></path></svg></span><span class="metric-caption">Recebimentos registrados</span></div>
+						<h3>Pagamentos confirmados</h3><p class="metric-value"><span id="confirmed-count">—</span> <span class="metric-unit">parcelas</span></p>
 					</article>
 					<article class="metric-card">
 						<div class="metric-topline"><span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 10h18m-12 5h3"></path></svg></span><span class="metric-caption">Locações em andamento</span></div>
-						<h3>Locações ativas</h3><p class="metric-value"><span id="active-rentals">0</span> <span class="metric-unit">locações</span></p>
+						<h3>Locações ativas</h3><p class="metric-value"><span id="active-rentals">—</span> <span class="metric-unit">locações</span></p>
 					</article>
 				</div>
 			</section>
@@ -114,15 +101,15 @@
 				<div class="metric-grid">
 					<article class="metric-card">
 						<div class="metric-topline"><span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 11 1.5-5h11L19 11M3 11h18v7H3zM6 18v2m12-2v2M6 14h.01M18 14h.01"></path></svg></span><span class="metric-caption">Prontos para locação</span></div>
-						<h3>Disponíveis</h3><p class="metric-value"><span id="available-count">08</span> <span class="metric-unit">carros</span></p>
+						<h3>Disponíveis</h3><p class="metric-value"><span id="available-count">—</span> <span class="metric-unit">carros</span></p>
 					</article>
 					<article class="metric-card">
 						<div class="metric-topline"><span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 11 1.5-5h11L19 11M3 11h18v7H3zM6 18v2m12-2v2M6 14h.01M18 14h.01"></path><path d="M8 14h8"></path></svg></span><span class="metric-caption">Em locação</span></div>
-						<h3>Indisponíveis</h3><p class="metric-value"><span id="rented-count">04</span> <span class="metric-unit">carros</span></p>
+						<h3>Locados</h3><p class="metric-value"><span id="rented-count">—</span> <span class="metric-unit">carros</span></p>
 					</article>
 					<article class="metric-card">
 						<div class="metric-topline"><span class="metric-icon warning-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14.5 6.5a4 4 0 0 0-5.2 5.2L4 17a2.1 2.1 0 0 0 3 3l5.3-5.3a4 4 0 0 0 5.2-5.2l-2.4 2.4-3-3z"></path></svg></span><span class="metric-caption">Fora de operação</span></div>
-						<h3>Em manutenção</h3><p class="metric-value"><span id="maintenance-count">02</span> <span class="metric-unit">carros</span></p>
+						<h3>Em manutenção</h3><p class="metric-value"><span id="maintenance-count">—</span> <span class="metric-unit">carros</span></p>
 					</article>
 				</div>
 			</section>

@@ -1,6 +1,13 @@
 (() => {
 	"use strict";
 
+	// Listas retornam arrays; confirmPayment usa :id e recebe status/paidAt.
+	const API_BASE_URL = "";
+	const API_ROUTES = {
+		customers: "",
+		installments: "",
+		confirmPayment: ""
+	};
 	const customerTableBody = document.querySelector("#customer-table-body");
 	const installmentTableBody = document.querySelector("#installment-table-body");
 	const overview = document.querySelector("#customer-overview");
@@ -12,12 +19,50 @@
 	const paymentDialog = document.querySelector("#payment-dialog");
 	const confirmPaymentButton = document.querySelector("#confirm-payment-button");
 	const dialogError = document.querySelector("#dialog-error");
+	const main = document.querySelector(".main-content");
+	const statusMessage = document.createElement("p");
+	statusMessage.className = "api-error-message";
+	statusMessage.setAttribute("role", "alert");
+	statusMessage.hidden = true;
+	main.insertBefore(statusMessage, main.querySelector("section"));
 	const currency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 	const dateFormatter = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeZone: "UTC" });
 	const requestedStatus = new URLSearchParams(window.location.search).get("filter");
 	const activeStatus = ["overdue", "unpaid"].includes(requestedStatus) ? requestedStatus : "pending";
 	let selectedCustomerId = null;
 	let selectedInstallmentId = null;
+	let customers = [];
+	let installments = [];
+
+	async function request(routeName, options = {}) {
+		const route = options.url || API_ROUTES[routeName];
+		if (!API_BASE_URL.trim() || !route.trim()) {
+			throw new Error(`Configure API_BASE_URL e API_ROUTES.${routeName} em financeiro.js.`);
+		}
+		const { url, ...fetchOptions } = options;
+		const response = await fetch(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
+			...fetchOptions,
+			credentials: "include",
+			headers: { ...(fetchOptions.body ? { "Content-Type": "application/json" } : {}), ...fetchOptions.headers }
+		});
+		const text = await response.text();
+		const body = text ? JSON.parse(text) : null;
+		if (!response.ok) throw new Error(body?.message || `A API respondeu com HTTP ${response.status}.`);
+		return body?.data ?? body;
+	}
+
+	async function loadData() {
+		const [customerData, installmentData] = await Promise.all([
+			request("customers"),
+			request("installments")
+		]);
+		if (!Array.isArray(customerData) || !Array.isArray(installmentData)) {
+			throw new Error("As rotas de clientes e parcelas devem retornar listas (ou { data: lista }).");
+		}
+		customers = customerData;
+		installments = installmentData;
+		return { customers, installments };
+	}
 
 	function setTheme(isLight) {
 		document.documentElement.dataset.theme = isLight ? "light" : "dark";
@@ -28,7 +73,9 @@
 	}
 
 	function displayDate(value) {
-		return value ? dateFormatter.format(new Date(`${value}T00:00:00Z`)) : "—";
+		if (!value) return "—";
+		const date = new Date(`${value}T00:00:00Z`);
+		return Number.isNaN(date.getTime()) ? "—" : dateFormatter.format(date);
 	}
 
 	function createCell(text, className = "") {
@@ -47,27 +94,31 @@
 		};
 	}
 
-	function getCustomerRows(state) {
+	function installmentsForCustomer(customerId) {
 		const filters = getFilters();
-		return state.customers.map((customer) => {
-			const installments = state.installments.filter((item) =>
-				item.customerId === customer.id
-				&& (activeStatus === "unpaid" ? item.status !== "paid" : item.status === activeStatus)
-				&& (!filters.rentalId || item.rentalId.toLocaleLowerCase("pt-BR").includes(filters.rentalId))
-				&& (!filters.startDate || item.dueDate >= filters.startDate)
-				&& (!filters.endDate || item.dueDate <= filters.endDate)
-			);
-			return { customer, installments };
-		}).filter(({ customer, installments }) => {
-			if (installments.length === 0) return false;
-			if (!filters.search) return true;
-			const searchable = `${customer.name} ${customer.id} ${installments.map((item) => `${item.id} ${item.rentalId}`).join(" ")}`.toLocaleLowerCase("pt-BR");
-			return searchable.includes(filters.search);
-		}).sort((first, second) => first.customer.name.localeCompare(second.customer.name, "pt-BR"));
+		return installments.filter((item) =>
+			item.customerId === customerId
+			&& (activeStatus === "unpaid" ? item.status !== "paid" : item.status === activeStatus)
+			&& (!filters.rentalId || String(item.rentalId).toLocaleLowerCase("pt-BR").includes(filters.rentalId))
+			&& (!filters.startDate || item.dueDate >= filters.startDate)
+			&& (!filters.endDate || item.dueDate <= filters.endDate)
+		);
 	}
 
-	function renderCustomerList(state) {
-		const rows = getCustomerRows(state);
+	function getCustomerRows() {
+		const filters = getFilters();
+		return customers.map((customer) => ({ customer, installments: installmentsForCustomer(customer.id) }))
+			.filter(({ customer, installments: customerInstallments }) => {
+				if (customerInstallments.length === 0) return false;
+				if (!filters.search) return true;
+				const searchable = `${customer.name} ${customer.id} ${customerInstallments.map((item) => `${item.id} ${item.rentalId}`).join(" ")}`.toLocaleLowerCase("pt-BR");
+				return searchable.includes(filters.search);
+			})
+			.sort((first, second) => first.customer.name.localeCompare(second.customer.name, "pt-BR"));
+	}
+
+	function renderCustomerList() {
+		const rows = getCustomerRows();
 		customerTableBody.replaceChildren();
 		if (rows.length === 0) {
 			const row = document.createElement("tr");
@@ -78,26 +129,25 @@
 			row.append(cell);
 			customerTableBody.append(row);
 		} else {
-			rows.forEach(({ customer, installments }) => {
+			rows.forEach(({ customer, installments: customerInstallments }) => {
 				const row = document.createElement("tr");
-				const total = installments.reduce((sum, installment) => sum + installment.amount, 0);
-				const nextDue = installments.reduce((earliest, installment) =>
+				const total = customerInstallments.reduce((sum, installment) => sum + installment.amount, 0);
+				const nextDue = customerInstallments.reduce((earliest, installment) =>
 					!earliest || installment.dueDate < earliest ? installment.dueDate : earliest, "");
 				row.append(
 					createCell(customer.name, "table-primary"),
-					createCell(`${customer.cid} · ${customer.id}`, "table-id"),
-					createCell(String(installments.length)),
+					createCell(`${customer.cpf || customer.cid || "—"} · ${customer.id}`, "table-id"),
+					createCell(String(customerInstallments.length)),
 					createCell(currency.format(total), "table-value"),
 					createCell(displayDate(nextDue)),
 					createCell("", "status-cell")
 				);
+				const hasOverdue = customerInstallments.some((item) => item.status === "overdue");
 				const badge = document.createElement("span");
-				const hasOverdueInstallment = installments.some((installment) => installment.status === "overdue");
-				const customerStatus = activeStatus === "unpaid" && !hasOverdueInstallment ? "pending" : activeStatus;
+				const customerStatus = activeStatus === "unpaid" && !hasOverdue ? "pending" : activeStatus;
 				badge.className = `status-badge status-${customerStatus}`;
 				badge.textContent = customerStatus === "overdue" ? "DEVENDO / VENCIDO" : activeStatus === "unpaid" ? "EM ABERTO" : "PENDENTE";
 				row.children[5].append(badge);
-
 				const actionCell = document.createElement("td");
 				const viewButton = document.createElement("button");
 				viewButton.className = "confirm-button";
@@ -109,32 +159,23 @@
 				customerTableBody.append(row);
 			});
 		}
-		document.querySelector("#installment-count").textContent =
-			`${rows.length} ${rows.length === 1 ? "pessoa" : "pessoas"}`;
+		document.querySelector("#installment-count").textContent = `${rows.length} ${rows.length === 1 ? "pessoa" : "pessoas"}`;
 	}
 
-	function renderCustomerDetail(state) {
+	function renderCustomerDetail() {
 		if (!selectedCustomerId) return;
-		const customer = state.customers.find((item) => item.id === selectedCustomerId);
+		const customer = customers.find((item) => item.id === selectedCustomerId);
 		if (!customer) {
 			closeCustomerDetail();
 			return;
 		}
-		const filters = getFilters();
-		const installments = state.installments
-			.filter((item) =>
-				item.customerId === selectedCustomerId
-				&& (activeStatus === "unpaid" ? item.status !== "paid" : item.status === activeStatus)
-				&& (!filters.rentalId || item.rentalId.toLocaleLowerCase("pt-BR").includes(filters.rentalId))
-				&& (!filters.startDate || item.dueDate >= filters.startDate)
-				&& (!filters.endDate || item.dueDate <= filters.endDate)
-			)
+		const customerInstallments = installmentsForCustomer(selectedCustomerId)
 			.sort((first, second) => first.dueDate.localeCompare(second.dueDate));
 		document.querySelector("#detail-customer-name").textContent = customer.name;
-		const detailSituation = activeStatus === "overdue" ? "vencidas" : activeStatus === "unpaid" ? "em aberto" : "pendentes";
-		document.querySelector("#detail-customer-id").textContent = `${customer.cid} · ${customer.id} · ${installments.length} ${installments.length === 1 ? "parcela" : "parcelas"} ${detailSituation}`;
+		const situation = activeStatus === "overdue" ? "vencidas" : activeStatus === "unpaid" ? "em aberto" : "pendentes";
+		document.querySelector("#detail-customer-id").textContent = `${customer.cpf || customer.cid || "—"} · ${customer.id} · ${customerInstallments.length} ${customerInstallments.length === 1 ? "parcela" : "parcelas"} ${situation}`;
 		installmentTableBody.replaceChildren();
-		if (installments.length === 0) {
+		if (customerInstallments.length === 0) {
 			const row = document.createElement("tr");
 			const cell = createCell("Não há parcelas nesta situação para esta pessoa.", "empty-cell");
 			cell.colSpan = 9;
@@ -142,8 +183,7 @@
 			installmentTableBody.append(row);
 			return;
 		}
-
-		installments.forEach((installment) => {
+		customerInstallments.forEach((installment) => {
 			const row = document.createElement("tr");
 			row.append(
 				createCell(installment.id, "table-id"),
@@ -159,7 +199,6 @@
 			badge.className = `status-badge status-${installment.status}`;
 			badge.textContent = installment.status === "overdue" ? "DEVENDO / VENCIDO" : "PENDENTE";
 			row.children[5].append(badge);
-
 			const actionCell = document.createElement("td");
 			const button = document.createElement("button");
 			button.className = "confirm-button";
@@ -172,22 +211,21 @@
 		});
 	}
 
-	function render() {
-		const state = AccessoCarData.read();
-		renderCustomerList(state);
-		renderCustomerDetail(state);
-
-		const summary = AccessoCarData.summarize(state);
-		document.querySelector("#pending-summary").textContent = String(summary.pendingInstallments);
-		document.querySelector("#overdue-summary").textContent = String(summary.overdueInstallments);
-		document.querySelector("#receivable-summary").textContent = currency.format(summary.receivableTotal);
-
-		const overdueLink = document.querySelector('.nav-submenu a[href="financeiro.html?filter=overdue"]');
-		const installmentsLink = document.querySelector('.nav-submenu a[href="financeiro.html"]');
-		overdueLink.classList.toggle("is-active", activeStatus === "overdue");
-		installmentsLink.classList.toggle("is-active", activeStatus !== "overdue");
-		overdueLink.toggleAttribute("aria-current", activeStatus === "overdue");
-		installmentsLink.toggleAttribute("aria-current", activeStatus !== "overdue");
+	async function render() {
+		statusMessage.hidden = true;
+		try {
+			await loadData();
+			renderCustomerList();
+			renderCustomerDetail();
+			const unpaid = installments.filter((item) => item.status !== "paid");
+			const overdue = unpaid.filter((item) => item.status === "overdue");
+			document.querySelector("#pending-summary").textContent = String(unpaid.filter((item) => item.status === "pending").length);
+			document.querySelector("#overdue-summary").textContent = String(overdue.length);
+			document.querySelector("#receivable-summary").textContent = currency.format(unpaid.reduce((total, item) => total + item.amount, 0));
+		} catch (error) {
+			statusMessage.textContent = `Não foi possível carregar o financeiro: ${error.message}`;
+			statusMessage.hidden = false;
+		}
 	}
 
 	function openCustomerDetail(customerId) {
@@ -207,9 +245,8 @@
 	}
 
 	function openConfirmation(installmentId) {
-		const state = AccessoCarData.read();
-		const installment = state.installments.find((item) => item.id === installmentId);
-		const customer = installment && state.customers.find((item) => item.id === installment.customerId);
+		const installment = installments.find((item) => item.id === installmentId);
+		const customer = installment && customers.find((item) => item.id === installment.customerId);
 		if (!installment || !customer || installment.status === "paid") return;
 		selectedInstallmentId = installment.id;
 		document.querySelector("#dialog-customer").textContent = `${customer.name} · ${customer.id}`;
@@ -219,12 +256,11 @@
 		paymentDialog.showModal();
 	}
 
+	setTheme(localStorage.getItem("acessocar-theme") === "light");
 	document.querySelector("#theme-toggle").addEventListener("change", (event) => {
 		setTheme(event.currentTarget.checked);
 		localStorage.setItem("acessocar-theme", event.currentTarget.checked ? "light" : "dark");
 	});
-	setTheme(localStorage.getItem("acessocar-theme") === "light");
-
 	const sidebar = document.querySelector("#sidebar");
 	const menuToggle = document.querySelector("#menu-toggle");
 	menuToggle.addEventListener("click", () => {
@@ -232,7 +268,6 @@
 		menuToggle.setAttribute("aria-expanded", String(isOpen));
 		menuToggle.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
 	});
-
 	[searchInput, rentalFilter, periodStart, periodEnd].forEach((control) => {
 		control.addEventListener("input", render);
 		control.addEventListener("change", render);
@@ -246,15 +281,20 @@
 		const button = event.target.closest("[data-confirm-installment]");
 		if (button) openConfirmation(button.dataset.confirmInstallment);
 	});
-	confirmPaymentButton.addEventListener("click", () => {
+	confirmPaymentButton.addEventListener("click", async () => {
 		if (!selectedInstallmentId) return;
 		try {
-			AccessoCarData.confirmPayment(selectedInstallmentId);
+			const route = API_ROUTES.confirmPayment.replace(":id", encodeURIComponent(selectedInstallmentId));
+			await request("confirmPayment", {
+				url: route,
+				method: "PATCH",
+				body: JSON.stringify({ status: "paid", paidAt: new Date().toISOString().slice(0, 10) })
+			});
 			selectedInstallmentId = null;
 			paymentDialog.close();
-			render();
+			await render();
 		} catch (error) {
-			dialogError.textContent = error.message;
+			dialogError.textContent = `Não foi possível confirmar o pagamento: ${error.message}`;
 		}
 	});
 
@@ -266,10 +306,5 @@
 		: activeStatus === "unpaid"
 			? "As parcelas ainda não confirmadas aparecem aqui agrupadas por pessoa. Selecione para revisar os valores em aberto."
 			: "As parcelas ainda não vencidas aparecem aqui agrupadas por pessoa. Selecione para consultar e confirmar pagamentos.";
-
 	render();
-	window.addEventListener("accessocar:data-changed", render);
-	window.addEventListener("storage", (event) => {
-		if (event.key === "accessocar-management-v1") render();
-	});
 })();

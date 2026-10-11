@@ -7,7 +7,7 @@
 	<title>Clientes | accessoCar</title>
 	<link rel="stylesheet" href="PG_HOME.css" />
 	<link rel="stylesheet" href="clientes.css" />
-	<script src="accessocar-data.js" defer></script>
+	<script src="accessocar-utils.js" defer></script>
 	<script src="clientes.js" defer></script>
 </head>
 <body>
@@ -49,20 +49,8 @@
 					<a class="nav-link" href="manutencao.html">
 						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.2 5.2L4 17a2.1 2.1 0 0 0 3 3l5.3-5.3a4 4 0 0 0 5.2-5.2l-2.4 2.4-3-3z"></path><path d="m15 5 4-2 2 2-2 4"></path></svg><span>Manutenção</span>
 					</a>
-					<a class="nav-link" href="configuracoes.html">
-						<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="m19.4 15 .1.1 1.1.9-1.5 2.6-1.4-.5a2 2 0 0 0-1.7.2l-.3.2-.2 1.5h-3l-.2-1.5a2 2 0 0 0-2-.4l-1.4.5-1.5-2.6 1.1-.9a2 2 0 0 0 0-2.2l-1.1-.9 1.5-2.6 1.4.5a2 2 0 0 0 2-.4l.2-1.5h3l.2 1.5a2 2 0 0 0 2 .4l1.4-.5 1.5 2.6-1.1.9a2 2 0 0 0-.1 2.1z" transform="translate(-2 -2)"></path></svg><span>Configurações</span>
-					</a>
 				</nav>
 
-				<div class="sidebar-bottom">
-					<div class="user-info">
-						<span class="user-avatar" aria-hidden="true">AD</span>
-						<span class="user-copy"><strong id="user-name">Administrador</strong><span>Usuário logado</span></span>
-					</div>
-					<a class="logout-link" href="PG_LOGIN.html">
-						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5m5 5H3m9-9h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7"></path></svg><span>Sair</span>
-					</a>
-				</div>
 			</div>
 		</aside>
 
@@ -86,7 +74,6 @@
 				<div class="customer-heading">
 					<div class="customer-title-group">
 						<h2 id="customer-title">Clientes cadastrados</h2>
-						<span class="customer-demo-note">Dados de demonstração</span>
 					</div>
 					<a class="new-customer-button" id="new-customer-link" href="CadastroCliente.html">
 						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
@@ -111,10 +98,9 @@
 								<tr>
 									<th scope="col">ID</th>
 									<th scope="col">Nome</th>
-									<th scope="col">CID</th>
-									<th scope="col">Placa do carro</th>
-									<th scope="col">Status</th>
-									<th scope="col">Ações</th>
+									<th scope="col">CPF</th>
+									<th scope="col">Membros</th>
+									<th scope="col">Deletar</th>
 								</tr>
 							</thead>
 							<tbody id="customer-table-body"></tbody>

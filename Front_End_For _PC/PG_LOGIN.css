@@ -205,6 +205,8 @@ button, input { font: inherit; }
 .submit-button:hover { filter: brightness(1.08); }
 .submit-button:focus-visible { outline: 3px solid rgba(112, 182, 255, 0.65); outline-offset: 3px; }
 .submit-button svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+.login-message { margin: 18px 0 0; color: #ff8585; font-size: 13px; line-height: 1.5; }
+:root[data-theme="light"] .login-message { color: #b42318; }
 .security-note { display: flex; align-items: center; justify-content: center; gap: 7px; margin: 19px 0 0; color: var(--muted); font-size: 11px; }
 .security-note span { color: #50c79d; font-size: 9px; }
 
@@ -239,4 +241,3 @@ button, input { font: inherit; }
     .panel-heading h2 { font-size: 23px; }
     .page-footer { align-items: flex-start; flex-direction: column; gap: 6px; font-size: 10px; }
 }
-

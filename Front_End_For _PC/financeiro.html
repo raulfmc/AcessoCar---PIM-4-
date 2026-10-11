@@ -7,7 +7,6 @@
 	<title>Financeiro | acessoCar</title>
 	<link rel="stylesheet" href="PG_HOME.css" />
 	<link rel="stylesheet" href="financeiro.css" />
-	<script src="accessocar-data.js" defer></script>
 	<script src="financeiro.js" defer></script>
 </head>
 <body>
@@ -36,12 +35,7 @@
 						</div>
 					</div>
 					<a class="nav-link" href="manutencao.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.2 5.2L4 17a2.1 2.1 0 0 0 3 3l5.3-5.3a4 4 0 0 0 5.2-5.2l-2.4 2.4-3-3z"></path><path d="m15 5 4-2 2 2-2 4"></path></svg><span>Manutenção</span></a>
-					<a class="nav-link" href="configuracoes.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="m19.4 15 .1.1 1.1.9-1.5 2.6-1.4-.5a2 2 0 0 0-1.7.2l-.3.2-.2 1.5h-3l-.2-1.5a2 2 0 0 0-2-.4l-1.4.5-1.5-2.6 1.1-.9a2 2 0 0 0 0-2.2l-1.1-.9 1.5-2.6 1.4.5a2 2 0 0 0 2-.4l.2-1.5h3l.2 1.5a2 2 0 0 0 2 .4l1.4-.5 1.5 2.6-1.1.9a2 2 0 0 0-.1 2.1z" transform="translate(-2 -2)"></path></svg><span>Configurações</span></a>
 				</nav>
-				<div class="sidebar-bottom">
-					<div class="user-info"><span class="user-avatar" aria-hidden="true">AD</span><span class="user-copy"><strong id="user-name">Administrador</strong><span>Usuário logado</span></span></div>
-					<a class="logout-link" href="PG_LOGIN.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5m5 5H3m9-9h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7"></path></svg><span>Sair</span></a>
-				</div>
 			</div>
 		</aside>
 
@@ -56,21 +50,20 @@
 			</header>
 
 			<section class="finance-summary" aria-label="Resumo das parcelas">
-				<article class="summary-card"><span class="summary-label">Pendentes</span><strong id="pending-summary">0</strong></article>
-				<article class="summary-card summary-overdue"><span class="summary-label">Vencidas / devendo</span><strong id="overdue-summary">0</strong></article>
-				<article class="summary-card summary-receivable"><span class="summary-label">A receber</span><strong id="receivable-summary">R$ 0,00</strong></article>
+				<article class="summary-card"><span class="summary-label">Pendentes</span><strong id="pending-summary">—</strong></article>
+				<article class="summary-card summary-overdue"><span class="summary-label">Vencidas / devendo</span><strong id="overdue-summary">—</strong></article>
+				<article class="summary-card summary-receivable"><span class="summary-label">A receber</span><strong id="receivable-summary">—</strong></article>
 			</section>
 
 			<section class="finance-section" aria-labelledby="installments-title">
 				<div class="finance-heading">
 					<div><h2 id="installments-title">Clientes com parcelas pendentes</h2><p id="finance-description">Selecione uma pessoa para consultar e atualizar as parcelas dela.</p></div>
-					<span class="demo-note">Controle local de demonstração</span>
 				</div>
 				<div class="finance-panel">
 					<div id="customer-overview">
 						<div class="advanced-filters customer-filters">
-							<div class="field search-field"><label for="installment-search">Pesquisar pessoa ou ID da locação</label><input id="installment-search" type="search" placeholder="Nome, CLI-001 ou LOC-2026-001" /></div>
-							<div class="field"><label for="rental-filter">Número da locação</label><input id="rental-filter" type="search" placeholder="LOC-2026-001" /></div>
+							<div class="field search-field"><label for="installment-search">Pesquisar pessoa ou ID da locação</label><input id="installment-search" type="search" placeholder="Nome ou identificador" /></div>
+							<div class="field"><label for="rental-filter">Número da locação</label><input id="rental-filter" type="search" placeholder="Identificador da locação" /></div>
 							<div class="field"><label for="period-start">Vencimento a partir de</label><input id="period-start" type="date" /></div>
 							<div class="field"><label for="period-end">Vencimento até</label><input id="period-end" type="date" /></div>
 						</div>

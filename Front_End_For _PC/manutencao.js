@@ -1,9 +1,16 @@
 (() => {
 	"use strict";
 
+	// Listas retornam arrays; releaseMaintenance usa :id do registro de manutenção.
+	const API_BASE_URL = "";
+	const API_ROUTES = {
+		vehicles: "",
+		maintenance: "",
+		createMaintenance: "",
+		releaseMaintenance: ""
+	};
 	const themeToggle = document.querySelector("#theme-toggle");
 	const themeLabel = document.querySelector("#theme-label");
-	const savedTheme = localStorage.getItem("acessocar-theme");
 	const formPanel = document.querySelector("#maintenance-form-panel");
 	const form = document.querySelector("#maintenance-form");
 	const vehicleSelect = document.querySelector("#maintenance-vehicle");
@@ -15,6 +22,37 @@
 	const addButton = document.querySelector("#new-maintenance-button");
 	const closeButton = document.querySelector("#close-maintenance-form");
 	const currency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+	let vehicles = [];
+	let maintenanceRecords = [];
+
+	async function request(routeName, options = {}) {
+		const route = options.url || API_ROUTES[routeName];
+		if (!API_BASE_URL.trim() || !route.trim()) {
+			throw new Error(`Configure API_BASE_URL e API_ROUTES.${routeName} em manutencao.js.`);
+		}
+		const { url, ...fetchOptions } = options;
+		const response = await fetch(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
+			...fetchOptions,
+			credentials: "include",
+			headers: { ...(fetchOptions.body ? { "Content-Type": "application/json" } : {}), ...fetchOptions.headers }
+		});
+		const text = await response.text();
+		const body = text ? JSON.parse(text) : null;
+		if (!response.ok) throw new Error(body?.message || `A API respondeu com HTTP ${response.status}.`);
+		return body?.data ?? body;
+	}
+
+	async function loadData() {
+		const [vehicleData, maintenanceData] = await Promise.all([
+			request("vehicles"),
+			request("maintenance")
+		]);
+		if (!Array.isArray(vehicleData) || !Array.isArray(maintenanceData)) {
+			throw new Error("As rotas de veículos e manutenção devem retornar listas (ou { data: lista }).");
+		}
+		vehicles = vehicleData;
+		maintenanceRecords = maintenanceData;
+	}
 
 	function setTheme(isLight) {
 		document.documentElement.dataset.theme = isLight ? "light" : "dark";
@@ -52,40 +90,33 @@
 		message.classList.toggle("is-error", isError);
 	}
 
-	function activeRecordForVehicle(records, vehicleId) {
-		return records.find((record) => record.vehicleId === vehicleId && record.status === "active");
+	function activeRecordForVehicle(vehicleId) {
+		return maintenanceRecords.find((record) => record.vehicleId === vehicleId && record.status === "active");
 	}
 
-	function renderVehicleOptions(state) {
+	function renderVehicleOptions() {
 		const previousValue = vehicleSelect.value;
+		const availableVehicles = vehicles.filter((vehicle) => vehicle.status === "available");
 		vehicleSelect.replaceChildren(new Option("Selecione um veículo disponível", ""));
-		state.vehicles
-			.filter((vehicle) => vehicle.status === "available")
-			.forEach((vehicle) => {
-				vehicleSelect.add(new Option(`${vehicle.name} · ${vehicle.plate}`, vehicle.id));
-			});
-		if ([...vehicleSelect.options].some((option) => option.value === previousValue)) {
-			vehicleSelect.value = previousValue;
-		}
-		addButton.disabled = !state.vehicles.some((vehicle) => vehicle.status === "available");
+		availableVehicles.forEach((vehicle) => vehicleSelect.add(new Option(`${vehicle.name} · ${vehicle.plate}`, vehicle.id)));
+		if (availableVehicles.some((vehicle) => vehicle.id === previousValue)) vehicleSelect.value = previousValue;
+		addButton.disabled = availableVehicles.length === 0;
 		addButton.title = addButton.disabled ? "Não há veículos disponíveis para encaminhar." : "";
 	}
 
 	function renderMaintenance() {
-		const state = AccessoCarData.read();
-		renderVehicleOptions(state);
-		const inMaintenance = state.vehicles.filter((vehicle) => vehicle.status === "maintenance");
+		renderVehicleOptions();
+		const vehiclesInMaintenance = vehicles.filter((vehicle) => vehicle.status === "maintenance");
 		tableBody.replaceChildren();
-
-		if (inMaintenance.length === 0) {
+		if (vehiclesInMaintenance.length === 0) {
 			const row = document.createElement("tr");
 			const cell = createCell("Não há veículos em manutenção no momento.", "maintenance-empty");
 			cell.colSpan = 7;
 			row.append(cell);
 			tableBody.append(row);
 		} else {
-			inMaintenance.forEach((vehicle) => {
-				const record = activeRecordForVehicle(state.maintenance, vehicle.id);
+			vehiclesInMaintenance.forEach((vehicle) => {
+				const record = activeRecordForVehicle(vehicle.id);
 				const row = document.createElement("tr");
 				row.append(
 					createCell(vehicle.name, "maintenance-vehicle"),
@@ -94,20 +125,20 @@
 					createCell(record ? currency.format(record.cost) : "—", "maintenance-cost"),
 					createCell(record ? formatDate(record.date) : "—", "maintenance-date")
 				);
-
 				const statusCell = document.createElement("td");
 				const status = document.createElement("span");
 				status.className = "maintenance-status";
 				status.textContent = "EM MANUTENÇÃO";
 				statusCell.append(status);
 				row.append(statusCell);
-
 				const actionCell = document.createElement("td");
 				const releaseButton = document.createElement("button");
 				releaseButton.className = "maintenance-release";
 				releaseButton.type = "button";
 				releaseButton.dataset.releaseVehicle = vehicle.id;
 				if (record) releaseButton.dataset.maintenanceId = record.id;
+				releaseButton.disabled = !record;
+				releaseButton.title = record ? "Concluir manutenção" : "A API não retornou o registro desta manutenção.";
 				releaseButton.textContent = "Liberar veículo";
 				releaseButton.setAttribute("aria-label", `Concluir manutenção e liberar ${vehicle.name}`);
 				actionCell.append(releaseButton);
@@ -115,13 +146,20 @@
 				tableBody.append(row);
 			});
 		}
+		count.textContent = `${vehiclesInMaintenance.length} ${vehiclesInMaintenance.length === 1 ? "veículo" : "veículos"}`;
+	}
 
-		count.textContent = `${inMaintenance.length} ${inMaintenance.length === 1 ? "veículo" : "veículos"}`;
+	async function refresh() {
+		try {
+			await loadData();
+			renderMaintenance();
+		} catch (error) {
+			showMessage(`Não foi possível carregar as manutenções: ${error.message}`, true);
+		}
 	}
 
 	function openForm() {
-		const state = AccessoCarData.read();
-		renderVehicleOptions(state);
+		renderVehicleOptions();
 		if (addButton.disabled) {
 			showMessage("Não há veículos disponíveis para encaminhar à manutenção.", true);
 			return;
@@ -137,10 +175,8 @@
 		addButton.setAttribute("aria-expanded", "false");
 	}
 
-	setTheme(savedTheme === "light");
-	maintenanceDate.value = AccessoCarData.formatDate(new Date());
-	renderMaintenance();
-
+	setTheme(localStorage.getItem("acessocar-theme") === "light");
+	maintenanceDate.value = AccessoCarUtils.formatDate(new Date());
 	themeToggle.addEventListener("change", () => {
 		setTheme(themeToggle.checked);
 		localStorage.setItem("acessocar-theme", themeToggle.checked ? "light" : "dark");
@@ -150,75 +186,40 @@
 	maintenanceCost.addEventListener("input", () => {
 		maintenanceCost.value = formatCurrencyInput(maintenanceCost.value);
 	});
-
-	form.addEventListener("submit", (event) => {
+	form.addEventListener("submit", async (event) => {
 		event.preventDefault();
 		if (!form.reportValidity()) return;
-
-		const state = AccessoCarData.read();
-		const vehicle = state.vehicles.find((item) => item.id === vehicleSelect.value);
-		if (!vehicle || vehicle.status !== "available") {
-			showMessage("O veículo selecionado não está mais disponível. Atualize a seleção.", true);
-			renderMaintenance();
-			return;
-		}
-
 		const cost = parseCurrencyInput(maintenanceCost.value);
-		const report = form.elements.namedItem("report").value.trim();
-		const date = form.elements.namedItem("date").value;
-		if (!Number.isFinite(cost) || cost < 0 || !report || !date) {
+		const payload = {
+			vehicleId: vehicleSelect.value,
+			cost,
+			report: form.elements.namedItem("report").value.trim(),
+			date: form.elements.namedItem("date").value
+		};
+		if (!Number.isFinite(cost) || cost < 0 || !payload.report || !payload.date) {
 			showMessage("Informe um valor válido, o motivo e a data da manutenção.", true);
 			return;
 		}
-
-		const highestNumber = state.maintenance.reduce((highest, record) => {
-			const match = /^MAN-(\d{4})-(\d+)$/.exec(record.id);
-			return match ? Math.max(highest, Number(match[2])) : highest;
-		}, 0);
-		const record = {
-			id: `MAN-${new Date().getFullYear()}-${String(highestNumber + 1).padStart(3, "0")}`,
-			vehicleId: vehicle.id,
-			report,
-			cost,
-			date,
-			status: "active",
-			createdAt: new Date().toISOString(),
-			completedAt: null
-		};
-
 		try {
-			state.maintenance.push(record);
-			vehicle.status = "maintenance";
-			AccessoCarData.write(state);
+			const record = await request("createMaintenance", { method: "POST", body: JSON.stringify(payload) });
 			form.reset();
-			maintenanceDate.value = AccessoCarData.formatDate(new Date());
+			maintenanceDate.value = AccessoCarUtils.formatDate(new Date());
 			closeForm();
-			showMessage(`Manutenção de ${vehicle.name} registrada com sucesso.`);
-			renderMaintenance();
+			showMessage(`Manutenção ${record?.id || ""} registrada com sucesso.`.trim());
+			await refresh();
 		} catch (error) {
 			showMessage(`Não foi possível registrar a manutenção: ${error.message}`, true);
 		}
 	});
-
-	tableBody.addEventListener("click", (event) => {
-		const releaseButton = event.target.closest("[data-release-vehicle]");
-		if (!releaseButton) return;
-
-		const state = AccessoCarData.read();
-		const vehicle = state.vehicles.find((item) => item.id === releaseButton.dataset.releaseVehicle);
-		if (!vehicle || vehicle.status !== "maintenance") return;
-
-		const record = state.maintenance.find((item) => item.id === releaseButton.dataset.maintenanceId);
-		if (record) {
-			record.status = "completed";
-			record.completedAt = new Date().toISOString();
-		}
-		vehicle.status = "available";
-
+	tableBody.addEventListener("click", async (event) => {
+		const button = event.target.closest("[data-release-vehicle]");
+		if (!button) return;
+		if (!button.dataset.maintenanceId) return;
+		const route = API_ROUTES.releaseMaintenance.replace(":id", encodeURIComponent(button.dataset.maintenanceId));
 		try {
-			AccessoCarData.write(state);
-			showMessage(`${vehicle.name} foi liberado e está disponível para locação.`);
-			renderMaintenance();
+			await request("releaseMaintenance", { url: route, method: "PATCH" });
+			showMessage("Manutenção concluída e veículo liberado.");
+			await refresh();
 		} catch (error) {
 			showMessage(`Não foi possível liberar o veículo: ${error.message}`, true);
 		}
@@ -231,9 +232,5 @@
 		menuToggle.setAttribute("aria-expanded", String(isOpen));
 		menuToggle.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
 	});
-
-	window.addEventListener("accessocar:data-changed", renderMaintenance);
-	window.addEventListener("storage", (event) => {
-		if (event.key === "accessocar-management-v1") renderMaintenance();
-	});
+	refresh();
 })();
