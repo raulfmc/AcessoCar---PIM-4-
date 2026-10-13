@@ -1,7 +1,6 @@
 (() => {
 	"use strict";
 
-<<<<<<< HEAD
 	// Listas devem retornar arrays JSON ou { data: [] }; customerById usa :id.
 	const API_BASE_URL = "";
 	const API_ROUTES = {
@@ -22,7 +21,7 @@
 	main.insertBefore(statusMessage, main.querySelector("section"));
 	const requestedFilter = new URLSearchParams(window.location.search).get("filter");
 	let activeFilter = ["pending", "overdue"].includes(requestedFilter) ? requestedFilter : "all";
-	let customers = [];
+	//let customers = [];
 
 	async function request(routeName, options = {}) {
 		const route = options.url || API_ROUTES[routeName];
@@ -127,8 +126,7 @@
 	themeToggle.addEventListener("change", () => {
 		setTheme(themeToggle.checked);
 		localStorage.setItem("acessocar-theme", themeToggle.checked ? "light" : "dark");
-	});
-=======
+})});
 async function loadCustomers() {
 	const resposta = await fetch('http://localhost:5104/api/Cliente');
         
@@ -154,23 +152,21 @@ const statusLabels = {
 	owing: { label: "DEVENDO", className: "status-owing" }
 };
 
-const themeToggle = document.querySelector("#theme-toggle");
-const themeLabel = document.querySelector("#theme-label");
-const savedTheme = localStorage.getItem("acessocar-theme");
-const tableBody = document.querySelector("#customer-table-body");
-const customerCount = document.querySelector("#customer-count");
-const filterButtons = document.querySelectorAll(".filter-button");
-const newCustomerLink = document.querySelector("#new-customer-link");
-const requestedFilter = new URLSearchParams(window.location.search).get("filter");
-let activeFilter = ["pending", "overdue"].includes(requestedFilter) ? requestedFilter : "all";
+// const themeToggle = document.querySelector("#theme-toggle");
+// const themeLabel = document.querySelector("#theme-label");
+// const savedTheme = localStorage.getItem("acessocar-theme");
+// const tableBody = document.querySelector("#customer-table-body");
+// const customerCount = document.querySelector("#customer-count");
+// const filterButtons = document.querySelectorAll(".filter-button");
+// const newCustomerLink = document.querySelector("#new-customer-link");
+// const requestedFilter = new URLSearchParams(window.location.search).get("filter");
+// let activeFilter = ["pending", "overdue"].includes(requestedFilter) ? requestedFilter : "all";
 
 function updateActiveFilterButton() {
->>>>>>> a470dd3bcae3680ebe63d5ac5351f9d07a876ecc
 	filterButtons.forEach((button) => {
 		const isActive = button.dataset.filter === activeFilter;
 		button.classList.toggle("is-active", isActive);
 		button.setAttribute("aria-pressed", String(isActive));
-<<<<<<< HEAD
 		button.addEventListener("click", () => {
 			activeFilter = button.dataset.filter;
 			filterButtons.forEach((filterButton) => {
@@ -180,7 +176,6 @@ function updateActiveFilterButton() {
 			});
 			renderCustomers();
 		});
-=======
 	});
 }
 
@@ -274,7 +269,6 @@ filterButtons.forEach((button) => {
 		activeFilter = button.dataset.filter;
 		updateActiveFilterButton();
 		renderCustomers();
->>>>>>> a470dd3bcae3680ebe63d5ac5351f9d07a876ecc
 	});
 	tableBody.addEventListener("click", async (event) => {
 		const deleteButton = event.target.closest("[data-delete-customer]");
@@ -293,17 +287,6 @@ filterButtons.forEach((button) => {
 		}
 	});
 
-<<<<<<< HEAD
-	const sidebar = document.querySelector("#sidebar");
-	const menuToggle = document.querySelector("#menu-toggle");
-	menuToggle.addEventListener("click", () => {
-		const isOpen = sidebar.classList.toggle("is-open");
-		menuToggle.setAttribute("aria-expanded", String(isOpen));
-		menuToggle.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
-	});
-	renderCustomers();
-})();
-=======
 tableBody.addEventListener("click", (event) => {
 	const deleteButton = event.target.closest("[data-delete-customer]");
 	if (!deleteButton) return;
@@ -334,5 +317,4 @@ menuToggle.addEventListener("click", () => {
 window.addEventListener("accessocar:data-changed", renderCustomers);
 window.addEventListener("storage", (event) => {
 	if (event.key === "accessocar-management-v1") renderCustomers();
-});
->>>>>>> a470dd3bcae3680ebe63d5ac5351f9d07a876ecc
+})});
