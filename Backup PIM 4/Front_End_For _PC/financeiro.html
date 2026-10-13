@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="theme-color" content="#080d16" />
+	<title>Financeiro | acessoCar</title>
+	<link rel="stylesheet" href="PG_HOME.css" />
+	<link rel="stylesheet" href="financeiro.css" />
+	<script src="accessocar-data.js" defer></script>
+	<script src="financeiro.js" defer></script>
+</head>
+<body>
+	<div class="app-shell">
+		<aside class="sidebar" id="sidebar" aria-label="Menu principal">
+			<div class="sidebar-top">
+				<a class="brand" href="PG_HOME.html" aria-label="accessoCar, página inicial">
+					<span class="brand-mark" aria-hidden="true"><span>A</span><span>C</span></span>
+					<span class="brand-name">acesso<span>Car</span></span>
+				</a>
+				<button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar-content" aria-label="Abrir menu">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+				</button>
+			</div>
+			<div class="sidebar-content" id="sidebar-content">
+				<nav class="primary-nav" aria-label="Navegação">
+					<a class="nav-link" href="PG_HOME.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path></svg><span>Home</span></a>
+					<a class="nav-link" href="clientes.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M3 20c.4-3.4 2.5-5.5 6-5.5s5.6 2.1 6 5.5M16 5.2a3.5 3.5 0 0 1 0 6.7M17 15c2.4.6 3.7 2.2 4 5"></path></svg><span>Clientes</span></a>
+					<a class="nav-link" href="veiculos.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 11 1.5-5h11L19 11M3 11h18v7H3zM6 18v2m12-2v2M6 14h.01M18 14h.01"></path><path d="M6.5 6 5 4H3m14 2 1.5-2H21"></path></svg><span>Veículos</span></a>
+					<a class="nav-link" href="locacoes.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="17" rx="2"></rect><path d="M8 2v4m8-4v4M4 9h16m-11 4h6m-6 4h4"></path></svg><span>Locações</span></a>
+					<div class="nav-group is-active">
+						<a class="nav-link is-active" href="financeiro.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 10h18m-12 5h3"></path></svg><span>Financeiro</span></a>
+						<div class="nav-submenu" aria-label="Opções do financeiro">
+							<a class="nav-sub-link is-active" href="financeiro.html" aria-current="page">Parcelas</a>
+							<a class="nav-sub-link" href="financeiro.html?filter=overdue">Pagamentos em atraso</a>
+						</div>
+					</div>
+					<a class="nav-link" href="manutencao.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.2 5.2L4 17a2.1 2.1 0 0 0 3 3l5.3-5.3a4 4 0 0 0 5.2-5.2l-2.4 2.4-3-3z"></path><path d="m15 5 4-2 2 2-2 4"></path></svg><span>Manutenção</span></a>
+					<a class="nav-link" href="configuracoes.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="m19.4 15 .1.1 1.1.9-1.5 2.6-1.4-.5a2 2 0 0 0-1.7.2l-.3.2-.2 1.5h-3l-.2-1.5a2 2 0 0 0-2-.4l-1.4.5-1.5-2.6 1.1-.9a2 2 0 0 0 0-2.2l-1.1-.9 1.5-2.6 1.4.5a2 2 0 0 0 2-.4l.2-1.5h3l.2 1.5a2 2 0 0 0 2 .4l1.4-.5 1.5 2.6-1.1.9a2 2 0 0 0-.1 2.1z" transform="translate(-2 -2)"></path></svg><span>Configurações</span></a>
+				</nav>
+				<div class="sidebar-bottom">
+					<div class="user-info"><span class="user-avatar" aria-hidden="true">AD</span><span class="user-copy"><strong id="user-name">Administrador</strong><span>Usuário logado</span></span></div>
+					<a class="logout-link" href="PG_LOGIN.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5m5 5H3m9-9h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7"></path></svg><span>Sair</span></a>
+				</div>
+			</div>
+		</aside>
+
+		<main class="main-content">
+			<header class="page-header">
+				<div>
+					<p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> CONTROLE FINANCEIRO</p>
+					<h1>Parcelas e <span>recebimentos</span></h1>
+					<p class="page-description">Acompanhe os valores e confirme pagamentos recebidos fora do sistema.</p>
+				</div>
+				<label class="theme-control" for="theme-toggle"><span class="theme-label" id="theme-label">Tema escuro</span><span class="switch"><input id="theme-toggle" type="checkbox" role="switch" aria-label="Ativar tema claro" /><span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span></span></label>
+			</header>
+
+			<section class="finance-summary" aria-label="Resumo das parcelas">
+				<article class="summary-card"><span class="summary-label">Pendentes</span><strong id="pending-summary">0</strong></article>
+				<article class="summary-card summary-overdue"><span class="summary-label">Vencidas / devendo</span><strong id="overdue-summary">0</strong></article>
+				<article class="summary-card summary-receivable"><span class="summary-label">A receber</span><strong id="receivable-summary">R$ 0,00</strong></article>
+			</section>
+
+			<section class="finance-section" aria-labelledby="installments-title">
+				<div class="finance-heading">
+					<div><h2 id="installments-title">Clientes com parcelas pendentes</h2><p id="finance-description">Selecione uma pessoa para consultar e atualizar as parcelas dela.</p></div>
+					<span class="demo-note">Controle local de demonstração</span>
+				</div>
+				<div class="finance-panel">
+					<div id="customer-overview">
+						<div class="advanced-filters customer-filters">
+							<div class="field search-field"><label for="installment-search">Pesquisar pessoa ou ID da locação</label><input id="installment-search" type="search" placeholder="Nome, CLI-001 ou LOC-2026-001" /></div>
+							<div class="field"><label for="rental-filter">Número da locação</label><input id="rental-filter" type="search" placeholder="LOC-2026-001" /></div>
+							<div class="field"><label for="period-start">Vencimento a partir de</label><input id="period-start" type="date" /></div>
+							<div class="field"><label for="period-end">Vencimento até</label><input id="period-end" type="date" /></div>
+						</div>
+						<p class="installment-count" id="installment-count" aria-live="polite"></p>
+						<div class="customer-table-scroll" tabindex="0" aria-label="Tabela de clientes com parcelas">
+							<table class="installment-table customer-installment-table">
+								<caption class="visually-hidden">Clientes com parcelas no status selecionado</caption>
+								<thead><tr><th scope="col">Cliente</th><th scope="col">Identificador</th><th scope="col">Parcelas</th><th scope="col">Valor em aberto</th><th scope="col">Próximo vencimento</th><th scope="col">Situação</th><th scope="col">Ação</th></tr></thead>
+								<tbody id="customer-table-body"></tbody>
+							</table>
+						</div>
+					</div>
+					<div class="customer-detail" id="customer-detail" hidden>
+						<div class="detail-heading">
+							<div><h3 id="detail-customer-name"></h3><p id="detail-customer-id"></p></div>
+							<button class="secondary-button" id="back-to-customers" type="button">Voltar para pessoas</button>
+						</div>
+						<div class="installment-table-scroll" tabindex="0" aria-label="Parcelas da pessoa selecionada">
+							<table class="installment-table detail-table">
+								<caption class="visually-hidden">Parcelas da pessoa selecionada</caption>
+								<thead><tr><th scope="col">ID da parcela</th><th scope="col">Locação</th><th scope="col">Parcela</th><th scope="col">Valor</th><th scope="col">Vencimento</th><th scope="col">Status</th><th scope="col">Confirmada em</th><th scope="col">Observação</th><th scope="col">Ação</th></tr></thead>
+								<tbody id="installment-table-body"></tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<dialog class="confirm-dialog" id="payment-dialog" aria-labelledby="dialog-title">
+				<form method="dialog" id="payment-confirm-form">
+					<p class="panel-kicker">CONFIRMAÇÃO MANUAL</p>
+					<h2 id="dialog-title">Confirmar pagamento recebido?</h2>
+					<p class="dialog-description">O sistema não processa pagamentos. Confirme somente se o recebimento aconteceu fora do sistema.</p>
+					<dl class="confirmation-details">
+						<div><dt>Cliente</dt><dd id="dialog-customer"></dd></div>
+						<div><dt>Parcela</dt><dd id="dialog-installment"></dd></div>
+						<div><dt>Valor</dt><dd id="dialog-amount"></dd></div>
+					</dl>
+					<p class="dialog-error" id="dialog-error" role="alert"></p>
+					<div class="dialog-actions">
+						<button class="secondary-button" value="cancel">Voltar</button>
+						<button class="primary-button" id="confirm-payment-button" type="button">Confirmar como pago</button>
+					</div>
+				</form>
+			</dialog>
+
+			<footer class="page-footer"><span>© 2026 accessoCar</span><span>Uma viagem melhor começa com acesso.</span></footer>
+		</main>
+	</div>
+</body>
+</html>

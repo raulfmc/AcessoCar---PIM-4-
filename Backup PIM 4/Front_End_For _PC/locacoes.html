@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="theme-color" content="#080d16" />
+	<title>Locações | acessoCar</title>
+	<link rel="stylesheet" href="PG_HOME.css" />
+	<link rel="stylesheet" href="locacoes.css" />
+	<script src="accessocar-data.js" defer></script>
+	<script src="locacoes.js" defer></script>
+</head>
+<body>
+	<div class="app-shell">
+		<aside class="sidebar" id="sidebar" aria-label="Menu principal">
+			<div class="sidebar-top">
+				<a class="brand" href="PG_HOME.html" aria-label="accessoCar, página inicial">
+					<span class="brand-mark" aria-hidden="true"><span>A</span><span>C</span></span>
+					<span class="brand-name">acesso<span>Car</span></span>
+				</a>
+				<button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar-content" aria-label="Abrir menu">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+				</button>
+			</div>
+			<div class="sidebar-content" id="sidebar-content">
+				<nav class="primary-nav" aria-label="Navegação">
+					<a class="nav-link" href="PG_HOME.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path></svg><span>Home</span></a>
+					<a class="nav-link" href="clientes.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M3 20c.4-3.4 2.5-5.5 6-5.5s5.6 2.1 6 5.5M16 5.2a3.5 3.5 0 0 1 0 6.7M17 15c2.4.6 3.7 2.2 4 5"></path></svg><span>Clientes</span></a>
+					<a class="nav-link" href="veiculos.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 11 1.5-5h11L19 11M3 11h18v7H3zM6 18v2m12-2v2M6 14h.01M18 14h.01"></path><path d="M6.5 6 5 4H3m14 2 1.5-2H21"></path></svg><span>Veículos</span></a>
+					<a class="nav-link is-active" href="locacoes.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="17" rx="2"></rect><path d="M8 2v4m8-4v4M4 9h16m-11 4h6m-6 4h4"></path></svg><span>Locações</span></a>
+					<div class="nav-group">
+						<a class="nav-link" href="financeiro.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 10h18m-12 5h3"></path></svg><span>Financeiro</span></a>
+						<div class="nav-submenu" aria-label="Opções do financeiro">
+							<a class="nav-sub-link" href="financeiro.html">Parcelas</a>
+							<a class="nav-sub-link" href="financeiro.html?filter=overdue">Pagamentos em atraso</a>
+						</div>
+					</div>
+					<a class="nav-link" href="manutencao.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.2 5.2L4 17a2.1 2.1 0 0 0 3 3l5.3-5.3a4 4 0 0 0 5.2-5.2l-2.4 2.4-3-3z"></path><path d="m15 5 4-2 2 2-2 4"></path></svg><span>Manutenção</span></a>
+					<a class="nav-link" href="configuracoes.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="m19.4 15 .1.1 1.1.9-1.5 2.6-1.4-.5a2 2 0 0 0-1.7.2l-.3.2-.2 1.5h-3l-.2-1.5a2 2 0 0 0-2-.4l-1.4.5-1.5-2.6 1.1-.9a2 2 0 0 0 0-2.2l-1.1-.9 1.5-2.6 1.4.5a2 2 0 0 0 2-.4l.2-1.5h3l.2 1.5a2 2 0 0 0 2 .4l1.4-.5 1.5 2.6-1.1.9a2 2 0 0 0-.1 2.1z" transform="translate(-2 -2)"></path></svg><span>Configurações</span></a>
+				</nav>
+				<div class="sidebar-bottom">
+					<div class="user-info"><span class="user-avatar" aria-hidden="true">AD</span><span class="user-copy"><strong id="user-name">Administrador</strong><span>Usuário logado</span></span></div>
+					<a class="logout-link" href="PG_LOGIN.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5m5 5H3m9-9h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7"></path></svg><span>Sair</span></a>
+				</div>
+			</div>
+		</aside>
+
+		<main class="main-content">
+			<header class="page-header">
+				<div>
+					<p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> GESTÃO DE LOCAÇÕES</p>
+					<h1>Gestão de <span>locações</span></h1>
+					<p class="page-description">Consulte os carros alugados no momento ou inicie uma nova locação.</p>
+				</div>
+				<label class="theme-control" for="theme-toggle"><span class="theme-label" id="theme-label">Tema escuro</span><span class="switch"><input id="theme-toggle" type="checkbox" role="switch" aria-label="Ativar tema claro" /><span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span></span></label>
+			</header>
+
+			<p class="page-message" id="page-message" role="status" aria-live="polite" hidden></p>
+
+			<section class="recent-section" aria-labelledby="recent-title">
+				<div class="rental-heading"><h2 id="recent-title">Carros locados no momento</h2><span class="recent-count" id="recent-count" aria-live="polite"></span></div>
+				<div class="table-panel">
+					<div class="table-toolbar">
+						<p>Veículos com locações em andamento</p>
+						<button class="primary-button" id="show-rental-form" type="button" aria-expanded="false" aria-controls="rental-form">Nova locação</button>
+					</div>
+					<div class="table-scroll" tabindex="0" aria-label="Tabela rolável de carros locados no momento">
+						<table class="rental-table">
+							<caption class="visually-hidden">Carros com locações em andamento</caption>
+							<thead><tr><th scope="col">ID da locação</th><th scope="col">Cliente</th><th scope="col">Veículo</th><th scope="col">Placa</th><th scope="col">Início</th><th scope="col">Devolução prevista</th><th scope="col">Valor</th><th scope="col">Status</th></tr></thead>
+							<tbody id="rental-table-body"></tbody>
+						</table>
+					</div>
+				</div>
+			</section>
+
+			<section class="rental-section" id="new-rental-section" aria-labelledby="rental-form-title" hidden>
+				<div class="rental-heading"><div><h2 id="rental-form-title">Dados da nova locação</h2><span class="demo-note">Dados de demonstração salvos neste dispositivo</span></div><button class="secondary-button" id="cancel-rental-form" type="button">Voltar à lista</button></div>
+				<form class="rental-panel" id="rental-form" hidden>
+					<div class="form-grid">
+						<div class="field field-wide">
+							<label for="customer-select">Cliente</label>
+							<select id="customer-select" required><option value="">Selecione ou pesquise pelo nome</option></select>
+						</div>
+						<div class="field">
+							<label for="customer-id">CPF / Identificador</label>
+							<input id="customer-id" type="text" readonly placeholder="Selecione um cliente" />
+						</div>
+						<div class="field">
+							<label for="customer-contact">Conferência do cliente</label>
+							<input id="customer-contact" type="text" readonly placeholder="Dados básicos do cadastro" />
+						</div>
+						<div class="field field-wide">
+							<label for="vehicle-select">Veículo disponível</label>
+							<select id="vehicle-select" required><option value="">Selecione um veículo disponível</option></select>
+						</div>
+						<div class="field">
+							<label for="vehicle-plate">Placa</label>
+							<input id="vehicle-plate" type="text" readonly placeholder="—" />
+						</div>
+						<div class="field">
+							<label for="daily-rate">Valor da diária</label>
+							<input id="daily-rate" type="text" readonly placeholder="—" />
+						</div>
+						<div class="field">
+							<label for="start-date">Início da locação</label>
+							<input id="start-date" name="startDate" type="date" required />
+						</div>
+						<div class="field">
+							<label for="return-date">Devolução prevista</label>
+							<input id="return-date" name="returnDate" type="date" required />
+						</div>
+						<div class="field">
+							<label for="rental-days">Quantidade de dias</label>
+							<input id="rental-days" type="number" readonly placeholder="Calculado pelas datas" />
+						</div>
+						<div class="field">
+							<label for="rental-total">Valor total</label>
+							<input id="rental-total" type="text" readonly placeholder="R$ 0,00" />
+						</div>
+						<div class="field">
+							<label for="payment-method">Forma de pagamento</label>
+							<select id="payment-method" name="paymentMethod"><option value="À vista">À vista</option><option value="Parcelado">Parcelado (controle externo)</option></select>
+						</div>
+						<div class="field" id="installments-field">
+							<label for="installment-count">Quantidade de parcelas</label>
+							<select id="installment-count" name="installments" disabled><option value="2">2 parcelas</option><option value="3">3 parcelas</option><option value="4">4 parcelas</option><option value="6">6 parcelas</option><option value="12">12 parcelas</option></select>
+						</div>
+						<div class="field field-wide" id="first-due-field" hidden>
+							<label for="first-due-date">Vencimento da primeira parcela</label>
+							<input id="first-due-date" name="firstDueDate" type="date" />
+						</div>
+						<div class="field field-wide">
+							<label for="rental-notes">Observações</label>
+							<textarea id="rental-notes" name="notes" rows="3" placeholder="Informações importantes sobre esta locação"></textarea>
+						</div>
+					</div>
+					<p class="form-message" id="rental-message" role="status" aria-live="polite"></p>
+					<div class="form-actions">
+						<p>O pagamento é realizado fora do sistema. O Financeiro apenas registra e acompanha as parcelas.</p>
+						<button class="primary-button" type="submit">Confirmar locação</button>
+					</div>
+				</form>
+			</section>
+
+			<footer class="page-footer"><span>© 2026 accessoCar</span><span>Uma viagem melhor começa com acesso.</span></footer>
+		</main>
+	</div>
+</body>
+</html>
