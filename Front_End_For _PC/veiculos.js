@@ -2,10 +2,10 @@
 	"use strict";
 
 	// A rota vehicles deve retornar um array JSON ou { data: [] }; vehicleById usa :id.
-	const API_BASE_URL = "";
+	const API_BASE_URL = "http://localhost:5104/api";
 	const API_ROUTES = {
-		vehicles: "",
-		vehicleById: ""
+		vehicles: "Carro",
+		vehicleById: "Carro/{id}"
 	};
 	const themeToggle = document.querySelector("#theme-toggle");
 	const themeLabel = document.querySelector("#theme-label");
@@ -29,11 +29,11 @@
 		const { url, ...fetchOptions } = options;
 		const response = await fetch(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
 			...fetchOptions,
-			credentials: "include",
 			headers: { ...(fetchOptions.body ? { "Content-Type": "application/json" } : {}), ...fetchOptions.headers }
 		});
 		const body = response.status === 204 ? null : await response.json();
 		if (!response.ok) throw new Error(body?.message || `A API respondeu com HTTP ${response.status}.`);
+		console.log(body);
 		return body?.data ?? body;
 	}
 
@@ -74,20 +74,20 @@
 					bodyCell.className = "vehicle-body-cell";
 					bodyCell.append(AccessoCarUtils.buildBodyMiniature(vehicle.bodyRegions || []));
 					row.append(
-						createCell(vehicle.id, "vehicle-id"),
-						createCell(vehicle.name, "vehicle-name"),
-						createCell(vehicle.plate, "vehicle-plate"),
-						createCell(String(vehicle.year), "vehicle-year"),
+						createCell(vehicle.id, "id"),
+						createCell(String(vehicle.marca + " " + vehicle.modelo), "nome_Veiculo"),
+						createCell(vehicle.placa, "placa"),
+						createCell(String(vehicle.ano_Fabricacao), "ano_Fabricacao"),
 						bodyCell,
-						createCell(Number(vehicle.dailyRate).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }), "vehicle-price")
+						createCell(Number(vehicle.valor_Diaria).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }), "valor_Diaria")
 					);
 					const actionsCell = document.createElement("td");
 					const deleteButton = document.createElement("button");
 					deleteButton.className = "vehicle-delete";
 					deleteButton.type = "button";
 					deleteButton.dataset.deleteVehicle = vehicle.id;
-					deleteButton.setAttribute("aria-label", `Excluir veículo ${vehicle.name}`);
-					deleteButton.title = `Excluir ${vehicle.name}`;
+					deleteButton.setAttribute("aria-label", `Excluir veículo ${vehicle.nome}`);
+					deleteButton.title = `Excluir ${vehicle.nome}`;
 					deleteButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6m4-6v6M5 7l1 14h12l1-14M9 7V4h6v3"></path></svg>';
 					actionsCell.append(deleteButton);
 					row.append(actionsCell);
@@ -119,7 +119,7 @@
 		const button = event.target.closest("[data-delete-vehicle]");
 		if (!button) return;
 		const vehicle = vehicles.find((item) => item.id === button.dataset.deleteVehicle);
-		if (!vehicle || !window.confirm(`Deseja excluir o veículo ${vehicle.name}?`)) return;
+		if (!vehicle || !window.confirm(`Deseja excluir o veículo ${vehicle.nome}?`)) return;
 		try {
 			await request("vehicleById", {
 				method: "DELETE",

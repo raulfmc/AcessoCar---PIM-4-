@@ -7,7 +7,7 @@
 	<title>Novo veículo | acessoCar</title>
 	<link rel="stylesheet" href="PG_HOME.css" />
 	<link rel="stylesheet" href="cadastros.css" />
-	<script src="cadastro-veiculo.js" defer></script>
+	<script src="cadastro-cliente.js" defer></script>
 </head>
 <body>
 	<div class="app-shell">
@@ -55,19 +55,6 @@
 					<div class="registration-message" id="registration-message" role="status" aria-live="polite"></div>
 					<form id="registration-form" data-kind="vehicle">
 						<div class="registration-grid">
-<<<<<<< HEAD
-							<div class="registration-field">
-								<label for="brand">Marca</label>
-								<input id="brand" name="brand" type="text" maxlength="60" placeholder="Marca do veículo" required />
-							</div>
-							<div class="registration-field">
-								<label for="model">Modelo</label>
-								<input id="model" name="model" type="text" maxlength="80" placeholder="Modelo do veículo" required />
-							</div>
-							<div class="registration-field">
-								<label for="year">Ano de fabricação</label>
-								<input id="year" name="year" type="number" min="1950" max="2100" step="1" placeholder="Ano de fabricação" required />
-=======
 							<!-- <div class="registration-field">
 								<label for="registration-id">ID do veículo</label>
 								<input id="registration-id" name="id" type="text" readonly />
@@ -83,7 +70,6 @@
 							<div class="registration-field">
 								<label for="year">Ano de fabricação</label>
 								<input id="Ano_Fabricacao" name="Ano_Fabricacao" type="number" min="1950" max="2100" step="1" placeholder="2026" required />
->>>>>>> a470dd3bcae3680ebe63d5ac5351f9d07a876ecc
 							</div>
 							<div class="registration-field">
 								<label for="number">Número / chassi</label>
@@ -91,11 +77,7 @@
 							</div>
 							<div class="registration-field">
 								<label for="version">Versão</label>
-<<<<<<< HEAD
-								<input id="version" name="version" type="text" maxlength="60" placeholder="Versão do veículo" required />
-=======
 								<input id="Versao" name="Versao" type="text" maxlength="60" placeholder="Ex.: LT 1.0 Turbo" required />
->>>>>>> a470dd3bcae3680ebe63d5ac5351f9d07a876ecc
 							</div>
 							<div class="registration-field">
 								<label for="transmission">Câmbio</label>
@@ -109,16 +91,15 @@
 							</div>
 							<div class="registration-field">
 								<label for="plate">Placa</label>
-<<<<<<< HEAD
-								<input id="plate" name="plate" type="text" maxlength="8" placeholder="Placa do veículo" required />
+								<input id="Placa" name="Placa" type="text" maxlength="8" placeholder="Placa do veículo" required />
 							</div>
 							<div class="registration-field">
 								<label for="color">Cor</label>
-								<input id="color" name="color" type="text" maxlength="40" placeholder="Cor do veículo" required />
+								<input id="Cor" name="Cor" type="text" maxlength="40" placeholder="Cor do veículo" required />
 							</div>
 							<div class="registration-field">
 								<label for="dailyRate">Valor da diária (R$)</label>
-								<input id="dailyRate" name="dailyRate" type="number" min="0.01" step="0.01" placeholder="Valor da diária" required />
+								<input id="Valor_Diaria" name="Valor_Diaria" type="number" min="0.01" step="0.01" placeholder="Valor da diária" required />
 							</div>
 							<div class="registration-field is-wide">
 								<label>Identificador corporal</label>
@@ -141,32 +122,6 @@
 									</div>
 								</div>
 							</div>
-=======
-								<input id="Placa" name="Placa" type="text" maxlength="8" placeholder="ABC-1D23" required />
-							</div>
-							<div class="registration-field">
-								<label for="color">Cor</label>
-								<input id="Cor" name="Cor" type="text" maxlength="40" placeholder="Ex.: Prata" required />
-							</div>
-							<div class="registration-field">
-								<label for="dailyRate">Valor da diária (R$)</label>
-								<input id="Valor_Diaria" name="Valor_Diaria" type="number" min="0.01" step="0.01" placeholder="150,00" required />
-							</div>
-							<div class="registration-field is-wide">
-								<label for="mainFeature">Principal característica do veículo</label>
-								<input id="mainFeature" name="mainFeature" type="text" maxlength="100" placeholder="Ex.: SUV, acessibilidade, porta-malas amplo" required />
-							</div>
-							<!-- <div class="registration-field">
-								<label for="accessibilityDifficulty">Dificuldade / necessidade de acessibilidade</label>
-								<select id="accessibilityDifficulty" name="accessibilityDifficulty">
-									<option value="">Selecione uma opção</option>
-									<option value="Braço esquerdo e perna direita">Braço esquerdo e perna direita</option>
-									<option value="Braço direito e perna esquerda">Braço direito e perna esquerda</option>
-									<option value="Braço e perna esquerda">Braço e perna esquerda</option>
-									<option value="Braço e perna direita">Braço e perna direita</option>
-								</select>
-							</div> -->
->>>>>>> a470dd3bcae3680ebe63d5ac5351f9d07a876ecc
 							<div class="registration-field">
 								<label for="photo">Foto do veículo</label>
 								<input id="photo" name="photo" type="file" accept="image/*" aria-describedby="photo-help" />

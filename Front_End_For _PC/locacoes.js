@@ -2,12 +2,12 @@
 	"use strict";
 
 	// A API deve validar disponibilidade e gerar a locação/parcelas no POST.
-	const API_BASE_URL = "";
+	const API_BASE_URL = "http://localhost:5104";
 	const API_ROUTES = {
-		customers: "",
-		vehicles: "",
-		rentals: "",
-		createRental: ""
+		clientes: "",
+		carros: "",
+		alugueis: "",
+		criarAluguel: ""
 	};
 	const form = document.querySelector("#rental-form");
 	const newRentalSection = document.querySelector("#new-rental-section");
