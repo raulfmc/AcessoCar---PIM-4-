@@ -2,8 +2,8 @@
 	"use strict";
 
 	// POST de login recebe { login, password }; configure sessão/token conforme sua API.
-	const API_BASE_URL = "";
-	const API_ROUTES = { login: "" };
+	// const API_BASE_URL = "http://localhost:5104/api/";
+	// const API_ROUTES = { login: "" };
 	const form = document.querySelector("#login-form");
 	const message = document.querySelector("#login-message");
 	const submitButton = form.querySelector('button[type="submit"]');
@@ -25,7 +25,7 @@
 		const response = await fetch(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
-			credentials: "include",
+			
 			body: JSON.stringify(credentials)
 		});
 		const text = await response.text();

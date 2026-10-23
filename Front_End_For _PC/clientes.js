@@ -2,11 +2,11 @@
 	"use strict";
 
 	// Listas devem retornar arrays JSON ou { data: [] }; customerById usa :id.
-	const API_BASE_URL = "http://localhost:5104";
+	const API_BASE_URL = "http://localhost:5104/api/";
 	const API_ROUTES = {
 		customers: "Cliente",
-		installments: "",
-		customerById: ""
+		installments: "Aluguel",
+		customerById: "Cliente/{id}"
 	};
 	const themeToggle = document.querySelector("#theme-toggle");
 	const themeLabel = document.querySelector("#theme-label");
@@ -69,11 +69,11 @@
 			]);
 			const installments = readList(installmentData, "installments");
 			customers = readList(customerData, "customers").map((customer) => {
-				const customerInstallments = installments.filter((item) => item.id === customer.id && item.status !== "paid");
+				const customerInstallments = installments.filter((item) => item.id === customer.id && item.Estado !== "paid");
 				return {
 					...customer,
-					hasPending: customerInstallments.some((item) => item.status === "pending"),
-					hasOverdue: customerInstallments.some((item) => item.status === "overdue")
+					hasPending: customerInstallments.some((item) => item.Estado === "pending"),
+					hasOverdue: customerInstallments.some((item) => item.Estado === "overdue")
 				};
 			});
 

@@ -2,10 +2,10 @@
 	"use strict";
 
 	// Listas retornam arrays; confirmPayment usa :id e recebe status/paidAt.
-	const API_BASE_URL = "";
+	const API_BASE_URL = "http://localhost:5104/api/";
 	const API_ROUTES = {
-		customers: "",
-		installments: "",
+		customers: "Cliente",
+		installments: "Aluguel",
 		confirmPayment: ""
 	};
 	const customerTableBody = document.querySelector("#customer-table-body");
@@ -42,7 +42,7 @@
 		const { url, ...fetchOptions } = options;
 		const response = await fetch(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
 			...fetchOptions,
-			credentials: "include",
+		
 			headers: { ...(fetchOptions.body ? { "Content-Type": "application/json" } : {}), ...fetchOptions.headers }
 		});
 		const text = await response.text();
@@ -97,11 +97,11 @@
 	function installmentsForCustomer(customerId) {
 		const filters = getFilters();
 		return installments.filter((item) =>
-			item.customerId === customerId
-			&& (activeStatus === "unpaid" ? item.status !== "paid" : item.status === activeStatus)
-			&& (!filters.rentalId || String(item.rentalId).toLocaleLowerCase("pt-BR").includes(filters.rentalId))
-			&& (!filters.startDate || item.dueDate >= filters.startDate)
-			&& (!filters.endDate || item.dueDate <= filters.endDate)
+			item.cliente_Id === customerId
+			&& (activeStatus === "unpaid" ? item.estado !== "paid" : item.estado === activeStatus)
+			&& (!filters.aluguel_Id || String(item.aluguel_Id).toLocaleLowerCase("pt-BR").includes(filters.aluguel_Id))
+			&& (!filters.data_Inicio || item.dueDate >= filters.data_Inicio)
+			&& (!filters.data_Fim || item.dueDate <= filters.data_Fim)
 		);
 	}
 
@@ -111,7 +111,7 @@
 			.filter(({ customer, installments: customerInstallments }) => {
 				if (customerInstallments.length === 0) return false;
 				if (!filters.search) return true;
-				const searchable = `${customer.name} ${customer.id} ${customerInstallments.map((item) => `${item.id} ${item.rentalId}`).join(" ")}`.toLocaleLowerCase("pt-BR");
+				const searchable = `${customer.nome} ${customer.id} ${customerInstallments.map((item) => `${item.id} ${item.id}`).join(" ")}`.toLocaleLowerCase("pt-BR");
 				return searchable.includes(filters.search);
 			})
 			.sort((first, second) => first.customer.name.localeCompare(second.customer.name, "pt-BR"));
@@ -135,14 +135,14 @@
 				const nextDue = customerInstallments.reduce((earliest, installment) =>
 					!earliest || installment.dueDate < earliest ? installment.dueDate : earliest, "");
 				row.append(
-					createCell(customer.name, "table-primary"),
-					createCell(`${customer.cpf || customer.cid || "—"} · ${customer.id}`, "table-id"),
+					createCell(customer.nome, "table-primary"),
+					createCell(`${customer.cpf || "—"} · ${customer.id}`, "table-id"),
 					createCell(String(customerInstallments.length)),
 					createCell(currency.format(total), "table-value"),
 					createCell(displayDate(nextDue)),
 					createCell("", "status-cell")
 				);
-				const hasOverdue = customerInstallments.some((item) => item.status === "overdue");
+				const hasOverdue = customerInstallments.some((item) => item.estado === "overdue");
 				const badge = document.createElement("span");
 				const customerStatus = activeStatus === "unpaid" && !hasOverdue ? "pending" : activeStatus;
 				badge.className = `status-badge status-${customerStatus}`;
@@ -173,7 +173,7 @@
 			.sort((first, second) => first.dueDate.localeCompare(second.dueDate));
 		document.querySelector("#detail-customer-name").textContent = customer.name;
 		const situation = activeStatus === "overdue" ? "vencidas" : activeStatus === "unpaid" ? "em aberto" : "pendentes";
-		document.querySelector("#detail-customer-id").textContent = `${customer.cpf || customer.cid || "—"} · ${customer.id} · ${customerInstallments.length} ${customerInstallments.length === 1 ? "parcela" : "parcelas"} ${situation}`;
+		document.querySelector("#detail-customer-id").textContent = `${customer.cpf|| "—"} · ${customer.id} · ${customerInstallments.length} ${customerInstallments.length === 1 ? "parcela" : "parcelas"} ${situation}`;
 		installmentTableBody.replaceChildren();
 		if (customerInstallments.length === 0) {
 			const row = document.createElement("tr");
@@ -187,9 +187,9 @@
 			const row = document.createElement("tr");
 			row.append(
 				createCell(installment.id, "table-id"),
-				createCell(installment.rentalId, "table-id"),
+				//createCell(installment.rentalId, "table-id"),
 				createCell(`${installment.number}ª`, "table-number"),
-				createCell(currency.format(installment.amount), "table-value"),
+				createCell(currency.format(installment.valor_Total), "table-value"),
 				createCell(displayDate(installment.dueDate)),
 				createCell("", "status-cell"),
 				createCell(displayDate(installment.paidAt)),
@@ -197,7 +197,7 @@
 			);
 			const badge = document.createElement("span");
 			badge.className = `status-badge status-${installment.status}`;
-			badge.textContent = installment.status === "overdue" ? "DEVENDO / VENCIDO" : "PENDENTE";
+			badge.textContent = installment.estado === "overdue" ? "DEVENDO / VENCIDO" : "PENDENTE";
 			row.children[5].append(badge);
 			const actionCell = document.createElement("td");
 			const button = document.createElement("button");
@@ -217,11 +217,11 @@
 			await loadData();
 			renderCustomerList();
 			renderCustomerDetail();
-			const unpaid = installments.filter((item) => item.status !== "paid");
-			const overdue = unpaid.filter((item) => item.status === "overdue");
-			document.querySelector("#pending-summary").textContent = String(unpaid.filter((item) => item.status === "pending").length);
+			const unpaid = installments.filter((item) => item.estado !== "paid");
+			const overdue = unpaid.filter((item) => item.estado === "overdue");
+			document.querySelector("#pending-summary").textContent = String(unpaid.filter((item) => item.estado === "pending").length);
 			document.querySelector("#overdue-summary").textContent = String(overdue.length);
-			document.querySelector("#receivable-summary").textContent = currency.format(unpaid.reduce((total, item) => total + item.amount, 0));
+			document.querySelector("#receivable-summary").textContent = currency.format(unpaid.reduce((total, item) => total + item.valor_Total, 0));
 		} catch (error) {
 			statusMessage.textContent = `Não foi possível carregar o financeiro: ${error.message}`;
 			statusMessage.hidden = false;
@@ -246,12 +246,12 @@
 
 	function openConfirmation(installmentId) {
 		const installment = installments.find((item) => item.id === installmentId);
-		const customer = installment && customers.find((item) => item.id === installment.customerId);
+		const customer = installment && customers.find((item) => item.id === installment.cliente_Id);
 		if (!installment || !customer || installment.status === "paid") return;
 		selectedInstallmentId = installment.id;
-		document.querySelector("#dialog-customer").textContent = `${customer.name} · ${customer.id}`;
-		document.querySelector("#dialog-installment").textContent = `${installment.id} · ${installment.number}ª parcela da locação ${installment.rentalId}`;
-		document.querySelector("#dialog-amount").textContent = currency.format(installment.amount);
+		document.querySelector("#dialog-customer").textContent = `${customer.nome} · ${customer.id}`;
+		document.querySelector("#dialog-installment").textContent = `${installment.id} · ${installment.number}ª parcela da locação ${installment.id}`;
+		document.querySelector("#dialog-amount").textContent = currency.format(installment.valor_Total);
 		dialogError.textContent = "";
 		paymentDialog.showModal();
 	}

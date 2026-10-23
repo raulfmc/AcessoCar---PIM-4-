@@ -13,7 +13,7 @@ public class CriarAluguelDTO
 
     public decimal Valor_Total { get; set; }
 
-    public bool Ativo { get; set; }
+    public bool Ativo { get; set; } = true;
 
     public int Carro_ID {get; set;}
 

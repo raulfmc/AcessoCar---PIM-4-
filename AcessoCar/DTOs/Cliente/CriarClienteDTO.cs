@@ -15,7 +15,7 @@ public class CriarClienteDTO
 
     public string Endereco { get; set; }  = string.Empty;
 
-    public bool Ativo { get; set; }
+    public bool Ativo { get; set; } = true;
 
 
 }

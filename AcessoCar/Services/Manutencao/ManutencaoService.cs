@@ -100,7 +100,7 @@ public class ManutencaoService : IManutencaoService
             Descricao_Problema = manutencao.Descricao_Problema,
             Data_Prevista_Conclusao = manutencao.Data_Prevista_Conclusao,        
             carro = manutencao.carro,
-            Ativo = true
+            Ativo = manutencao.Ativo
            
             
         };

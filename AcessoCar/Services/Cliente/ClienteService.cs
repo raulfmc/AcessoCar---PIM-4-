@@ -103,7 +103,7 @@ public class ClienteService : IClienteService
             Telefone = cliente.Telefone,
             Email = cliente.Email,
             Endereco = cliente.Endereco,
-            Ativo = true
+            Ativo = cliente.Ativo
             
         };
     }

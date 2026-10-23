@@ -2,12 +2,12 @@
 	"use strict";
 
 	// Listas retornam arrays; releaseMaintenance usa :id do registro de manutenção.
-	const API_BASE_URL = "";
+	const API_BASE_URL = "http://localhost:5104/api/";
 	const API_ROUTES = {
-		vehicles: "",
-		maintenance: "",
-		createMaintenance: "",
-		releaseMaintenance: ""
+		vehicles: "Carro",
+		maintenance: "Manutencao",
+		createMaintenance: "Manutencao",
+		releaseMaintenance: "Manutencao"
 	};
 	const themeToggle = document.querySelector("#theme-toggle");
 	const themeLabel = document.querySelector("#theme-label");
@@ -33,7 +33,7 @@
 		const { url, ...fetchOptions } = options;
 		const response = await fetch(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
 			...fetchOptions,
-			credentials: "include",
+			
 			headers: { ...(fetchOptions.body ? { "Content-Type": "application/json" } : {}), ...fetchOptions.headers }
 		});
 		const text = await response.text();
@@ -91,12 +91,12 @@
 	}
 
 	function activeRecordForVehicle(vehicleId) {
-		return maintenanceRecords.find((record) => record.vehicleId === vehicleId && record.status === "active");
+		return maintenanceRecords.find((record) => record.Carro_ID === vehicleId && record.Ativo === 1);
 	}
 
 	function renderVehicleOptions() {
 		const previousValue = vehicleSelect.value;
-		const availableVehicles = vehicles.filter((vehicle) => vehicle.status === "available");
+		const availableVehicles = vehicles.filter((vehicle) => vehicle.estado === "Disponível");
 		vehicleSelect.replaceChildren(new Option("Selecione um veículo disponível", ""));
 		availableVehicles.forEach((vehicle) => vehicleSelect.add(new Option(`${vehicle.name} · ${vehicle.plate}`, vehicle.id)));
 		if (availableVehicles.some((vehicle) => vehicle.id === previousValue)) vehicleSelect.value = previousValue;
@@ -106,7 +106,7 @@
 
 	function renderMaintenance() {
 		renderVehicleOptions();
-		const vehiclesInMaintenance = vehicles.filter((vehicle) => vehicle.status === "maintenance");
+		const vehiclesInMaintenance = vehicles.filter((vehicle) => vehicle.estado === "Em Manutenção");
 		tableBody.replaceChildren();
 		if (vehiclesInMaintenance.length === 0) {
 			const row = document.createElement("tr");

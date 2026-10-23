@@ -46,7 +46,7 @@ public class AluguelService : IAluguelService
     }
     async public Task<AluguelRespostaDTO?> Criar(CriarAluguelDTO dto)
     {
-        
+        //implementar verificação da dívida
         Carro? carro = await _context.Carro
         .FirstOrDefaultAsync(c => dto.Carro_ID == c.ID);
         if (carro == null)
@@ -66,6 +66,7 @@ public class AluguelService : IAluguelService
             Data_Inicio = dto.Data_Inicio,
             Data_Fim = dto.Data_Fim,
             Carro_ID = dto.Carro_ID,
+            Valor_Total = dto.Valor_Total,
             Ativo = dto.Ativo,
             Cliente_ID = dto.Cliente_ID,
             carro = carro,
@@ -123,7 +124,7 @@ public class AluguelService : IAluguelService
             Cliente_ID = aluguel.Cliente_ID,
             carro = aluguel.carro,
             cliente = aluguel.cliente,
-            Ativo = true
+            Ativo = aluguel.Ativo
 
         };
     }

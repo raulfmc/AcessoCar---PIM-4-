@@ -117,7 +117,7 @@ public class CarroService : ICarroService
             Cor = carro.Cor,
             Estado = carro.Estado,
             Valor_Diaria = carro.Valor_Diaria,
-            Ativo = true
+            Ativo = carro.Ativo
             
         };
     }

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AcessoCar")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ab51a8be491398b87e43e8c22ef29c71f0cddbd4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f6482f8f25c10e964c43f7032f7e664c7ee27772")]
 [assembly: System.Reflection.AssemblyProductAttribute("AcessoCar")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AcessoCar")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

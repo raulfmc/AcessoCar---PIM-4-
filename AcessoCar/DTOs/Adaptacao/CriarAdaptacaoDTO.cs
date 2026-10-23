@@ -13,7 +13,7 @@ public class CriarAdaptacaoDTO
 
     public string Descricao { get; set; } = string.Empty;
 
-    public bool Ativo {get; set;}
+    public bool Ativo {get; set;} = true;
     
     public int Carro_ID {get;set;}
 

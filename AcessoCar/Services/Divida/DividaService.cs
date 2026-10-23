@@ -108,7 +108,7 @@ public class DividaService : IDividaService
             Descricao = Divida.Descricao,
             Valor = Divida.Valor,
             Aluguel_ID = Divida.Aluguel_ID,
-            Ativo = true
+            Ativo = Divida.Ativo
            
             
         };

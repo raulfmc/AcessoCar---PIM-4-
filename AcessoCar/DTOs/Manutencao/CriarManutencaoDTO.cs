@@ -8,7 +8,7 @@ public class CriarManutencaoDTO
 
     public DateTime Data_Prevista_Conclusao { get; set; }
 
-    public bool Ativo {get; set;}
+    public bool Ativo {get; set;} = true;
 
     public int Carro_ID {get; set;}
 }

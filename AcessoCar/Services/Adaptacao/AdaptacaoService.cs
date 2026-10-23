@@ -110,7 +110,7 @@ public class AdaptacaoService : IAdaptacaoService
             Descricao = adaptacao.Descricao,
             Carro_ID = adaptacao.Carro_ID,
             carro = adaptacao.carro,
-            Ativo = true
+            Ativo = adaptacao.Ativo
 
         };
     }

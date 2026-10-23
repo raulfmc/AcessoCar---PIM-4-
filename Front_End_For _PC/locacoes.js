@@ -1,14 +1,15 @@
 (() => {
 	"use strict";
 
-	// A API deve validar disponibilidade e gerar a locação/parcelas no POST.
-	const API_BASE_URL = "http://localhost:5104";
+	//A API deve validar disponibilidade e gerar a locação/parcelas no POST.
+	const API_BASE_URL = "http://localhost:5104/api/";
 	const API_ROUTES = {
-		clientes: "",
-		carros: "",
-		alugueis: "",
-		criarAluguel: ""
+		clientes: "Cliente",
+		carros: "Carro",
+		alugueis: "Aluguel",
+		criarAluguel: "Aluguel"
 	};
+	
 	const form = document.querySelector("#rental-form");
 	const newRentalSection = document.querySelector("#new-rental-section");
 	const showRentalFormButton = document.querySelector("#show-rental-form");
@@ -35,6 +36,7 @@
 	const currency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 	const dateFormatter = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeZone: "UTC" });
 	let lastPaymentMethod = paymentMethod.value;
+	let valorTotalCalculado = 0;
 	let customers = [];
 	let vehicles = [];
 	let rentals = [];
@@ -47,20 +49,21 @@
 		const { url, ...fetchOptions } = options;
 		const response = await fetch(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
 			...fetchOptions,
-			credentials: "include",
+			
 			headers: { ...(fetchOptions.body ? { "Content-Type": "application/json" } : {}), ...fetchOptions.headers }
 		});
 		const text = await response.text();
 		const body = text ? JSON.parse(text) : null;
 		if (!response.ok) throw new Error(body?.message || `A API respondeu com HTTP ${response.status}.`);
+		
 		return body?.data ?? body;
 	}
 
 	async function loadData() {
 		const [customerData, vehicleData, rentalData] = await Promise.all([
-			request("customers"),
-			request("vehicles"),
-			request("rentals")
+			request("clientes"),
+			request("carros"),
+			request("alugueis")
 		]);
 		if (!Array.isArray(customerData) || !Array.isArray(vehicleData) || !Array.isArray(rentalData)) {
 			throw new Error("As rotas de clientes, veículos e locações devem retornar listas (ou { data: lista }).");
@@ -93,7 +96,7 @@
 
 	function getCompatibleVehicles(customer) {
 		return vehicles.filter((vehicle) =>
-			vehicle.status === "available"
+			vehicle.estado === "Disponível"
 			&& AccessoCarUtils.bodyRegionsAreCompatible(customer?.bodyRegions || [], vehicle.bodyRegions || [])
 		);
 	}
@@ -102,46 +105,56 @@
 		const selectedCustomerId = customerSelect.value;
 		const selectedVehicleId = vehicleSelect.value;
 		customerSelect.replaceChildren(new Option("Selecione ou pesquise pelo nome", ""));
-		customers.forEach((customer) => customerSelect.add(new Option(`${customer.name} · ${customer.id}`, customer.id)));
+		customers.forEach((customer) => customerSelect.add(new Option(`${customer.nome} · ${customer.id}`, customer.id)));
 		customerSelect.value = selectedCustomerId;
-		const customer = customers.find((item) => item.id === selectedCustomerId);
+		const customer = customers.find((item) => String(item.id) === selectedCustomerId);
 		const compatibleVehicles = getCompatibleVehicles(customer);
 		vehicleSelect.replaceChildren(new Option(customer ? "Selecione um veículo compatível" : "Selecione um veículo disponível", ""));
-		compatibleVehicles.forEach((vehicle) => vehicleSelect.add(new Option(`${vehicle.name} · ${vehicle.plate}`, vehicle.id)));
+		compatibleVehicles.forEach((vehicle) => vehicleSelect.add(new Option(`${vehicle.marca + " " + vehicle.modelo} · ${vehicle.placa}`, vehicle.id)));
 		vehicleSelect.value = compatibleVehicles.some((vehicle) => vehicle.id === selectedVehicleId) ? selectedVehicleId : "";
 		updateCustomerDetails();
 		updateVehicleDetails();
 	}
 
 	function updateCustomerDetails() {
-		const customer = customers.find((item) => item.id === customerSelect.value);
-		customerId.value = customer ? `${customer.cpf || customer.cid || "—"} · ${customer.id}` : "";
+		const customer = customers.find((item) => String(item.id) === customerSelect.value);
+		customerId.value = customer ? `${customer.cpf || "—"} · ${customer.id}` : "";
 		customerContact.value = customer
 			? AccessoCarUtils.normalizeBodyRegions(customer.bodyRegions || [])
 				.map((part) => AccessoCarUtils.BODY_PARTS.find((item) => item.key === part)?.label || part)
 				.join(", ")
 			: "";
+		
+		
 	}
 
 	function updateVehicleDetails() {
-		const vehicle = vehicles.find((item) => item.id === vehicleSelect.value && item.status === "available");
-		vehiclePlate.value = vehicle ? vehicle.plate : "";
-		dailyRate.value = vehicle ? currency.format(vehicle.dailyRate) : "";
+		const vehicle = vehicles.find((item) => String(item.id) === vehicleSelect.value && item.estado === "Disponível");
+		vehiclePlate.value = vehicle ? vehicle.placa : "";
+		dailyRate.value = vehicle ? currency.format(vehicle.valor_Diaria) : "";
 		updatePrice();
+		
 	}
 
 	function updatePrice() {
 		if (!startDate.value || !returnDate.value || returnDate.value <= startDate.value) {
 			rentalDays.value = "";
 			rentalTotal.value = "";
+			valorTotalCalculado = 0;
 			return;
 		}
 		const start = new Date(`${startDate.value}T12:00:00`);
 		const end = new Date(`${returnDate.value}T12:00:00`);
 		const days = Math.round((Date.UTC(end.getFullYear(), end.getMonth(), end.getDate()) - Date.UTC(start.getFullYear(), start.getMonth(), start.getDate())) / 86400000);
-		const vehicle = vehicles.find((item) => item.id === vehicleSelect.value && item.status === "available");
+		const vehicle = vehicles.find((item) => String(item.id) === vehicleSelect.value && item.estado === "Disponível");
+		const rental = rentals.find((item) => String(item.id) == item.id && item.ativo === true);
 		rentalDays.value = String(days);
-		rentalTotal.value = vehicle ? currency.format(days * vehicle.dailyRate) : "";
+		valorTotalCalculado = vehicle ? days * vehicle.valor_Diaria : 0;
+		rentalTotal.value = vehicle ? currency.format(days * vehicle.valor_Diaria) : "";
+		//rental.valor_Total = vehicle ? days * vehicle.valor_Diaria : "";
+
+
+		
 	}
 
 	function updatePaymentFields() {
@@ -160,7 +173,7 @@
 	function renderRentals() {
 		const customerById = new Map(customers.map((customer) => [customer.id, customer]));
 		const vehicleById = new Map(vehicles.map((vehicle) => [vehicle.id, vehicle]));
-		const activeRentals = rentals.filter((rental) => rental.status === "active")
+		const activeRentals = rentals.filter((rental) => rental.ativo === true)
 			.sort((first, second) => String(second.createdAt || "").localeCompare(String(first.createdAt || "")));
 		tableBody.replaceChildren();
 		if (activeRentals.length === 0) {
@@ -171,17 +184,17 @@
 			tableBody.append(row);
 		} else {
 			activeRentals.forEach((rental) => {
-				const customer = customerById.get(rental.customerId);
-				const vehicle = vehicleById.get(rental.vehicleId);
+				const customer = customerById.get(rental.cliente_ID);
+				const vehicle = vehicleById.get(rental.carro_ID);
 				const row = document.createElement("tr");
 				row.append(
 					createCell(rental.id, "table-id"),
-					createCell(customer ? customer.name : "Cliente não encontrado", "table-primary"),
-					createCell(vehicle ? vehicle.name : "Veículo não encontrado"),
-					createCell(vehicle ? vehicle.plate : "—", "table-id"),
-					createCell(displayDate(rental.startDate)),
-					createCell(displayDate(rental.returnDate)),
-					createCell(currency.format(rental.total), "table-value")
+					createCell(customer ? customer.nome : "Cliente não encontrado", "table-primary"),
+					createCell(vehicle ? vehicle.marca + " " + vehicle.modelo : "Veículo não encontrado"),
+					createCell(vehicle ? vehicle.placa : "—", "placa"),
+					createCell(displayDate(rental.data_Inicio.split("T")[0])),
+					createCell(displayDate(rental.data_Fim.split("T")[0])),
+					createCell(currency.format(rental.valor_Total), "table-value")
 				);
 				const statusCell = document.createElement("td");
 				const badge = document.createElement("span");
@@ -263,17 +276,18 @@
 		message.classList.remove("is-error");
 		if (!form.reportValidity()) return;
 		const payload = {
-			customerId: customerSelect.value,
-			vehicleId: vehicleSelect.value,
-			startDate: startDate.value,
-			returnDate: returnDate.value,
+			cliente_ID: customerSelect.value,
+			carro_ID: vehicleSelect.value,
+			data_Inicio: startDate.value,
+			data_Fim: returnDate.value,
+			valor_Total: valorTotalCalculado,
 			paymentMethod: paymentMethod.value,
 			installments: paymentMethod.value === "Parcelado" ? Number(installmentCount.value) : 1,
 			firstDueDate: paymentMethod.value === "Parcelado" ? firstDueDate.value : startDate.value,
 			notes: document.querySelector("#rental-notes").value.trim()
 		};
 		try {
-			const rental = await request("createRental", { method: "POST", body: JSON.stringify(payload) });
+			const rental = await request("criarAluguel", { method: "POST", body: JSON.stringify(payload) });
 			form.reset();
 			startDate.value = AccessoCarUtils.formatDate(new Date());
 			returnDate.value = AccessoCarUtils.addDays(startDate.value, 1);
