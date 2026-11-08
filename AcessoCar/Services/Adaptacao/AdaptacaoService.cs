@@ -83,7 +83,7 @@ public class AdaptacaoService : IAdaptacaoService
         await _context.SaveChangesAsync();
         return ConverterParaResposta(adaptacao);
     }
-    public async Task<AdaptacaoRespostaDTO?> Excluir(int id, AtualizarAdaptacaoDTO dto)
+    public async Task<AdaptacaoRespostaDTO?> Excluir(int id)
     {
         Adaptacao? adaptacao = await _context.Adaptacao
         .Include(Adaptacao => Adaptacao.carro)

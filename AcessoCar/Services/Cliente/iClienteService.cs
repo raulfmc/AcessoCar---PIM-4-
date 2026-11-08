@@ -8,6 +8,6 @@ public interface IClienteService
     Task<ClienteRespostaDTO?> BuscarPorId(int ID);
     Task<ClienteRespostaDTO?> Criar(CriarClienteDTO dto);
     Task<ClienteRespostaDTO?> Atualizar(int id, AtualizarClienteDTO dto);
-    Task<ClienteRespostaDTO?> Excluir(int id, AtualizarClienteDTO dto);
+    Task<ClienteRespostaDTO?> Excluir(int id);
     
 }

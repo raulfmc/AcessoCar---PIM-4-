@@ -76,17 +76,17 @@ public class AluguelController : ControllerBase
         return Ok(aluguelAtualizada);
     }
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Excluir(int id, AtualizarAluguelDTO dto)
+    public async Task<IActionResult> Excluir(int id)
     {
         AluguelRespostaDTO? aluguelExcluida = 
-        await _aluguelService.Excluir(id, dto);
+        await _aluguelService.Excluir(id);
 
         if (aluguelExcluida == null)
         {
             return NotFound(new {mensagem = "Aluguel não encontrado"});
         }
 
-        return Ok(aluguelExcluida);
+        return NoContent();
     }
 
 }

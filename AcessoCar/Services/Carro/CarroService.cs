@@ -85,7 +85,7 @@ public class CarroService : ICarroService
         await _context.SaveChangesAsync();
         return ConverterParaResposta(carro);
     }
-    public async Task<CarroRespostaDTO?> Excluir(int id, AtualizarCarroDTO dto)
+    public async Task<CarroRespostaDTO?> Excluir(int id)
     {
         Carro? carro = await _context.Carro
         .FirstOrDefaultAsync(Carro => Carro.ID == id);

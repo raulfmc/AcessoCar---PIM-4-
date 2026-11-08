@@ -13,11 +13,15 @@ public class CriarAluguelDTO
 
     public decimal Valor_Total { get; set; }
 
+    public int Parcelas { get; set; }
+
+    public string Estado {get; set;} = string.Empty;
+
     public bool Ativo { get; set; } = true;
 
-    public int Carro_ID {get; set;}
+    public int Carro_ID { get; set; }
 
-    public int Cliente_ID {get; set;}
+    public int Cliente_ID { get; set; }
 
 
 

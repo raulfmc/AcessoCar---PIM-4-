@@ -8,6 +8,6 @@ public interface IDividaService
     Task<DividaRespostaDTO?> BuscarPorId(int ID);
     Task<DividaRespostaDTO?> Criar(CriarDividaDTO dto);
     Task<DividaRespostaDTO?> Atualizar(int id, AtualizarDividaDTO dto);
-    Task<DividaRespostaDTO?> Excluir(int id, AtualizarDividaDTO dto);
+    Task<DividaRespostaDTO?> Excluir(int id);
     
 }

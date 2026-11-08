@@ -75,7 +75,7 @@ public class ManutencaoService : IManutencaoService
         await _context.SaveChangesAsync();
         return ConverterParaResposta(manutencao);
     }
-    public async Task<ManutencaoRespostaDTO?> Excluir(int id, AtualizarManutencaoDTO dto)
+    public async Task<ManutencaoRespostaDTO?> Excluir(int id)
     {
         Manutencao? manutencao = await _context.Manutencao
         .FirstOrDefaultAsync(Manutencao => Manutencao.ID == id);

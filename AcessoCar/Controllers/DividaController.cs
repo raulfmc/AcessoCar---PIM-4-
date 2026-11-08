@@ -72,17 +72,17 @@ public class DividaController : ControllerBase
         return Ok(dividaAtualizada);
     }
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Excluir(int id, AtualizarDividaDTO dto)
+    public async Task<IActionResult> Excluir(int id)
     {
         DividaRespostaDTO? dividaExcluida = 
-        await _dividaService.Excluir(id, dto);
+        await _dividaService.Excluir(id);
 
         if (dividaExcluida == null)
         {
             return NotFound(new {mensagem = "Dívida não encontrada"});
         }
 
-        return Ok(dividaExcluida);
+        return NoContent();
     }
 
 }

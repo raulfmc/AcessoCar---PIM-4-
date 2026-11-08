@@ -7,7 +7,7 @@
 		clientes: "Cliente",
 		carros: "Carro",
 		alugueis: "Aluguel",
-		criarAluguel: "Aluguel"
+		Aluguel: "Aluguel"
 	};
 	
 	const form = document.querySelector("#rental-form");
@@ -55,7 +55,7 @@
 		const text = await response.text();
 		const body = text ? JSON.parse(text) : null;
 		if (!response.ok) throw new Error(body?.message || `A API respondeu com HTTP ${response.status}.`);
-		
+		console.log(body);
 		return body?.data ?? body;
 	}
 
@@ -169,7 +169,12 @@
 		if (!isInstallment && startDate.value) firstDueDate.value = startDate.value;
 		lastPaymentMethod = paymentMethod.value;
 	}
-
+const statusLabels = {
+	OK: { label: "OK", className: "status-ok" },
+	LOCADO: { label: "LOCADO", className: "status-rented" },
+	PENDENTE: { label: "PENDENTE", className: "status-pending" },
+	ATRASADO: { label: "ATRASADO", className: "status-owing" }
+};
 	function renderRentals() {
 		const customerById = new Map(customers.map((customer) => [customer.id, customer]));
 		const vehicleById = new Map(vehicles.map((vehicle) => [vehicle.id, vehicle]));
@@ -187,6 +192,7 @@
 				const customer = customerById.get(rental.cliente_ID);
 				const vehicle = vehicleById.get(rental.carro_ID);
 				const row = document.createElement("tr");
+				const status = statusLabels[rental.estado];
 				row.append(
 					createCell(rental.id, "table-id"),
 					createCell(customer ? customer.nome : "Cliente não encontrado", "table-primary"),
@@ -194,11 +200,13 @@
 					createCell(vehicle ? vehicle.placa : "—", "placa"),
 					createCell(displayDate(rental.data_Inicio.split("T")[0])),
 					createCell(displayDate(rental.data_Fim.split("T")[0])),
-					createCell(currency.format(rental.valor_Total), "table-value")
+					createCell(currency.format(rental.valor_Total), "table-value"),
+					createCell(rental.parcelas),
+					createCell(rental.estado)
 				);
 				const statusCell = document.createElement("td");
 				const badge = document.createElement("span");
-				badge.className = "status-badge status-active";
+				badge.className = `status-badge ${rental.estado}`;
 				badge.textContent = "ATIVA";
 				statusCell.append(badge);
 				row.append(statusCell);
@@ -283,11 +291,12 @@
 			valor_Total: valorTotalCalculado,
 			paymentMethod: paymentMethod.value,
 			installments: paymentMethod.value === "Parcelado" ? Number(installmentCount.value) : 1,
+			estado: "OK",
 			firstDueDate: paymentMethod.value === "Parcelado" ? firstDueDate.value : startDate.value,
 			notes: document.querySelector("#rental-notes").value.trim()
 		};
 		try {
-			const rental = await request("criarAluguel", { method: "POST", body: JSON.stringify(payload) });
+			const rental = await request("Aluguel", { method: "POST", body: JSON.stringify(payload) });
 			form.reset();
 			startDate.value = AccessoCarUtils.formatDate(new Date());
 			returnDate.value = AccessoCarUtils.addDays(startDate.value, 1);

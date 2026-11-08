@@ -15,6 +15,8 @@ public class CriarClienteDTO
 
     public string Endereco { get; set; }  = string.Empty;
 
+    public string Estado {get; set;} = string.Empty;
+
     public bool Ativo { get; set; } = true;
 
 

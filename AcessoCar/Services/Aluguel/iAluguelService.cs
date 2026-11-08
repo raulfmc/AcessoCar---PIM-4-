@@ -8,7 +8,7 @@ public interface IAluguelService
     Task<AluguelRespostaDTO?> BuscarPorId(int ID);
     Task<AluguelRespostaDTO?> Criar(CriarAluguelDTO dto);
     Task<AluguelRespostaDTO?> Atualizar(int id, AtualizarAluguelDTO dto);
-    Task<AluguelRespostaDTO?> Excluir(int id, AtualizarAluguelDTO dto);
+    Task<AluguelRespostaDTO?> Excluir(int id);
 
     
 }

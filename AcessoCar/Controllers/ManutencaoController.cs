@@ -71,18 +71,18 @@ public class ManutencaoController : ControllerBase
 
         return Ok(manutencaoAtualizada);
     }
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Excluir(int id, AtualizarManutencaoDTO dto)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Excluir(int id)
     {
         ManutencaoRespostaDTO? manutencaoExcluida = 
-        await _manutencaoService.Excluir(id, dto);
+        await _manutencaoService.Excluir(id);
 
         if (manutencaoExcluida == null)
         {
             return NotFound(new {mensagem = "Manutenção não encontrada"});
         }
 
-        return Ok(manutencaoExcluida);
+        return NoContent();
     }
 
 }

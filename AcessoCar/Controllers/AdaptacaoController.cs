@@ -47,14 +47,33 @@ public class AdaptacaoController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<AdaptacaoRespostaDTO>> Criar(CriarAdaptacaoDTO dto)
     {
-        AdaptacaoRespostaDTO? adaptacaoCriada =
-        await _adaptacaoService.Criar(dto);
+        try
+        {
+            AdaptacaoRespostaDTO? adaptacaoCriada =
+            await _adaptacaoService.Criar(dto);
 
-        return CreatedAtAction(
-        nameof(BuscarPorId),
-        new {id = adaptacaoCriada!.ID },
-        adaptacaoCriada);
 
+            if (adaptacaoCriada is null)
+            {
+                return NotFound(new { message = "Carro não encontrado." });
+            }
+            return CreatedAtAction(
+            nameof(BuscarPorId),
+            new { id = adaptacaoCriada.ID },
+            adaptacaoCriada);
+        }
+        catch (ArgumentException ae)
+        {
+            return BadRequest(new { message = ae.Message});
+        }
+        catch (KeyNotFoundException ke)
+        {
+            return NotFound(new { message = ke.Message});
+        }
+        catch (InvalidOperationException ioe)
+        {
+            return Conflict(new { message = ioe.Message});
+        }
     }
 
     [HttpPut("{id:int}")]
@@ -73,17 +92,17 @@ public class AdaptacaoController : ControllerBase
         return Ok(adaptacaoAtualizada);
     }
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Excluir(int id, AtualizarAdaptacaoDTO dto)
+    public async Task<IActionResult> Excluir(int id)
     {
-        AdaptacaoRespostaDTO? adaptacaoExcluida = 
-        await _adaptacaoService.Excluir(id, dto);
+        AdaptacaoRespostaDTO? adaptacaoExcluida =
+        await _adaptacaoService.Excluir(id);
 
         if (adaptacaoExcluida == null)
         {
-            return NotFound(new {mensagem = "Adaptação não encontrada"});
+            return NotFound(new { mensagem = "Adaptação não encontrada" });
         }
 
-        return Ok(adaptacaoExcluida);
+        return NoContent();
     }
 
 }

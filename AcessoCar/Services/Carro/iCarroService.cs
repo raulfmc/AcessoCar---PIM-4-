@@ -8,6 +8,6 @@ public interface ICarroService
     Task<CarroRespostaDTO?> BuscarPorId(int ID);
     Task<CarroRespostaDTO?> Criar(CriarCarroDTO dto);
     Task<CarroRespostaDTO?> Atualizar(int id, AtualizarCarroDTO dto);
-    Task<CarroRespostaDTO?> Excluir(int id, AtualizarCarroDTO dto);
+    Task<CarroRespostaDTO?> Excluir(int id);
     
 }

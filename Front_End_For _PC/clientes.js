@@ -15,13 +15,14 @@
 	const filterButtons = document.querySelectorAll(".filter-button");
 	const main = document.querySelector(".main-content");
 	const statusMessage = document.createElement("p");
+	
 	statusMessage.className = "api-error-message";
 	statusMessage.setAttribute("role", "alert");
 	statusMessage.hidden = true;
 	main.insertBefore(statusMessage, main.querySelector("section"));
 	const requestedFilter = new URLSearchParams(window.location.search).get("filter");
 	let activeFilter = ["pending", "overdue"].includes(requestedFilter) ? requestedFilter : "all";
-	//let customers = [];
+	let customers = [];
 
 	async function request(routeName, options = {}) {
 		const route = options.url || API_ROUTES[routeName];
@@ -31,13 +32,13 @@
 		const { url, ...fetchOptions } = options;
 		const response = await fetch(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
 			...fetchOptions,
-			credentials: "include",
 			headers: { ...(fetchOptions.body ? { "Content-Type": "application/json" } : {}), ...fetchOptions.headers }
 		});
 		const body = response.status === 204 ? null : await response.json();
 		if (!response.ok) {
 			throw new Error(body?.message || `A API respondeu com HTTP ${response.status}.`);
 		}
+		console.log(body);
 		return body?.data ?? body;
 	}
 
@@ -64,23 +65,23 @@
 		statusMessage.hidden = true;
 		try {
 			const [customerData, installmentData] = await Promise.all([
-				request("customers"),
-				request("installments")
+				request("Cliente"),
+				request("Aluguel")
 			]);
-			const installments = readList(installmentData, "installments");
-			customers = readList(customerData, "customers").map((customer) => {
-				const customerInstallments = installments.filter((item) => item.id === customer.id && item.Estado !== "paid");
+			const installments = readList(installmentData, "Aluguel");
+			customers = readList(customerData, "Cliente").map((customer) => {
+				const customerInstallments = installments.filter((item) => item.id === customer.id && item.estado !== "OK");
 				return {
 					...customer,
-					hasPending: customerInstallments.some((item) => item.Estado === "pending"),
-					hasOverdue: customerInstallments.some((item) => item.Estado === "overdue")
+					hasPending: customerInstallments.some((item) => item.estado === "PENDENTE"),
+					hasOverdue: customerInstallments.some((item) => item.estado === "DEVENDO")
 				};
 			});
 
 			const visibleCustomers = customers.filter((customer) =>
 				activeFilter === "all"
-				|| (activeFilter === "pending" && customer.hasPending)
-				|| (activeFilter === "overdue" && customer.hasOverdue)
+				|| (activeFilter === "PENDENTE" && customer.hasPending)
+				|| (activeFilter === "DEVENDO" && customer.hasOverdue)
 			);
 			tableBody.replaceChildren();
 			if (visibleCustomers.length === 0) {
@@ -126,30 +127,32 @@
 	themeToggle.addEventListener("change", () => {
 		setTheme(themeToggle.checked);
 		localStorage.setItem("acessocar-theme", themeToggle.checked ? "light" : "dark");
-})});
+	})
+});
+const criacaoCliente = "CadastroCliente.html";
 async function loadCustomers() {
 	const resposta = await fetch('http://localhost:5104/api/Cliente');
-        
-        if (!resposta.ok) {
-            throw new Error(`Erro HTTP: ${resposta.status}`);
-        }
 
-        customers = await resposta.json();
-	//const dados = await resposta.json();
+	if (!resposta.ok) {
+		throw new Error(`Erro HTTP: ${resposta.status}`);
+	}
 
-   
+	customers = await resposta.json();
 
-    return customers;
+
+
+
+	return customers;
 }
 
 let customers = loadCustomers();
 
 //Puxar o status do banco, vai ter que ter condições pro front saber as labels de acordo com o status do banco
 const statusLabels = {
-	ok: { label: "OK", className: "status-ok" },
-	rented: { label: "LOCADO", className: "status-rented" },
-	pending: { label: "PENDENTE", className: "status-pending" },
-	owing: { label: "DEVENDO", className: "status-owing" }
+	OK: { label: "OK", className: "status-ok" },
+	LOCADO: { label: "LOCADO", className: "status-rented" },
+	PENDENTE: { label: "PENDENTE", className: "status-pending" },
+	ATRASADO: { label: "ATRASADO", className: "status-owing" }
 };
 
 const themeToggle = document.querySelector("#theme-toggle");
@@ -195,14 +198,15 @@ function createCell(text, className = "") {
 
 async function renderCustomers() {
 	customers = await loadCustomers();
-    
+
 	console.log("customers:", customers);
-    console.log("É array?", Array.isArray(customers));
+	
+	// console.log("É array?", Array.isArray(customers));
 	const visibleCustomers = customers.filter((customer) => {
 		return activeFilter === "all"
-			|| (activeFilter === "pending" && customer.hasPending)
-			|| (activeFilter === "overdue" && customer.hasOverdue);
-	 });
+			|| (activeFilter === "PENDENTE" && customer.hasPending)
+			|| (activeFilter === "DEVENDO" && customer.hasOverdue);
+	});
 	tableBody.replaceChildren();
 
 	if (visibleCustomers.length === 0) {
@@ -214,7 +218,7 @@ async function renderCustomers() {
 	} else {
 		visibleCustomers.forEach((customer) => {
 			const row = document.createElement("tr");
-			//const status = statusLabels[customer.status];
+			const status = statusLabels[customer.estado];
 			row.append(
 				createCell(customer.id, "id"),
 				createCell(customer.nome, "nome"),
@@ -222,16 +226,17 @@ async function renderCustomers() {
 				createCell(customer.telefone, "telefone"),
 				createCell(customer.email, "email"),
 				createCell(customer.endereco, "endereco"),
+				
 
 				//createCell(customer.vehiclePlate || "—", "customer-plate")
 			);
 
 			const statusCell = document.createElement("td");
 			const statusBadge = document.createElement("span");
-			// statusBadge.className = `status-badge ${status.className}`;
-			// statusBadge.textContent = status.label;
-			// statusCell.append(statusBadge);
-			// row.append(statusCell);
+			statusBadge.className = `status-badge ${customer.estado}`;
+			statusBadge.textContent = status.label;
+			statusCell.append(statusBadge);
+			row.append(statusCell);
 
 			const actionsCell = document.createElement("td");
 			const deleteButton = document.createElement("button");
@@ -252,11 +257,11 @@ async function renderCustomers() {
 }
 
 setTheme(savedTheme === "light");
-//newCustomerLink.href = CUSTOMER_CREATE_PAGE;
+newCustomerLink.href = criacaoCliente;
 updateActiveFilterButton();
-renderCustomers();
+//renderCustomers();
 renderCustomers().catch((erro) => {
-    console.error("Erro ao carregar clientes:", erro);
+	console.error("Erro ao carregar clientes:", erro);
 });
 
 themeToggle.addEventListener("change", () => {
@@ -287,34 +292,35 @@ filterButtons.forEach((button) => {
 		}
 	});
 
-tableBody.addEventListener("click", (event) => {
-	const deleteButton = event.target.closest("[data-delete-customer]");
-	if (!deleteButton) return;
+	tableBody.addEventListener("click", (event) => {
+		const deleteButton = event.target.closest("[data-delete-customer]");
+		if (!deleteButton) return;
 
-	const customer = customers.find((item) => item.id === deleteButton.dataset.deleteCustomer);
-	if (!customer || !window.confirm(`Deseja excluir o cliente ${customer.name}?`)) return;
+		const customer = customers.find((item) => item.id === deleteButton.dataset.deleteCustomer);
+		if (!customer || !window.confirm(`Deseja excluir o cliente ${customer.name}?`)) return;
 
-	const state = AccessoCarData.read();
-	const hasRentalHistory = state.rentals.some((rental) => rental.cliente_id === customer.id)
-		|| state.installments.some((installment) => installment.cliente_id === customer.id);
-	if (hasRentalHistory) {
-		window.alert("Este cliente possui registros financeiros ou de locação e não pode ser excluído.");
-		return;
-	}
-	state.customers = state.customers.filter((item) => item.ID !== customer.ID);
-	AccessoCarData.write(state);
+		const state = AccessoCarData.read();
+		const hasRentalHistory = state.rentals.some((rental) => rental.cliente_id === customer.id)
+			|| state.installments.some((installment) => installment.cliente_id === customer.id);
+		if (hasRentalHistory) {
+			window.alert("Este cliente possui registros financeiros ou de locação e não pode ser excluído.");
+			return;
+		}
+		state.customers = state.customers.filter((item) => item.ID !== customer.ID);
+		AccessoCarData.write(state);
+	});
+
+	const sidebar = document.querySelector("#sidebar");
+	const menuToggle = document.querySelector("#menu-toggle");
+
+	menuToggle.addEventListener("click", () => {
+		const isOpen = sidebar.classList.toggle("is-open");
+		menuToggle.setAttribute("aria-expanded", String(isOpen));
+		menuToggle.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
+	});
+
+	window.addEventListener("accessocar:data-changed", renderCustomers);
+	window.addEventListener("storage", (event) => {
+		if (event.key === "accessocar-management-v1") renderCustomers();
+	})
 });
-
-const sidebar = document.querySelector("#sidebar");
-const menuToggle = document.querySelector("#menu-toggle");
-
-menuToggle.addEventListener("click", () => {
-	const isOpen = sidebar.classList.toggle("is-open");
-	menuToggle.setAttribute("aria-expanded", String(isOpen));
-	menuToggle.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
-});
-
-window.addEventListener("accessocar:data-changed", renderCustomers);
-window.addEventListener("storage", (event) => {
-	if (event.key === "accessocar-management-v1") renderCustomers();
-})});

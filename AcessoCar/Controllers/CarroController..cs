@@ -73,17 +73,17 @@ public class CarroController : ControllerBase
         return Ok(carroAtualizado);
     }
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Excluir(int id, AtualizarCarroDTO dto)
+    public async Task<IActionResult> Excluir(int id)
     {
         CarroRespostaDTO? carroExcluido = 
-        await _CarroService.Excluir(id, dto);
+        await _CarroService.Excluir(id);
 
         if (carroExcluido == null)
         {
             return NotFound(new {mensagem = "Carro não encontrado"});
         }
 
-        return Ok(carroExcluido);
+        return NoContent();
     }
 
 }

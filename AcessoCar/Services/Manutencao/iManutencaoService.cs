@@ -8,6 +8,6 @@ public interface IManutencaoService
     Task<ManutencaoRespostaDTO?> BuscarPorId(int ID);
     Task<ManutencaoRespostaDTO?> Criar(CriarManutencaoDTO dto);
     Task<ManutencaoRespostaDTO?> Atualizar(int id, AtualizarManutencaoDTO dto);
-    Task<ManutencaoRespostaDTO?> Excluir(int id, AtualizarManutencaoDTO dto);
+    Task<ManutencaoRespostaDTO?> Excluir(int id);
     
 }

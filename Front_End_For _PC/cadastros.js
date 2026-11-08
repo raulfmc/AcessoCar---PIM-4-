@@ -59,6 +59,7 @@
 			CPF: document.getElementById("CPF").value,
 			Telefone: document.getElementById("Telefone").value,
 			Endereco: document.getElementById("Endereco").value,
+            Estado: "OK",
 			Email: document.getElementById("Email").value,
 			Ativo: true
 		}
@@ -118,6 +119,7 @@
 			Cambio: document.getElementById("Cambio").value,
 			Placa: document.getElementById("Placa").value,
 			Cor: document.getElementById("Cor").value,
+			Estado: "Disponível",
 			Valor_Diaria: parseFloat(document.getElementById("Valor_Diaria").value),
 			Ativo: true
 		};
@@ -242,10 +244,10 @@
 		}
 
 		try {
-			const state = AccessoCarData.read();
+			//const state = AccessoCarData.read();
 			const record = isCustomer ? createCustomerRecord() : createVehicleRecord();
-			state[collectionName].push(record);
-			AccessoCarData.write(state);
+			//state[collectionName].push(record);
+			//AccessoCarData.write(state);
 			showMessage(`${isCustomer ? "Cliente" : "Veículo"} cadastrado com sucesso.`);
 			form.reset();
 			photoData = "";

@@ -46,6 +46,7 @@ public class ClienteService : IClienteService
             Telefone = dto.Telefone,
             Email = dto.Email,
             Endereco = dto.Endereco,
+            Estado = "OK",
             Ativo = dto.Ativo
             
         };
@@ -76,20 +77,21 @@ public class ClienteService : IClienteService
         await _context.SaveChangesAsync();
         return ConverterParaResposta(cliente);
     }
-    public async Task<ClienteRespostaDTO?> Excluir(int id, AtualizarClienteDTO dto)
+    public async Task<ClienteRespostaDTO?> Excluir(int id)
     {
-        Cliente? Cliente = await _context.Cliente
+        Cliente? cliente = await _context.Cliente
         .FirstOrDefaultAsync(Cliente => Cliente.ID == id);
 
-        if (Cliente is null)
+        if (cliente is null)
         {
             return null;
         }
-        Cliente.Ativo = false;
-        _context.Cliente.Update(Cliente);
+        cliente.Ativo = false;
+        
+        _context.Cliente.Update(cliente);
         await _context.SaveChangesAsync();
 
-        return ConverterParaResposta(Cliente);
+        return ConverterParaResposta(cliente);
     }
     private static ClienteRespostaDTO ConverterParaResposta(
         Cliente cliente
@@ -103,7 +105,9 @@ public class ClienteService : IClienteService
             Telefone = cliente.Telefone,
             Email = cliente.Email,
             Endereco = cliente.Endereco,
+            Estado = cliente.Estado,
             Ativo = cliente.Ativo
+
             
         };
     }

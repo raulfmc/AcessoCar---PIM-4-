@@ -72,18 +72,18 @@ public class ClienteController : ControllerBase
 
         return Ok(clienteAtualizado);
     }
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Excluir(int id, AtualizarClienteDTO dto)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Excluir(int id)
     {
         ClienteRespostaDTO? clienteExcluido = 
-        await _ClienteService.Excluir(id, dto);
-
+        await _ClienteService.Excluir(id);
+        
         if (clienteExcluido == null)
         {
             return NotFound(new {mensagem = "Cliente não encontrado"});
         }
 
-        return Ok(clienteExcluido);
+        return NoContent();
     }
 
 }

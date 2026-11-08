@@ -12,9 +12,13 @@ public class AtualizarAluguelDTO
 
     public decimal Valor_Total { get; set; }
 
+    public int Parcelas { get; set; }
+
+    public string Estado {get; set;} = string.Empty;
+
     public bool Ativo { get; set; }
 
-   
+
 
 }
 
