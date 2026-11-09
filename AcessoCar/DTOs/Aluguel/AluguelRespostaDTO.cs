@@ -14,6 +14,7 @@ public class AluguelRespostaDTO
 
     public int Parcelas { get; set; }
 
+    public string Forma_Pagamento {get; set;} = string.Empty;
     public string Estado {get; set;} = string.Empty;
 
     public bool Ativo { get; set; }

@@ -13,6 +13,7 @@ public class CriarAluguelDTO
 
     public decimal Valor_Total { get; set; }
 
+    public string Forma_Pagamento {get; set;} = string.Empty;
     public int Parcelas { get; set; }
 
     public string Estado {get; set;} = string.Empty;

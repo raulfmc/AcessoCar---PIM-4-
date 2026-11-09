@@ -2,7 +2,6 @@ using AcessoCar.Data;
 using Microsoft.EntityFrameworkCore;
 using AcessoCar.Models;
 using AcessoCar.Dtos.Manutencoes;
-
 namespace AcessoCar.Services.Manutencoes;
 public class ManutencaoService : IManutencaoService
 {
@@ -82,7 +81,7 @@ public class ManutencaoService : IManutencaoService
 
         if (manutencao is null)
         {
-            return null;
+            throw new KeyNotFoundException("Manutenção não encontrada");
         }
         manutencao.Ativo = false;
         _context.Manutencao.Update(manutencao);

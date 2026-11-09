@@ -2,6 +2,8 @@ using AcessoCar.Dtos.Clientes;
 using AcessoCar.Data;
 using Microsoft.EntityFrameworkCore;
 using AcessoCar.Models;
+using AcessoCar.Exceptions;
+using Microsoft.Data.SqlClient;
 namespace AcessoCar.Services.Clientes;
 public class ClienteService : IClienteService
 {
@@ -31,7 +33,7 @@ public class ClienteService : IClienteService
         
         if (Cliente == null || Cliente.Ativo == false)
         {
-            return null;
+            throw new KeyNotFoundException("Cliente não encontrado");
         }
        
         
@@ -50,8 +52,19 @@ public class ClienteService : IClienteService
             Ativo = dto.Ativo
             
         };
-        _context.Cliente.Add(Cliente);
-        await _context.SaveChangesAsync();
+        try{
+            _context.Cliente.Add(Cliente);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is SqlException sql &&
+        sql.Number == 547 && sql.Message.Contains("UQ_Placa", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new CpfRepetidoException("Esse CPF já existe/é inválido, insira outro CPF");
+        }
+        
+            
+
+        
         return ConverterParaResposta(Cliente);
     }
 

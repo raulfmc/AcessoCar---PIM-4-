@@ -15,6 +15,7 @@ public class Aluguel
     public decimal Valor_Total { get; set; }
 
     public int Parcelas {get; set;}
+    public string Forma_Pagamento {get; set;} = string.Empty;
 
     public string Estado {get; set;} = string.Empty;
 

@@ -34,7 +34,7 @@ public class AdaptacaoService : IAdaptacaoService
 
         if (adaptacao == null || adaptacao.Ativo == false)
         {
-            return null;
+            throw new KeyNotFoundException("Adaptação não encontrada");
         }
 
 

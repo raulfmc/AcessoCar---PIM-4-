@@ -2,7 +2,10 @@ using AcessoCar.Dtos.Carros;
 using AcessoCar.Data;
 using Microsoft.EntityFrameworkCore;
 using AcessoCar.Models;
+using AcessoCar.Exceptions;
+using Microsoft.Data.SqlClient;
 namespace AcessoCar.Services.Carros;
+
 public class CarroService : ICarroService
 {
 
@@ -16,7 +19,7 @@ public class CarroService : ICarroService
         var Carros = await _context.Carro
         .Where(c => c.Ativo == true)
         .ToListAsync();
-        
+
         return Carros
         .Select(ConverterParaResposta)
         .ToList();
@@ -28,19 +31,20 @@ public class CarroService : ICarroService
     {
         Carro? Carro = await _context.Carro
         .FirstOrDefaultAsync(Carro => Carro.ID == id);
-        
+
         if (Carro == null || Carro.Ativo == false)
         {
-            return null;
+            throw new KeyNotFoundException("Carro não encontrado");
         }
-       
-        
+
+
         return ConverterParaResposta(Carro);
 
     }
     async public Task<CarroRespostaDTO?> Criar(CriarCarroDTO dto)
     {
-        Carro carro = new Carro(){
+        Carro carro = new Carro()
+        {
             Marca = dto.Marca,
             Modelo = dto.Modelo,
             Ano_Fabricacao = dto.Ano_Fabricacao,
@@ -52,16 +56,24 @@ public class CarroService : ICarroService
             Estado = dto.Estado,
             Valor_Diaria = dto.Valor_Diaria,
             Ativo = dto.Ativo
-            
+
         };
-        _context.Carro.Add(carro);
-        await _context.SaveChangesAsync();
+        try
+        {
+            _context.Carro.Add(carro);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is SqlException sql &&
+        sql.Number == 547 && sql.Message.Contains("UQ_Placa", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new PlacaRepetidaException("Essa placa já existe/é inválida, insira outra placa");
+        }
         return ConverterParaResposta(carro);
     }
 
     public async Task<CarroRespostaDTO?> Atualizar(int id, AtualizarCarroDTO dto)
     {
-        
+
         Carro? carro = await _context.Carro
         .FirstOrDefaultAsync(Carro => Carro.ID == id);
 
@@ -70,7 +82,7 @@ public class CarroService : ICarroService
             return null;
         }
 
-        
+
         carro.Marca = dto.Marca;
         carro.Modelo = dto.Modelo;
         carro.Ano_Fabricacao = dto.Ano_Fabricacao;
@@ -118,7 +130,7 @@ public class CarroService : ICarroService
             Estado = carro.Estado,
             Valor_Diaria = carro.Valor_Diaria,
             Ativo = carro.Ativo
-            
+
         };
     }
 

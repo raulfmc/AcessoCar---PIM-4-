@@ -54,7 +54,7 @@
 		});
 		const text = await response.text();
 		const body = text ? JSON.parse(text) : null;
-		if (!response.ok) throw new Error(body?.message || `A API respondeu com HTTP ${response.status}.`);
+		if (!response.ok) throw new Error(body?.message || `${body.detail}`);
 		console.log(body);
 		return body?.data ?? body;
 	}
@@ -170,10 +170,9 @@
 		lastPaymentMethod = paymentMethod.value;
 	}
 const statusLabels = {
-	OK: { label: "OK", className: "status-ok" },
-	LOCADO: { label: "LOCADO", className: "status-rented" },
-	PENDENTE: { label: "PENDENTE", className: "status-pending" },
-	ATRASADO: { label: "ATRASADO", className: "status-owing" }
+	OK: { label: "OK", className: "OK" },
+	PENDENTE: { label: "PENDENTE", className: "PENDENTE" },
+	ATRASADO: { label: "ATRASADO", className: "ATRASADO" }
 };
 	function renderRentals() {
 		const customerById = new Map(customers.map((customer) => [customer.id, customer]));
@@ -202,12 +201,12 @@ const statusLabels = {
 					createCell(displayDate(rental.data_Fim.split("T")[0])),
 					createCell(currency.format(rental.valor_Total), "table-value"),
 					createCell(rental.parcelas),
-					createCell(rental.estado)
+					//createCell(rental.estado)
 				);
 				const statusCell = document.createElement("td");
 				const badge = document.createElement("span");
 				badge.className = `status-badge ${rental.estado}`;
-				badge.textContent = "ATIVA";
+				badge.textContent = status.label;
 				statusCell.append(badge);
 				row.append(statusCell);
 				tableBody.append(row);
@@ -289,7 +288,7 @@ const statusLabels = {
 			data_Inicio: startDate.value,
 			data_Fim: returnDate.value,
 			valor_Total: valorTotalCalculado,
-			paymentMethod: paymentMethod.value,
+			forma_Pagamento: paymentMethod.value,
 			installments: paymentMethod.value === "Parcelado" ? Number(installmentCount.value) : 1,
 			estado: "OK",
 			firstDueDate: paymentMethod.value === "Parcelado" ? firstDueDate.value : startDate.value,

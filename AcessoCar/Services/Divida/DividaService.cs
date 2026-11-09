@@ -36,7 +36,7 @@ public class DividaService : IDividaService
 
         if (Divida == null || Divida.Ativo == false)
         {
-            return null;
+            throw new KeyNotFoundException("Dívida não encontrada");
         }
 
 

@@ -41,6 +41,9 @@
 .table-id { color: var(--muted) !important; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .table-primary { font-weight: 600; }
 .table-value { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.OK { border-color: rgba(91, 214, 170, 0.2); background: rgba(91, 214, 170, 0.1); color: var(--success);} 
+.PENDENTE { border-color: rgba(242, 226, 9, 0.2); background: rgba(236, 236, 0, 0.1); color: yellow;}
+.ATRASADO { border-color: rgba(220, 47, 8, 0.2); background: rgba(229, 38, 5, 0.1); color: red;}
 .status-badge { display: inline-flex; min-height: 24px; align-items: center; gap: 6px; padding: 0 8px; border: 1px solid transparent; border-radius: 5px; font-size: 10px; font-weight: 750; letter-spacing: 0.35px; white-space: nowrap; }
 .status-badge::before { width: 6px; height: 6px; border-radius: 50%; background: currentColor; content: ""; }
 .status-active { border-color: rgba(91, 214, 170, 0.2); background: rgba(91, 214, 170, 0.1); color: var(--success); }
