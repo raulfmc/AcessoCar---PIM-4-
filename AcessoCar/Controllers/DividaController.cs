@@ -1,10 +1,11 @@
 using AcessoCar.Dtos.Dividas;
 using AcessoCar.Services.Dividas;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace AcessoCar.Controllers;
 
 
-
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class DividaController : ControllerBase

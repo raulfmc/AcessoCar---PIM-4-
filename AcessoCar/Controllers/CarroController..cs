@@ -1,11 +1,12 @@
 
 using AcessoCar.Dtos.Carros;
 using AcessoCar.Services.Carros;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace AcessoCar.Controllers;
 
 
-
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class CarroController : ControllerBase

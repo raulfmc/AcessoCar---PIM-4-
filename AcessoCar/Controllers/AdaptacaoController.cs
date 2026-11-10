@@ -1,11 +1,12 @@
 using AcessoCar.Dtos;
 using AcessoCar.Dtos.Adaptacoes;
 using AcessoCar.Services.Adaptacoes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace AcessoCar.Controllers;
 
 
-
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class AdaptacaoController : ControllerBase

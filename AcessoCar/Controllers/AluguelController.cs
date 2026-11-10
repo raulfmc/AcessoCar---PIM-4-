@@ -1,10 +1,11 @@
 using AcessoCar.Dtos.Alugueis;
 using AcessoCar.Services.Alugueis;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace AcessoCar.Controllers;
 
 
-
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class AluguelController : ControllerBase
