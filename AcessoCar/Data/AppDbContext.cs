@@ -30,6 +30,7 @@ public class AppDbContext : DbContext
     public DbSet<Manutencao> Manutencao { get; set; }
     public DbSet<Aluguel> Aluguel { get; set; }
     public DbSet<Adaptacao> Adaptacao { get; set; }
+    public DbSet<Parcela> Parcela { get; set; }
 }
 
 

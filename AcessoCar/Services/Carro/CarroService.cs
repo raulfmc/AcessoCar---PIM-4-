@@ -55,7 +55,7 @@ public class CarroService : ICarroService
             Cor = dto.Cor,
             Estado = dto.Estado,
             Valor_Diaria = dto.Valor_Diaria,
-            Ativo = dto.Ativo
+            Ativo = true
 
         };
         try

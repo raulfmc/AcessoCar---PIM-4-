@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using AcessoCar.DTOs.Auth;
+using Microsoft.AspNetCore.Antiforgery;
 namespace AcessoCar.Controllers;
 
 
@@ -36,7 +37,19 @@ public class AuthController : ControllerBase
 
         return Ok(new { mensagem = "Logout realizado com sucesso." });
     }
+    [AllowAnonymous]
+    [HttpGet("csrf")]
+    public IActionResult ObterToken(
+    [FromServices] IAntiforgery antiforgery)
+    {
+        var tokens = antiforgery.GetAndStoreTokens(HttpContext);
 
+        return Ok(new
+        {
+            requestToken = tokens.RequestToken,
+            cookieGerado = tokens.CookieToken != null
+        });
+    }
 
 
 

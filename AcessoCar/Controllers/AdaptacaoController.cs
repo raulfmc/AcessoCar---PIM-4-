@@ -48,33 +48,21 @@ public class AdaptacaoController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<AdaptacaoRespostaDTO>> Criar(CriarAdaptacaoDTO dto)
     {
-        try
-        {
-            AdaptacaoRespostaDTO? adaptacaoCriada =
-            await _adaptacaoService.Criar(dto);
+
+        AdaptacaoRespostaDTO? adaptacaoCriada =
+        await _adaptacaoService.Criar(dto);
 
 
-            if (adaptacaoCriada is null)
-            {
-                return NotFound(new { message = "Carro não encontrado." });
-            }
-            return CreatedAtAction(
-            nameof(BuscarPorId),
-            new { id = adaptacaoCriada.ID },
-            adaptacaoCriada);
-        }
-        catch (ArgumentException ae)
+        if (adaptacaoCriada is null)
         {
-            return BadRequest(new { message = ae.Message});
+            return NotFound(new { message = "Carro não encontrado." });
         }
-        catch (KeyNotFoundException ke)
-        {
-            return NotFound(new { message = ke.Message});
-        }
-        catch (InvalidOperationException ioe)
-        {
-            return Conflict(new { message = ioe.Message});
-        }
+        return CreatedAtAction(
+        nameof(BuscarPorId),
+        new { id = adaptacaoCriada.ID },
+        adaptacaoCriada);
+
+
     }
 
     [HttpPut("{id:int}")]

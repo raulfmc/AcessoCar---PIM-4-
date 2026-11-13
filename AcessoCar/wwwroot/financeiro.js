@@ -2,11 +2,12 @@
 	"use strict";
 
 	// Listas retornam arrays; confirmPayment usa :id e recebe status/paidAt.
-	const API_BASE_URL = "http://localhost:5104/api/";
+
 	const API_ROUTES = {
-		customers: "Cliente",
-		installments: "Aluguel",
-		confirmPayment: ""
+		customers: "/api/Cliente",
+		installments: "/api/Parcela",
+		financeiro: "/api/Financeiro"
+
 	};
 	const customerTableBody = document.querySelector("#customer-table-body");
 	const installmentTableBody = document.querySelector("#installment-table-body");
@@ -28,11 +29,12 @@
 	const currency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 	const dateFormatter = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeZone: "UTC" });
 	const requestedStatus = new URLSearchParams(window.location.search).get("filter");
-	const activeStatus = ["overdue", "unpaid"].includes(requestedStatus) ? requestedStatus : "pending";
+	const activeStatus = ["ATRASADO", "PENDENTE"].includes(requestedStatus) ? requestedStatus : "PENDENTE";
 	let selectedCustomerId = null;
 	let selectedInstallmentId = null;
 	let customers = [];
 	let installments = [];
+	let finanças = [];
 
 	async function request(routeName, options = {}) {
 		const route = options.url || API_ROUTES[routeName];
@@ -40,9 +42,9 @@
 			throw new Error(`Configure API_BASE_URL e API_ROUTES.${routeName} em financeiro.js.`);
 		}
 		const { url, ...fetchOptions } = options;
-		const response = await fetch(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
+		const response = await fetchProtegido(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
 			...fetchOptions,
-		
+
 			headers: { ...(fetchOptions.body ? { "Content-Type": "application/json" } : {}), ...fetchOptions.headers }
 		});
 		const text = await response.text();
@@ -52,16 +54,19 @@
 	}
 
 	async function loadData() {
-		const [customerData, installmentData] = await Promise.all([
+		const [customerData, installmentData, financeData] = await Promise.all([
 			request("customers"),
-			request("installments")
+			request("installments"),
+			request("financeiro")
+
 		]);
-		if (!Array.isArray(customerData) || !Array.isArray(installmentData)) {
+		if (!Array.isArray(customerData) || !Array.isArray(installmentData || !Array.isArray(fin))) {
 			throw new Error("As rotas de clientes e parcelas devem retornar listas (ou { data: lista }).");
 		}
 		customers = customerData;
 		installments = installmentData;
-		return { customers, installments };
+		finanças = financeData;
+		return { customers, installments, finanças };
 	}
 
 	function setTheme(isLight) {
@@ -74,7 +79,7 @@
 
 	function displayDate(value) {
 		if (!value) return "—";
-		const date = new Date(`${value}T00:00:00Z`);
+		const date = new Date(value);
 		return Number.isNaN(date.getTime()) ? "—" : dateFormatter.format(date);
 	}
 
@@ -88,33 +93,42 @@
 	function getFilters() {
 		return {
 			search: searchInput.value.trim().toLocaleLowerCase("pt-BR"),
-			rentalId: rentalFilter.value.trim().toLocaleLowerCase("pt-BR"),
-			startDate: periodStart.value,
-			endDate: periodEnd.value
+			aluguel_ID: rentalFilter.value.trim().toLocaleLowerCase("pt-BR"),
+			data_Inicio: periodStart.value,
+			data_Fim: periodEnd.value
 		};
 	}
 
 	function installmentsForCustomer(customerId) {
 		const filters = getFilters();
 		return installments.filter((item) =>
-			item.cliente_Id === customerId
-			&& (activeStatus === "unpaid" ? item.estado !== "paid" : item.estado === activeStatus)
-			&& (!filters.aluguel_Id || String(item.aluguel_Id).toLocaleLowerCase("pt-BR").includes(filters.aluguel_Id))
-			&& (!filters.data_Inicio || item.dueDate >= filters.data_Inicio)
-			&& (!filters.data_Fim || item.dueDate <= filters.data_Fim)
+			item.id === customerId
+			&& (activeStatus === "PENDENTE" ? item.estado !== "OK" : item.estado === activeStatus)
+			&& (!filters.aluguel_ID || String(item.aluguel_Id).toLocaleLowerCase("pt-BR").includes(filters.aluguel_ID))
+			&& (!filters.data_Inicio || item.data_Vencimento >= filters.data_Inicio)
+			&& (!filters.data_Fim || item.data_Vencimento <= filters.data_Fim)
 		);
 	}
 
 	function getCustomerRows() {
 		const filters = getFilters();
-		return customers.map((customer) => ({ customer, installments: installmentsForCustomer(customer.id) }))
-			.filter(({ customer, installments: customerInstallments }) => {
-				if (customerInstallments.length === 0) return false;
-				if (!filters.search) return true;
-				const searchable = `${customer.nome} ${customer.id} ${customerInstallments.map((item) => `${item.id} ${item.id}`).join(" ")}`.toLocaleLowerCase("pt-BR");
-				return searchable.includes(filters.search);
-			})
-			.sort((first, second) => first.customer.name.localeCompare(second.customer.name, "pt-BR"));
+		return finanças.filter((finance) => {
+			const customer = customers.find(
+				(item) => item.id === finance.clienteID
+			);
+
+			const searchable = `
+            ${finance.clienteNome}
+            ${finance.clienteID}
+            ${customer?.cpf || ""}
+        `.toLocaleLowerCase("pt-BR");
+
+			return (!filters.search || searchable.includes(filters.search))
+				&& (!filters.startDate ||
+					finance.proxVencimento >= filters.startDate)
+				&& (!filters.endDate ||
+					finance.proxVencimento <= filters.endDate);
+		});
 	}
 
 	function renderCustomerList() {
@@ -122,37 +136,49 @@
 		customerTableBody.replaceChildren();
 		if (rows.length === 0) {
 			const row = document.createElement("tr");
-			const cell = createCell(activeStatus === "overdue"
+			const cell = createCell(activeStatus === "ATRASADO" || "PENDENTE"
 				? "Nenhuma pessoa possui parcelas vencidas com estes filtros."
 				: "Nenhuma pessoa possui parcelas pendentes com estes filtros.", "empty-cell");
 			cell.colSpan = 7;
 			row.append(cell);
 			customerTableBody.append(row);
 		} else {
-			rows.forEach(({ customer, installments: customerInstallments }) => {
+			rows.forEach((finance) => {
 				const row = document.createElement("tr");
-				const total = customerInstallments.reduce((sum, installment) => sum + installment.amount, 0);
-				const nextDue = customerInstallments.reduce((earliest, installment) =>
-					!earliest || installment.dueDate < earliest ? installment.dueDate : earliest, "");
+
 				row.append(
-					createCell(customer.nome, "table-primary"),
-					createCell(`${customer.cpf || "—"} · ${customer.id}`, "table-id"),
-					createCell(String(customerInstallments.length)),
-					createCell(currency.format(total), "table-value"),
-					createCell(displayDate(nextDue)),
+					createCell(finance.clienteNome, "table-primary"),
+					createCell(
+						`${finance.clienteID}`,
+						"table-id"
+					),
+					createCell(String(finance.qtdParcelas)),
+					createCell(
+						currency.format(finance.valorEmAberto),
+						"table-value"
+					),
+					createCell(displayDate(finance.proxVencimento)),
 					createCell("", "status-cell")
 				);
-				const hasOverdue = customerInstallments.some((item) => item.estado === "overdue");
+				const customerInstallments = installments.filter(
+					(item) => Number(item.cliente_ID) === Number(finance.clienteID));
+				const hasOverdue = customerInstallments.some((item) => item.estado === "ATRASADO");
 				const badge = document.createElement("span");
-				const customerStatus = activeStatus === "unpaid" && !hasOverdue ? "pending" : activeStatus;
-				badge.className = `status-badge status-${customerStatus}`;
-				badge.textContent = customerStatus === "overdue" ? "DEVENDO / VENCIDO" : activeStatus === "unpaid" ? "EM ABERTO" : "PENDENTE";
+				const customerStatus = activeStatus === "PENDENTE" && hasOverdue
+					? "ATRASADO"
+					: activeStatus;
+
+				badge.className = `status-badge ${customerStatus}`;
+
+				badge.textContent = customerStatus === "ATRASADO"
+					? "PENDENTE / ATRASADO"
+					: "PENDENTE";
 				row.children[5].append(badge);
 				const actionCell = document.createElement("td");
 				const viewButton = document.createElement("button");
 				viewButton.className = "confirm-button";
 				viewButton.type = "button";
-				viewButton.dataset.viewCustomer = customer.id;
+				viewButton.dataset.viewCustomer = finance.clienteID;
 				viewButton.textContent = "Visualizar parcelas";
 				actionCell.append(viewButton);
 				row.append(actionCell);
@@ -164,16 +190,16 @@
 
 	function renderCustomerDetail() {
 		if (!selectedCustomerId) return;
-		const customer = customers.find((item) => item.id === selectedCustomerId);
+		const customer = customers.find((item) => Number(item.id) === Number(selectedCustomerId));
 		if (!customer) {
 			closeCustomerDetail();
 			return;
 		}
 		const customerInstallments = installmentsForCustomer(selectedCustomerId)
-			.sort((first, second) => first.dueDate.localeCompare(second.dueDate));
-		document.querySelector("#detail-customer-name").textContent = customer.name;
-		const situation = activeStatus === "overdue" ? "vencidas" : activeStatus === "unpaid" ? "em aberto" : "pendentes";
-		document.querySelector("#detail-customer-id").textContent = `${customer.cpf|| "—"} · ${customer.id} · ${customerInstallments.length} ${customerInstallments.length === 1 ? "parcela" : "parcelas"} ${situation}`;
+			.sort((first, second) => first.data_Vencimento.localeCompare(second.data_Vencimento));
+		document.querySelector("#detail-customer-name").textContent = customer.nome;
+		const situation = activeStatus === "ATRASADO" ? "vencidas" : activeStatus === "ATRASADO" ? "OK" : "PENDENTE";
+		document.querySelector("#detail-customer-id").textContent = `${customer.cpf || "—"} · ${customer.id} · ${customerInstallments.length} ${customerInstallments.length === 1 ? "parcela" : "parcelas"} ${situation}`;
 		installmentTableBody.replaceChildren();
 		if (customerInstallments.length === 0) {
 			const row = document.createElement("tr");
@@ -188,16 +214,16 @@
 			row.append(
 				createCell(installment.id, "table-id"),
 				//createCell(installment.rentalId, "table-id"),
-				createCell(`${installment.number}ª`, "table-number"),
-				createCell(currency.format(installment.valor_Total), "table-value"),
-				createCell(displayDate(installment.dueDate)),
+				//createCell(`${installment.number}ª`, "table-number"),
+				createCell(currency.format(installment.valor), "table-value"),
+				createCell(displayDate(installment.data_Vencimento)),
 				createCell("", "status-cell"),
-				createCell(displayDate(installment.paidAt)),
+				createCell(displayDate(installment.data_Confirmacao)),
 				createCell(installment.notes || "—", "table-note")
 			);
 			const badge = document.createElement("span");
-			badge.className = `status-badge status-${installment.status}`;
-			badge.textContent = installment.estado === "overdue" ? "DEVENDO / VENCIDO" : "PENDENTE";
+			badge.className = `status-badge status-${installment.estado}`;
+			badge.textContent = installment.estado === "ATRASADO" ? "DEVENDO / VENCIDO" : "PENDENTE";
 			row.children[5].append(badge);
 			const actionCell = document.createElement("td");
 			const button = document.createElement("button");
@@ -215,16 +241,23 @@
 		statusMessage.hidden = true;
 		try {
 			await loadData();
+			console.log("Finanças:", finanças);
 			renderCustomerList();
 			renderCustomerDetail();
-			const unpaid = installments.filter((item) => item.estado !== "paid");
-			const overdue = unpaid.filter((item) => item.estado === "overdue");
-			document.querySelector("#pending-summary").textContent = String(unpaid.filter((item) => item.estado === "pending").length);
+			const unpaid = installments.filter((item) => item.estado !== "OK");
+			const overdue = unpaid.filter((item) => item.estado === "ATRASADO");
+			document.querySelector("#pending-summary").textContent = String(unpaid.filter((item) => item.estado === "PENDENTE").length);
 			document.querySelector("#overdue-summary").textContent = String(overdue.length);
-			document.querySelector("#receivable-summary").textContent = currency.format(unpaid.reduce((total, item) => total + item.valor_Total, 0));
+			document.querySelector("#receivable-summary").textContent = currency.format(unpaid.reduce((total, item) => total + item.valor, 0));
 		} catch (error) {
-			statusMessage.textContent = `Não foi possível carregar o financeiro: ${error.message}`;
+			console.error("Erro completo:", error);
+			console.trace("Rastreamento do erro:");
+
+			statusMessage.textContent =
+				`Não foi possível carregar o financeiro: ${error.message}`;
+
 			statusMessage.hidden = false;
+
 		}
 	}
 
@@ -246,12 +279,12 @@
 
 	function openConfirmation(installmentId) {
 		const installment = installments.find((item) => item.id === installmentId);
-		const customer = installment && customers.find((item) => item.id === installment.cliente_Id);
-		if (!installment || !customer || installment.status === "paid") return;
+		const customer = installment && customers.find((item) => item.id === installment.id);
+		if (!installment || !customer || installment.estado === "OK") return;
 		selectedInstallmentId = installment.id;
 		document.querySelector("#dialog-customer").textContent = `${customer.nome} · ${customer.id}`;
-		document.querySelector("#dialog-installment").textContent = `${installment.id} · ${installment.number}ª parcela da locação ${installment.id}`;
-		document.querySelector("#dialog-amount").textContent = currency.format(installment.valor_Total);
+		//document.querySelector("#dialog-installment").textContent = `${installment.id} · ${installment.number}ª parcela da locação ${installment.id}`;
+		document.querySelector("#dialog-amount").textContent = currency.format(installment.valor);
 		dialogError.textContent = "";
 		paymentDialog.showModal();
 	}
@@ -288,7 +321,7 @@
 			await request("confirmPayment", {
 				url: route,
 				method: "PATCH",
-				body: JSON.stringify({ status: "paid", paidAt: new Date().toISOString().slice(0, 10) })
+				body: JSON.stringify({ status: "OK", paidAt: new Date().toISOString().slice(0, 10) })
 			});
 			selectedInstallmentId = null;
 			paymentDialog.close();
@@ -298,12 +331,12 @@
 		}
 	});
 
-	document.querySelector("#installments-title").textContent = activeStatus === "overdue"
+	document.querySelector("#installments-title").textContent = activeStatus === "ATRASADO"
 		? "Pessoas com pagamentos em atraso"
-		: activeStatus === "unpaid" ? "Pessoas com valores a receber" : "Pessoas com parcelas pendentes";
-	document.querySelector("#finance-description").textContent = activeStatus === "overdue"
+		: activeStatus === "PENDENTE" ? "Pessoas com valores a receber" : "Pessoas com parcelas pendentes";
+	document.querySelector("#finance-description").textContent = activeStatus === "ATRASADO"
 		? "As parcelas vencidas aparecem aqui agrupadas por pessoa. Selecione para revisar e confirmar pagamentos."
-		: activeStatus === "unpaid"
+		: activeStatus === "PENDENTE"
 			? "As parcelas ainda não confirmadas aparecem aqui agrupadas por pessoa. Selecione para revisar os valores em aberto."
 			: "As parcelas ainda não vencidas aparecem aqui agrupadas por pessoa. Selecione para consultar e confirmar pagamentos.";
 	render();

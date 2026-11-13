@@ -8,6 +8,11 @@ using AcessoCar.Services.Dividas;
 using AcessoCar.Services.Manutencoes;
 using AcessoCar.Services.Alugueis;
 using AcessoCar.Exceptions.Handlers;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using AcessoCar.Services.Dashboard;
+using AcessoCar.Services.Parcelas;
+using AcessoCar.Services.Financeiro;
 
 WebApplicationBuilder builder =
 WebApplication.CreateBuilder(args);
@@ -30,7 +35,9 @@ builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<ICarroService, CarroService>();
 builder.Services.AddScoped<IDividaService, DividaService>();
 builder.Services.AddScoped<IManutencaoService, ManutencaoService>();
-
+builder.Services.AddScoped<IParcelaService, ParcelaService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IFinanceiroService, FinanceiroService>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Services
@@ -42,7 +49,15 @@ builder.Services
         options.Cookie.SameSite = SameSiteMode.Lax;
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
     });
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-CSRF-TOKEN";
 
+    options.Cookie.Name = "AcessoCar.Antiforgery";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+});
 builder.Services.AddAuthorization();
 WebApplication app = builder.Build();
 app.UseExceptionHandler();

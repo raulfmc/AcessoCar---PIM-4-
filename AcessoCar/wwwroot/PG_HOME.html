@@ -6,6 +6,7 @@
 	<meta name="theme-color" content="#080d16" />
 	<title>Home | acessoCar</title>
 	<link rel="stylesheet" href="PG_HOME.css" />
+	<script src="csrf.js"></script>
 	<script src="PG_HOME.js" defer></script>
 </head>
 <body>
@@ -41,7 +42,7 @@
 						</a>
 						<div class="nav-submenu" aria-label="Opções do financeiro">
 							<a class="nav-sub-link" href="financeiro.html">Parcelas</a>
-							<a class="nav-sub-link" href="financeiro.html?filter=overdue">Pagamentos em atraso</a>
+							<!-- <a class="nav-sub-link" href="financeiro.html?filter=overdue">Pagamentos em atraso</a> -->
 						</div>
 					</div>
 					<a class="nav-link" href="manutencao.html">
@@ -77,7 +78,8 @@
 					</article>
 					<article class="metric-card">
 						<div class="metric-topline"><span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"></circle><path d="M3 20c.4-3.4 2.5-5.5 6-5.5s5.6 2.1 6 5.5M17 8h5m-2.5-2.5v5"></path></svg></span><span class="metric-caption">Pagamentos pendentes</span></div>
-						<h3>A receber</h3><p class="metric-value metric-total" id="receivable-total">—</p><p class="metric-detail"><span id="receivable-count">—</span> parcelas não confirmadas</p>
+						<h3>A receber</h3><p class="metric-value metric-total" id="receivable-total">—</p><p class="metric-detail">
+					
 						<a class="view-link" href="financeiro.html?filter=unpaid">Visualizar<span class="visually-hidden"> parcelas a receber</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"></path></svg></a>
 					</article>
 					<article class="metric-card">

@@ -2,12 +2,12 @@
 	"use strict";
 
 	//A API deve validar disponibilidade e gerar a locação/parcelas no POST.
-	const API_BASE_URL = "http://localhost:5104/api/";
+	
 	const API_ROUTES = {
-		clientes: "Cliente",
-		carros: "Carro",
-		alugueis: "Aluguel",
-		Aluguel: "Aluguel"
+		clientes: "api/Cliente",
+		carros: "api/Carro",
+		alugueis: "api/Aluguel",
+		Aluguel: "api/Aluguel"
 	};
 	
 	const form = document.querySelector("#rental-form");
@@ -47,7 +47,7 @@
 			throw new Error(`Configure API_BASE_URL e API_ROUTES.${routeName} em locacoes.js.`);
 		}
 		const { url, ...fetchOptions } = options;
-		const response = await fetch(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
+		const response = await fetchProtegido(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
 			...fetchOptions,
 			
 			headers: { ...(fetchOptions.body ? { "Content-Type": "application/json" } : {}), ...fetchOptions.headers }

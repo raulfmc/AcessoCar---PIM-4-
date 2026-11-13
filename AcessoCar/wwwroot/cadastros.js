@@ -65,7 +65,7 @@
 		}
 
 
-		const resposta = await fetch("http://localhost:5104/api/Cliente", {
+		const resposta = await fetchProtegido("https://localhost:7240/api/Cliente", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
@@ -104,7 +104,7 @@
 		};
 
 
-		const resposta = await fetch("http://localhost:5104/api/Carro", {
+		const resposta = await fetchProtegido("https://localhost:7240/api/Carro", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"

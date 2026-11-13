@@ -49,7 +49,7 @@ public class ClienteService : IClienteService
             Email = dto.Email,
             Endereco = dto.Endereco,
             Estado = "OK",
-            Ativo = dto.Ativo
+            Ativo = true
             
         };
         try{

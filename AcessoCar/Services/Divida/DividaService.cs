@@ -61,7 +61,7 @@ public class DividaService : IDividaService
             Descricao = dto.Descricao,
             Valor = valor,
             Aluguel_ID = dto.Aluguel_ID,
-            Ativo = dto.Ativo
+            Ativo = true
 
 
         };

@@ -29,7 +29,7 @@ public class CriarCarroDTO
     public decimal Valor_Diaria { get; set; }
 
 
-    public bool Ativo { get; set; } = true;
+    //public bool Ativo { get; set; } = true;
 
 
 }

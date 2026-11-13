@@ -107,7 +107,7 @@ public class AluguelService : IAluguelService
                 Forma_Pagamento = dto.Forma_Pagamento,
                 Parcelas = dto.Parcelas,
                 Estado = "OK",
-                Ativo = dto.Ativo,
+                Ativo = true,
                 Cliente_ID = dto.Cliente_ID,
                 carro = carro,
                 cliente = cliente

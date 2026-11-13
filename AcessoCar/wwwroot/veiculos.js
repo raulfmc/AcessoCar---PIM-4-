@@ -2,10 +2,10 @@
 	"use strict";
 
 	// A rota vehicles deve retornar um array JSON ou { data: [] }; vehicleById usa :id.
-	const API_BASE_URL = "http://localhost:5104/api";
+	
 	const API_ROUTES = {
-		vehicles: "Carro",
-		vehicleById: "Carro/{id}"
+		vehicles: "/api/Carro",
+		vehicleById: "/api/Carro/{id}"
 	};
 	const themeToggle = document.querySelector("#theme-toggle");
 	const themeLabel = document.querySelector("#theme-label");
@@ -27,7 +27,7 @@
 			throw new Error(`Configure API_BASE_URL e API_ROUTES.${routeName} em veiculos.js.`);
 		}
 		const { url, ...fetchOptions } = options;
-		const response = await fetch(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
+		const response = await fetchProtegido(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
 			...fetchOptions,
 			headers: { ...(fetchOptions.body ? { "Content-Type": "application/json" } : {}), ...fetchOptions.headers }
 		});

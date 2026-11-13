@@ -2,7 +2,6 @@
 	"use strict";
 
 	// Listas devem retornar arrays JSON ou { data: [] }; customerById usa :id.
-	const API_BASE_URL = "http://localhost:5104/api/";
 	const API_ROUTES = {
 		customers: "Cliente",
 		installments: "Aluguel",
@@ -30,8 +29,9 @@
 			throw new Error(`Configure API_BASE_URL e API_ROUTES.${routeName} em clientes.js.`);
 		}
 		const { url, ...fetchOptions } = options;
-		const response = await fetch(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
+		const response = await fetchProtegido(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
 			...fetchOptions,
+			credentials: "include",
 			headers: { ...(fetchOptions.body ? { "Content-Type": "application/json" } : {}), ...fetchOptions.headers }
 		});
 		const body = response.status === 204 ? null : await response.json();
@@ -131,7 +131,7 @@
 });
 const criacaoCliente = "CadastroCliente.html";
 async function loadCustomers() {
-	const resposta = await fetch('http://localhost:5104/api/Cliente');
+	const resposta = await fetchProtegido('https://localhost:7240/api/Cliente');
 
 	if (!resposta.ok) {
 		throw new Error(`Erro HTTP: ${resposta.status}`);

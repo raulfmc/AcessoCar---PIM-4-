@@ -17,7 +17,7 @@ public class CriarClienteDTO
 
     public string Estado {get; set;} = string.Empty;
 
-    public bool Ativo { get; set; } = true;
+    //public bool Ativo { get; set; } = true;
 
 
 }

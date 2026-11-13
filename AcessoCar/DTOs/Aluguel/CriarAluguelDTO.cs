@@ -18,7 +18,7 @@ public class CriarAluguelDTO
 
     public string Estado {get; set;} = string.Empty;
 
-    public bool Ativo { get; set; } = true;
+    //public bool Ativo { get; set; } = true;
 
     public int Carro_ID { get; set; }
 

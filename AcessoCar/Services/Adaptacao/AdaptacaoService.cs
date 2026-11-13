@@ -58,7 +58,7 @@ public class AdaptacaoService : IAdaptacaoService
             Descricao = dto.Descricao,
             Carro_ID = dto.Carro_ID,
             carro = carro,
-            Ativo = dto.Ativo
+            Ativo = true
         };
         _context.Adaptacao.Add(adaptacao);
         await _context.SaveChangesAsync();

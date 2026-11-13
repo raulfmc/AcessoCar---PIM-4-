@@ -2,9 +2,9 @@
 	"use strict";
 
 	// POST de login recebe { login, password }; configure sessão/token conforme sua API.
-	const API_BASE_URL = window.location.origin + "/api";
+	
 	const API_ROUTES = {
-		login: "Auth/login"
+		login: "api/Auth/login"
 	};
 	const form = document.querySelector("#login-form");
 	const message = document.querySelector("#login-message");
@@ -20,7 +20,7 @@
 	}
 
 	async function authenticate(credentials) {
-		const response = await fetch(
+		const response = await fetchProtegido(
 			`${API_BASE_URL}/${API_ROUTES.login}`,
 			{
 				method: "POST",
@@ -48,10 +48,12 @@
 		submitButton.disabled = true;
 		try {
 			const data = new FormData(form);
+			await obterTokenCSRF();
 			await authenticate({
 				usuario: String(data.get("login") || "").trim(),
 				senha: String(data.get("password") || "")
 			});
+			await obterTokenCSRF();
 			window.location.assign("PG_HOME.html");
 		} catch (error) {
 			message.textContent = `Não foi possível entrar: ${error.message}`;

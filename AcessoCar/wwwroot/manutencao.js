@@ -2,12 +2,12 @@
 	"use strict";
 
 	// Listas retornam arrays; releaseMaintenance usa :id do registro de manutenção.
-	const API_BASE_URL = "http://localhost:5104/api/";
+	
 	const API_ROUTES = {
-		vehicles: "Carro",
-		maintenance: "Manutencao",
-		createMaintenance: "Manutencao",
-		releaseMaintenance: "Manutencao"
+		vehicles: "/api/Carro",
+		maintenance: "/api/Manutencao",
+		createMaintenance: "/api/Manutencao",
+		releaseMaintenance: "/api/Manutencao"
 	};
 	const themeToggle = document.querySelector("#theme-toggle");
 	const themeLabel = document.querySelector("#theme-label");
@@ -31,7 +31,7 @@
 			throw new Error(`Configure API_BASE_URL e API_ROUTES.${routeName} em manutencao.js.`);
 		}
 		const { url, ...fetchOptions } = options;
-		const response = await fetch(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
+		const response = await fetchProtegido(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
 			...fetchOptions,
 			
 			headers: { ...(fetchOptions.body ? { "Content-Type": "application/json" } : {}), ...fetchOptions.headers }
