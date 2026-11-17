@@ -1,0 +1,325 @@
+(() => {
+	"use strict";
+
+	// Listas devem retornar arrays JSON ou { data: [] }; customerById usa :id.
+	const API_ROUTES = {
+		customers: "Cliente",
+		installments: "Aluguel",
+		customerById: "Cliente/{id}"
+	};
+	const themeToggle = document.querySelector("#theme-toggle");
+	const themeLabel = document.querySelector("#theme-label");
+	const tableBody = document.querySelector("#customer-table-body");
+	const customerCount = document.querySelector("#customer-count");
+	const filterButtons = document.querySelectorAll(".filter-button");
+	const main = document.querySelector(".main-content");
+	const statusMessage = document.createElement("p");
+
+	statusMessage.className = "api-error-message";
+	statusMessage.setAttribute("role", "alert");
+	statusMessage.hidden = true;
+	main.insertBefore(statusMessage, main.querySelector("section"));
+	const requestedFilter = new URLSearchParams(window.location.search).get("filter");
+	let activeFilter = ["pending", "overdue"].includes(requestedFilter) ? requestedFilter : "all";
+	let customers = [];
+
+	async function request(routeName, options = {}) {
+		const route = options.url || API_ROUTES[routeName];
+		if (!API_BASE_URL.trim() || !route.trim()) {
+			throw new Error(`Configure API_BASE_URL e API_ROUTES.${routeName} em clientes.js.`);
+		}
+		const { url, ...fetchOptions } = options;
+		const response = await fetchProtegido(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
+			...fetchOptions,
+			credentials: "include",
+			headers: { ...(fetchOptions.body ? { "Content-Type": "application/json" } : {}), ...fetchOptions.headers }
+		});
+		const body = response.status === 204 ? null : await response.json();
+		if (!response.ok) {
+			throw new Error(body?.message || `A API respondeu com HTTP ${response.status}.`);
+		}
+		console.log(body);
+		return body?.data ?? body;
+	}
+
+	function setTheme(isLight) {
+		document.documentElement.dataset.theme = isLight ? "light" : "dark";
+		themeToggle.checked = isLight;
+		themeToggle.setAttribute("aria-label", isLight ? "Ativar tema escuro" : "Ativar tema claro");
+		themeLabel.textContent = isLight ? "Tema claro" : "Tema escuro";
+	}
+
+	function createCell(text, className = "") {
+		const cell = document.createElement("td");
+		cell.textContent = text;
+		if (className) cell.className = className;
+		return cell;
+	}
+
+	function readList(data, routeName) {
+		if (Array.isArray(data)) return data;
+		throw new Error(`A rota API_ROUTES.${routeName} deve retornar uma lista (ou { data: lista }).`);
+	}
+
+
+	setTheme(localStorage.getItem("acessocar-theme") === "light");
+	themeToggle.addEventListener("change", () => {
+		setTheme(themeToggle.checked);
+		localStorage.setItem("acessocar-theme", themeToggle.checked ? "light" : "dark");
+	})
+})();
+const criacaoCliente = "CadastroCliente.html";
+async function loadCustomers() {
+	const resposta = await fetchProtegido('https://localhost:7240/api/Cliente');
+
+	if (!resposta.ok) {
+		throw new Error(`Erro HTTP: ${resposta.status}`);
+	}
+	console.log("Cliente recebido:", resposta);
+	console.log("CNH:", resposta.cnh);
+	customers = await resposta.json();
+
+
+
+
+	return customers;
+}
+
+let customers = loadCustomers();
+
+//Puxar o status do banco, vai ter que ter condições pro front saber as labels de acordo com o status do banco
+const statusLabels = {
+	OK: { label: "OK", className: "status-ok" },
+	LOCADO: { label: "LOCADO", className: "status-rented" },
+	PENDENTE: { label: "PENDENTE", className: "status-pending" },
+	ATRASADO: { label: "ATRASADO", className: "status-owing" }
+};
+
+const themeToggle = document.querySelector("#theme-toggle");
+const themeLabel = document.querySelector("#theme-label");
+const savedTheme = localStorage.getItem("acessocar-theme");
+const tableBody = document.querySelector("#customer-table-body");
+const customerCount = document.querySelector("#customer-count");
+const filterButtons = document.querySelectorAll(".filter-button");
+const newCustomerLink = document.querySelector("#new-customer-link");
+const requestedFilter = new URLSearchParams(window.location.search).get("filter");
+let activeFilter = ["PENDENTE", "ATRASADO"].includes(requestedFilter) ? requestedFilter : "all";
+
+function updateActiveFilterButton() {
+	filterButtons.forEach((button) => {
+		const isActive = button.dataset.filter === activeFilter;
+		button.classList.toggle("is-active", isActive);
+		button.setAttribute("aria-pressed", String(isActive));
+		button.addEventListener("click", () => {
+			activeFilter = button.dataset.filter;
+			filterButtons.forEach((filterButton) => {
+				const selected = filterButton === button;
+				filterButton.classList.toggle("is-active", selected);
+				filterButton.setAttribute("aria-pressed", String(selected));
+			});
+			renderCustomers();
+		});
+	});
+}
+
+function setTheme(isLight) {
+	document.documentElement.dataset.theme = isLight ? "light" : "dark";
+	themeToggle.checked = isLight;
+	themeToggle.setAttribute("aria-label", isLight ? "Ativar tema escuro" : "Ativar tema claro");
+	themeLabel.textContent = isLight ? "Tema claro" : "Tema escuro";
+}
+
+function createCell(text, className = "") {
+	const cell = document.createElement("td");
+	cell.textContent = text;
+	if (className) cell.className = className;
+	return cell;
+}
+const MOCK_BODY_REGIONS = {
+	clientes: {
+		1: ["left-arm", "right-leg"],
+		2: ["right-arm"],
+		3: ["left-leg", "right-leg"],
+		4: ["left-arm", "right-arm"],
+		5: ["left-arm", "left-leg"],
+		6: ["left-arm"]
+	},
+}
+
+
+async function renderCustomers() {
+	customers = await loadCustomers();
+
+	console.log("customers:", customers);
+
+	// console.log("É array?", Array.isArray(customers));
+	const visibleCustomers = customers.filter((customer) => {
+		return activeFilter === "all"
+			|| (activeFilter === "PENDENTE" && customer.hasPending)
+			|| (activeFilter === "ATRASADO" && customer.hasOverdue);
+	});
+	tableBody.replaceChildren();
+
+	if (visibleCustomers.length === 0) {
+		const row = document.createElement("tr");
+		const cell = createCell("Nenhum cliente encontrado para este filtro.", "customer-empty");
+		cell.colSpan = 6;
+		row.append(cell);
+		tableBody.append(row);
+	} else {
+		visibleCustomers.forEach((customer) => {
+			const row = document.createElement("tr");
+			const status = statusLabels[customer.estado];
+			const bodyCell = document.createElement("td");
+			const bodyRegions = customer.membros || [];
+
+
+			bodyCell.className = "customer-body-cell";
+			bodyCell.append(AccessoCarUtils.buildBodyMiniature(bodyRegions || []));
+			const fotoCell = document.createElement("td");
+
+			if (customer.cnh) {
+				const img = document.createElement("img");
+
+				img.src = `data:image/jpeg;base64,${customer.cnh}`;
+				img.alt = `CNH de ${customer.nome}`;
+				img.classList.add("cnh-thumbnail");
+
+				img.addEventListener("click", () => {
+					window.open(img.src, "_blank");
+				});
+
+				fotoCell.appendChild(img);
+			} else {
+				fotoCell.textContent = "Sem imagem";
+			}
+			row.append(
+				createCell(customer.id, "id"),
+				createCell(customer.nome, "nome"),
+				createCell(customer.cpf, "cpf"),
+				createCell(customer.telefone, "telefone"),
+				bodyCell,
+				fotoCell,
+				createCell(customer.email, "email"),
+				createCell(customer.endereco, "endereco"),
+
+
+
+
+			);
+
+			const statusCell = document.createElement("td");
+			const statusBadge = document.createElement("span");
+			statusBadge.className = `status-badge ${customer.estado}`;
+			statusBadge.textContent = status.label;
+			statusCell.append(statusBadge);
+			row.append(statusCell);
+
+			const actionsCell = document.createElement("td");
+			const deleteButton = document.createElement("button");
+			deleteButton.className = "customer-delete";
+			deleteButton.type = "button";
+			deleteButton.dataset.deleteCustomer = customer.id;
+			deleteButton.setAttribute("aria-label", `Excluir cliente ${customer.nome}`);
+			deleteButton.title = `Excluir ${customer.nome}`;
+			deleteButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6m4-6v6M5 7l1 14h12l1-14M9 7V4h6v3"></path></svg>';
+			actionsCell.append(deleteButton);
+			row.append(actionsCell);
+			tableBody.append(row);
+		});
+	}
+
+	const customerWord = visibleCustomers.length === 1 ? "cliente" : "clientes";
+	customerCount.textContent = `${visibleCustomers.length} ${customerWord}`;
+}
+
+setTheme(savedTheme === "light");
+newCustomerLink.href = criacaoCliente;
+updateActiveFilterButton();
+renderCustomers();
+renderCustomers().catch((erro) => {
+	console.error("Erro ao carregar clientes:", erro);
+});
+
+themeToggle.addEventListener("change", () => {
+	setTheme(themeToggle.checked);
+	localStorage.setItem("acessocar-theme", themeToggle.checked ? "light" : "dark");
+});
+
+function abrirEdicaoCliente() {
+	const clienteId = prompt("Digite o ID do cliente que deseja editar:");
+
+	// Verifica se o usuário cancelou ou não informou nada
+	if (clienteId === null || clienteId.trim() === "") {
+		return;
+	}
+
+	// Verifica se o ID é numérico e positivo
+	if (!/^[1-9]\d*$/.test(clienteId.trim())) {
+		alert("Informe um ID válido.");
+		return;
+	}
+
+	window.location.href = `EdiçãoCliente.html?id=${clienteId.trim()}`;
+}
+tableBody.addEventListener("click", (event) => {
+	const editButton = event.target.closest("[data-edit-customer]");
+	if (!editButton) return;
+
+	abrirEdicaoCliente();
+});
+filterButtons.forEach((button) => {
+	button.addEventListener("click", () => {
+		activeFilter = button.dataset.filter;
+		updateActiveFilterButton();
+		renderCustomers();
+	});
+	tableBody.addEventListener("click", async (event) => {
+		const deleteButton = event.target.closest("[data-delete-customer]");
+		if (!deleteButton) return;
+		const customer = customers.find((item) => item.id === deleteButton.dataset.deleteCustomer);
+		if (!customer || !window.confirm(`Deseja excluir o cliente ${customer.name}?`)) return;
+		try {
+			await request("customerById", {
+				method: "DELETE",
+				url: API_ROUTES.customerById.replace(":id", encodeURIComponent(customer.id))
+			});
+			await renderCustomers();
+		} catch (error) {
+			statusMessage.textContent = `Não foi possível excluir o cliente: ${error.message}`;
+			statusMessage.hidden = false;
+		}
+	});
+
+	tableBody.addEventListener("click", (event) => {
+		const deleteButton = event.target.closest("[data-delete-customer]");
+		if (!deleteButton) return;
+
+		const customer = customers.find((item) => item.id === deleteButton.dataset.deleteCustomer);
+		if (!customer || !window.confirm(`Deseja excluir o cliente ${customer.name}?`)) return;
+
+		const state = AccessoCarData.read();
+		const hasRentalHistory = state.rentals.some((rental) => rental.cliente_Id === customer.id)
+			|| state.installments.some((installment) => installment.cliente_Id === customer.id);
+		if (hasRentalHistory) {
+			window.alert("Este cliente possui registros financeiros ou de locação e não pode ser excluído.");
+			return;
+		}
+		state.customers = state.customers.filter((item) => item.ID !== customer.ID);
+		AccessoCarData.write(state);
+	});
+
+	const sidebar = document.querySelector("#sidebar");
+	const menuToggle = document.querySelector("#menu-toggle");
+
+	menuToggle.addEventListener("click", () => {
+		const isOpen = sidebar.classList.toggle("is-open");
+		menuToggle.setAttribute("aria-expanded", String(isOpen));
+		menuToggle.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
+	});
+
+	window.addEventListener("accessocar:data-changed", renderCustomers);
+	window.addEventListener("storage", (event) => {
+		if (event.key === "accessocar-management-v1") renderCustomers();
+	})
+});
