@@ -2,10 +2,11 @@
 	"use strict";
 
 	// A rota vehicles deve retornar um array JSON ou { data: [] }; vehicleById usa :id.
-	
+
 	const API_ROUTES = {
 		vehicles: "/api/Carro",
-		vehicleById: "/api/Carro/{id}"
+		vehicleById: "/api/Carro/{id}",
+		adaptations: "/api/Adaptacao"
 	};
 	const themeToggle = document.querySelector("#theme-toggle");
 	const themeLabel = document.querySelector("#theme-label");
@@ -20,6 +21,7 @@
 	main.insertBefore(statusMessage, main.querySelector("section"));
 	let activeFilter = "all";
 	let vehicles = [];
+	let adaptations = [];
 
 	async function request(routeName, options = {}) {
 		const route = options.url || API_ROUTES[routeName];
@@ -59,7 +61,12 @@
 				throw new Error("A rota API_ROUTES.vehicles deve retornar uma lista (ou { data: lista }).");
 			}
 			vehicles = data;
-			const visibleVehicles = vehicles.filter((vehicle) => activeFilter === "all" || vehicle.status === activeFilter);
+			const data1 = await request("adaptations");
+			if (!Array.isArray(data)) {
+				throw new Error("A rota API_ROUTES.adaptations deve retornar uma lista (ou { data: lista }).");
+			}
+			adaptations = data1;
+			const visibleVehicles = vehicles.filter((vehicle) => activeFilter === "all" || vehicle.estado === activeFilter);
 			tableBody.replaceChildren();
 			if (visibleVehicles.length === 0) {
 				const row = document.createElement("tr");
@@ -69,18 +76,41 @@
 				tableBody.append(row);
 			} else {
 				visibleVehicles.forEach((vehicle) => {
+					const vehicleAdaptations = adaptations.filter(
+						adaptation => adaptation.carro_ID === vehicle.id
+					);
+
 					const row = document.createElement("tr");
-					const bodyCell = document.createElement("td");
-					bodyCell.className = "vehicle-body-cell";
-					bodyCell.append(AccessoCarUtils.buildBodyMiniature(vehicle.bodyRegions || []));
+
 					row.append(
 						createCell(vehicle.id, "id"),
 						createCell(String(vehicle.marca + " " + vehicle.modelo), "nome_Veiculo"),
 						createCell(vehicle.placa, "placa"),
 						createCell(String(vehicle.ano_Fabricacao), "ano_Fabricacao"),
-						bodyCell,
-						createCell(Number(vehicle.valor_Diaria).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }), "valor_Diaria")
+						createCell(Number(vehicle.valor_Diaria).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }), "valor_Diaria"),
+						createCell(Number(vehicle.qtd_Alugueis)),						
+						createCell(
+							vehicleAdaptations.length > 0
+								? vehicleAdaptations.map(adaptation =>
+									`${adaptation.nome} (${adaptation.tipo})`
+								).join(", ")
+								: "Nenhuma adaptação"
+						),
+						//createCell()
 					);
+					const statusCell = document.createElement("td");
+					const statusClass = {
+						"DISPONÍVEL": "disponivel",
+						"LOCADO": "locado",
+						"EM MANUTENÇÃO": "emmanutencao"
+					};
+					const status = statusClass[vehicle.estado];
+					const badge = document.createElement("span");
+					badge.className = `status-badge ${status}`;
+					badge.textContent = vehicle.estado;
+					statusCell.append(badge);
+					row.append(statusCell);
+					tableBody.append(row);
 					const actionsCell = document.createElement("td");
 					const deleteButton = document.createElement("button");
 					deleteButton.className = "vehicle-delete";

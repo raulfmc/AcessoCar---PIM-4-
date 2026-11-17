@@ -11,6 +11,8 @@ public class FinanceiroDTO
 
     public int qtdParcelas { get; set; }
 
+    public string situacao {get; set;} = string.Empty;
+
     public decimal valorEmAberto { get; set; }
 
     public DateTime proxVencimento { get; set; }

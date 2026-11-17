@@ -7,6 +7,8 @@ public class AtualizarManutencaoDTO
 
     public DateTime Data_Prevista_Conclusao { get; set; }
 
+    public decimal Valor {get; set;}
+
     public bool Ativo {get; set;}
 
 }

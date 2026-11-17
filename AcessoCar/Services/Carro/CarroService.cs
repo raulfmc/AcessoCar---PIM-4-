@@ -4,15 +4,19 @@ using Microsoft.EntityFrameworkCore;
 using AcessoCar.Models;
 using AcessoCar.Exceptions;
 using Microsoft.Data.SqlClient;
+using AcessoCar.Services.Adaptacoes;
+using AcessoCar.Dtos.Adaptacoes;
 namespace AcessoCar.Services.Carros;
 
 public class CarroService : ICarroService
 {
 
     private readonly AppDbContext _context;
-    public CarroService(AppDbContext context)
+    private readonly IAdaptacaoService _adaptacaoService;
+    public CarroService(AppDbContext context, IAdaptacaoService adaptacaoService)
     {
         _context = context;
+        _adaptacaoService = adaptacaoService;
     }
     public async Task<IReadOnlyCollection<CarroRespostaDTO>> Listar()
     {
@@ -41,34 +45,61 @@ public class CarroService : ICarroService
         return ConverterParaResposta(Carro);
 
     }
-    async public Task<CarroRespostaDTO?> Criar(CriarCarroDTO dto)
+    async public Task<CarroRespostaDTO?> Criar(CriarCarroDTO dto,
+    CriarAdaptacaoDTO adaptacaoDTO)
     {
-        Carro carro = new Carro()
-        {
-            Marca = dto.Marca,
-            Modelo = dto.Modelo,
-            Ano_Fabricacao = dto.Ano_Fabricacao,
-            Numero = dto.Numero,
-            Versao = dto.Versao,
-            Cambio = dto.Cambio,
-            Placa = dto.Placa,
-            Cor = dto.Cor,
-            Estado = dto.Estado,
-            Valor_Diaria = dto.Valor_Diaria,
-            Ativo = true
+        await using var transaction =
+        await _context.Database.BeginTransactionAsync();
 
-        };
         try
         {
+            Carro carro = new Carro()
+            {
+                Marca = dto.Marca,
+                Modelo = dto.Modelo,
+                Ano_Fabricacao = dto.Ano_Fabricacao,
+                Numero = dto.Numero,
+                Versao = dto.Versao,
+                Cambio = dto.Cambio,
+                Placa = dto.Placa,
+                Cor = dto.Cor,
+                Estado = "DISPONÍVEL",
+                Qtd_Alugueis = 0,
+                Valor_Diaria = dto.Valor_Diaria,
+                Ativo = true
+            };
+
             _context.Carro.Add(carro);
             await _context.SaveChangesAsync();
+            adaptacaoDTO.Carro_ID = carro.ID;
+
+            var adaptacao = await _adaptacaoService.Criar(adaptacaoDTO);
+            if (adaptacao == null)
+            {
+                throw new InvalidOperationException("Não foi possível cadastrar a adaptação do veículo.");
+            }
+
+            await transaction.CommitAsync();
+
+            return ConverterParaResposta(carro);
+
         }
-        catch (DbUpdateException ex) when (ex.InnerException is SqlException sql &&
-        sql.Number == 547 && sql.Message.Contains("UQ_Placa", StringComparison.OrdinalIgnoreCase))
+        catch (DbUpdateException ex)
+            when (ex.InnerException is SqlException sql &&
+            (sql.Number == 2601 || sql.Number == 2627) &&
+            sql.Message.Contains("UQ_Placa",
+                StringComparison.OrdinalIgnoreCase))
         {
-            throw new PlacaRepetidaException("Essa placa já existe/é inválida, insira outra placa");
+            await transaction.RollbackAsync();
+
+            throw new PlacaRepetidaException(
+                "Essa placa já existe, insira outra placa.");
         }
-        return ConverterParaResposta(carro);
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task<CarroRespostaDTO?> Atualizar(int id, AtualizarCarroDTO dto)
@@ -128,6 +159,7 @@ public class CarroService : ICarroService
             Placa = carro.Placa,
             Cor = carro.Cor,
             Estado = carro.Estado,
+            Qtd_Alugueis = carro.Qtd_Alugueis,
             Valor_Diaria = carro.Valor_Diaria,
             Ativo = carro.Ativo
 

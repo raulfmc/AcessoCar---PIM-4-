@@ -10,7 +10,7 @@ public class AtualizarAdaptacaoDTO
 
     public string Tipo { get; set; } = string.Empty;
 
-    public string Descricao { get; set; } = string.Empty;
+   
     
     public bool Ativo {get; set;}
 

@@ -59,11 +59,11 @@ public class AluguelService : IAluguelService
             a.Data_Inicio < dto.Data_Fim &&
             a.Data_Fim > dto.Data_Inicio
             );
-            bool possuiDivida = await _context.Divida.AnyAsync(d =>
-            d.Ativo &&
-            d.aluguel != null &&
-            d.aluguel.Cliente_ID == dto.Cliente_ID
-            );
+            // bool possuiDivida = await _context.Divida.AnyAsync(d =>
+            // d.Ativo &&
+            // d.aluguel != null &&
+            // d.aluguel.Cliente_ID == dto.Cliente_ID
+            // );
             bool emManutencao = await _context.Manutencao.AnyAsync(m =>
             m.Ativo &&
             m.carro != null &&
@@ -83,10 +83,10 @@ public class AluguelService : IAluguelService
             {
                 throw new KeyNotFoundException($"Cliente não encontrado");
             }
-            if (possuiDivida)
-            {
-                throw new ClienteDevedorException("Cliente não pode alugar pois está em dívida");
-            }
+            // if (possuiDivida)
+            // {
+            //     throw new ClienteDevedorException("Cliente não pode alugar pois está em dívida");
+            // }
             if (emManutencao)
             {
                 throw new CarroEmManutencaoException("Carro não pode ser alugado, está em manutenção");
@@ -113,7 +113,9 @@ public class AluguelService : IAluguelService
                 cliente = cliente
             };
             _context.Aluguel.Add(Aluguel);
+            
             await _context.SaveChangesAsync();
+            await _context.Entry(carro).ReloadAsync();
             await transacao.CommitAsync();
             return ConverterParaResposta(Aluguel);
         }

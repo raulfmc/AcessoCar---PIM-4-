@@ -1,4 +1,5 @@
 
+using AcessoCar.Dtos.Adaptacoes;
 using AcessoCar.Dtos.Carros;
 using AcessoCar.Services.Carros;
 using Microsoft.AspNetCore.Authorization;
@@ -46,10 +47,10 @@ public class CarroController : ControllerBase
         return Ok(Carro);
     }
     [HttpPost]
-    public async Task<ActionResult<CarroRespostaDTO>> Criar(CriarCarroDTO dto)
+    public async Task<ActionResult<CarroRespostaDTO>> Criar(CriarCarroCompletoDTO dto)
     {
         CarroRespostaDTO? carroCriado =
-        await _CarroService.Criar(dto);
+        await _CarroService.Criar(dto.carro, dto.adaptacao);
 
         return CreatedAtAction(
         nameof(BuscarPorId),

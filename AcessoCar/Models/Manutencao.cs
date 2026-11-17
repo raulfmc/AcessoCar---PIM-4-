@@ -13,6 +13,7 @@ public class Manutencao
 
     public DateTime Data_Prevista_Conclusao { get; set; }
 
+    public decimal Valor {get; set;}
     public bool Ativo {get; set;}
 
     public int Carro_ID {get; set;}

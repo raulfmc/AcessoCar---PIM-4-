@@ -8,7 +8,6 @@
 	const prefix = isCustomer ? "CLI" : "VEI";
 	const listPage = isCustomer ? "clientes.html" : "veiculos.html";
 	const message = document.querySelector("#registration-message");
-	//const idField = document.querySelector("#registration-id");
 	const photoField = document.querySelector("#photo");
 	const photoPreview = document.querySelector("#photo-preview");
 	const themeToggle = document.querySelector("#theme-toggle");
@@ -61,7 +60,8 @@
 			Endereco: document.getElementById("Endereco").value,
 			Estado: "OK",
 			Email: document.getElementById("Email").value,
-			Ativo: true
+			Ativo: true,
+			CNH: photoData ? photoData.split(",")[1] : null
 		}
 
 
@@ -136,44 +136,44 @@
 		localStorage.setItem("acessocar-theme", themeToggle.checked ? "light" : "dark");
 	});
 
-	if (!isCustomer) {
-		photoField.addEventListener("change", async () => {
-			const file = photoField.files[0];
-			photoData = "";
-			photoPreview.classList.remove("is-visible");
-			photoPreview.removeAttribute("src");
-			if (!file) return;
+	// if (!isCustomer) {
+	// 	photoField.addEventListener("change", async () => {
+	// 		const file = photoField.files[0];
+	// 		photoData = "";
+	// 		photoPreview.classList.remove("is-visible");
+	// 		photoPreview.removeAttribute("src");
+	// 		if (!file) return;
 
-			if (!file.type.startsWith("image/")) {
-				photoField.value = "";
-				showMessage("Selecione um arquivo de imagem válido.", true);
-				return;
-			}
-			if (file.size > 1024 * 1024) {
-				photoField.value = "";
-				showMessage("A foto deve ter no máximo 1 MB para ser salva neste cadastro.", true);
-				return;
-			}
+	// 		if (!file.type.startsWith("image/")) {
+	// 			photoField.value = "";
+	// 			showMessage("Selecione um arquivo de imagem válido.", true);
+	// 			return;
+	// 		}
+	// 		if (file.size > 1024 * 1024) {
+	// 			photoField.value = "";
+	// 			showMessage("A foto deve ter no máximo 1 MB para ser salva neste cadastro.", true);
+	// 			return;
+	// 		}
 
-			try {
-				photoData = await readPhoto(file);
-				photoPreview.src = photoData;
-				photoPreview.classList.add("is-visible");
-				message.classList.remove("is-visible");
-			} catch (error) {
-				photoField.value = "";
-				showMessage(error.message, true);
-			}
-		});
-	}
+	// 		try {
+	// 			photoData = await readPhoto(file);
+	// 			photoPreview.src = photoData;
+	// 			photoPreview.classList.add("is-visible");
+	// 			message.classList.remove("is-visible");
+	// 		} catch (error) {
+	// 			photoField.value = "";
+	// 			showMessage(error.message, true);
+	// 		}
+	// 	});
+	// }
 
 	form.addEventListener("submit", async (event) => {
 		event.preventDefault();
-		if (!form.reportValidity()) return;
-		if (!isCustomer && photoField.files.length && !photoData) {
-			showMessage("Aguarde o carregamento da foto antes de salvar.", true);
-			return;
-		}
+		// if (!form.reportValidity()) return;
+		// if (!isCustomer && photoField.files.length && !photoData) {
+		// 	showMessage("Aguarde o carregamento da foto antes de salvar.", true);
+		// 	return;
+		// }
 
 		try {
 

@@ -15,13 +15,15 @@ public class Cliente
     [Phone]
     public string Telefone { get; set; }  = string.Empty;
 
+    public string Membros {get; set;} = string.Empty;
     [EmailAddress]
     public string Email { get; set; }  = string.Empty;
 
     public string Endereco { get; set; }  = string.Empty;
 
     public string Estado {get; set;} = string.Empty;
-
+    
     public bool Ativo { get; set; }
-
+    
+    public byte[]? CNH {get; set;}
 }

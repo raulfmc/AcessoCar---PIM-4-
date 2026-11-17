@@ -9,6 +9,7 @@ public class ManutencaoRespostaDTO
 
     public DateTime Data_Prevista_Conclusao { get; set; }
 
+    public decimal Valor {get; set;}
     public bool Ativo {get; set;}
 
     public Carro? carro {get; set;}

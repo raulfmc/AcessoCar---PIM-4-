@@ -27,6 +27,7 @@ public class FinanceiroService : IFinanceiroService
             clienteID = g.Key,
             clienteNome = g.First().aluguel!.cliente!.Nome,
             qtdParcelas = g.Count(),
+            situacao = g.Select(p => p.Estado).ToString(),
             valorEmAberto = g.Sum(p => p.Valor),
             proxVencimento = g.Min(p => p.Data_Vencimento)
         })

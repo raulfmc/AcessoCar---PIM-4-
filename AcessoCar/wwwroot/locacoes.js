@@ -2,14 +2,14 @@
 	"use strict";
 
 	//A API deve validar disponibilidade e gerar a locação/parcelas no POST.
-	
+
 	const API_ROUTES = {
 		clientes: "api/Cliente",
 		carros: "api/Carro",
 		alugueis: "api/Aluguel",
 		Aluguel: "api/Aluguel"
 	};
-	
+
 	const form = document.querySelector("#rental-form");
 	const newRentalSection = document.querySelector("#new-rental-section");
 	const showRentalFormButton = document.querySelector("#show-rental-form");
@@ -17,7 +17,7 @@
 	const pageMessage = document.querySelector("#page-message");
 	const customerSelect = document.querySelector("#customer-select");
 	const customerId = document.querySelector("#customer-id");
-	const customerContact = document.querySelector("#customer-contact");
+	//const customerContact = document.querySelector("#customer-contact");
 	const vehicleSelect = document.querySelector("#vehicle-select");
 	const vehiclePlate = document.querySelector("#vehicle-plate");
 	const dailyRate = document.querySelector("#daily-rate");
@@ -35,11 +35,13 @@
 	const recentCount = document.querySelector("#recent-count");
 	const currency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 	const dateFormatter = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeZone: "UTC" });
+	const filterButtons = document.querySelectorAll(".vehicle-filter-button");
 	let lastPaymentMethod = paymentMethod.value;
 	let valorTotalCalculado = 0;
 	let customers = [];
 	let vehicles = [];
 	let rentals = [];
+	let activeFilter = "all";
 
 	async function request(routeName, options = {}) {
 		const route = options.url || API_ROUTES[routeName];
@@ -49,7 +51,7 @@
 		const { url, ...fetchOptions } = options;
 		const response = await fetchProtegido(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
 			...fetchOptions,
-			
+
 			headers: { ...(fetchOptions.body ? { "Content-Type": "application/json" } : {}), ...fetchOptions.headers }
 		});
 		const text = await response.text();
@@ -119,13 +121,13 @@
 	function updateCustomerDetails() {
 		const customer = customers.find((item) => String(item.id) === customerSelect.value);
 		customerId.value = customer ? `${customer.cpf || "—"} · ${customer.id}` : "";
-		customerContact.value = customer
-			? AccessoCarUtils.normalizeBodyRegions(customer.bodyRegions || [])
-				.map((part) => AccessoCarUtils.BODY_PARTS.find((item) => item.key === part)?.label || part)
-				.join(", ")
-			: "";
-		
-		
+		// customerContact.value = customer
+		// 	? AccessoCarUtils.normalizeBodyRegions(customer.bodyRegions || [])
+		// 		.map((part) => AccessoCarUtils.BODY_PARTS.find((item) => item.key === part)?.label || part)
+		// 		.join(", ")
+		// 	: "";
+
+
 	}
 
 	function updateVehicleDetails() {
@@ -133,7 +135,7 @@
 		vehiclePlate.value = vehicle ? vehicle.placa : "";
 		dailyRate.value = vehicle ? currency.format(vehicle.valor_Diaria) : "";
 		updatePrice();
-		
+
 	}
 
 	function updatePrice() {
@@ -154,7 +156,7 @@
 		//rental.valor_Total = vehicle ? days * vehicle.valor_Diaria : "";
 
 
-		
+
 	}
 
 	function updatePaymentFields() {
@@ -169,11 +171,11 @@
 		if (!isInstallment && startDate.value) firstDueDate.value = startDate.value;
 		lastPaymentMethod = paymentMethod.value;
 	}
-const statusLabels = {
-	OK: { label: "OK", className: "OK" },
-	PENDENTE: { label: "PENDENTE", className: "PENDENTE" },
-	ATRASADO: { label: "ATRASADO", className: "ATRASADO" }
-};
+	const statusLabels = {
+		OK: { label: "OK", className: "OK" },
+		PENDENTE: { label: "PENDENTE", className: "PENDENTE" },
+		ATRASADO: { label: "ATRASADO", className: "ATRASADO" }
+	};
 	function renderRentals() {
 		const customerById = new Map(customers.map((customer) => [customer.id, customer]));
 		const vehicleById = new Map(vehicles.map((vehicle) => [vehicle.id, vehicle]));
@@ -201,14 +203,33 @@ const statusLabels = {
 					createCell(displayDate(rental.data_Fim.split("T")[0])),
 					createCell(currency.format(rental.valor_Total), "table-value"),
 					createCell(rental.parcelas),
-					//createCell(rental.estado)
+
 				);
 				const statusCell = document.createElement("td");
 				const badge = document.createElement("span");
+
 				badge.className = `status-badge ${rental.estado}`;
 				badge.textContent = status.label;
 				statusCell.append(badge);
-				row.append(statusCell);
+
+				const actionsCell = document.createElement("td");
+				const deleteButton = document.createElement("button");
+
+				deleteButton.className = "vehicle-delete";
+				deleteButton.type = "button";
+				deleteButton.dataset.deleteVehicle = rental.id;
+				deleteButton.setAttribute("aria-label", `Excluir locação ${rental.id}`);
+				deleteButton.title = `Excluir locação ${rental.id}`;
+
+				deleteButton.innerHTML = `
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 7h16M10 11v6m4-6v6M5 7l1 14h12l1-14M9 7V4h6v3"></path>
+    </svg>
+`;
+
+				actionsCell.append(deleteButton);
+				row.append(statusCell, actionsCell);
+
 				tableBody.append(row);
 			});
 		}
@@ -291,8 +312,8 @@ const statusLabels = {
 			forma_Pagamento: paymentMethod.value,
 			installments: paymentMethod.value === "Parcelado" ? Number(installmentCount.value) : 1,
 			estado: "OK",
-			firstDueDate: paymentMethod.value === "Parcelado" ? firstDueDate.value : startDate.value,
-			notes: document.querySelector("#rental-notes").value.trim()
+			data_Vencimento: paymentMethod.value === "Parcelado" ? firstDueDate.value : startDate.value,
+			//notes: document.querySelector("#rental-notes").value.trim()
 		};
 		try {
 			const rental = await request("Aluguel", { method: "POST", body: JSON.stringify(payload) });
@@ -316,7 +337,17 @@ const statusLabels = {
 		}
 	});
 
+	filterButtons.forEach((button) => button.addEventListener("click", () => {
+		activeFilter = button.dataset.filter;
+		filterButtons.forEach((filterButton) => {
+			const selected = filterButton === button;
+			filterButton.classList.toggle("is-active", selected);
+			filterButton.setAttribute("aria-pressed", String(selected));
+		});
+		renderRentals();
+	}));
 	updatePaymentFields();
 	updatePrice();
+	
 	refreshPage();
 })();

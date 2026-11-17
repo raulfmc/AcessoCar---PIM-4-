@@ -55,7 +55,6 @@ public class AdaptacaoService : IAdaptacaoService
         {
             Nome = dto.Nome,
             Tipo = dto.Tipo,
-            Descricao = dto.Descricao,
             Carro_ID = dto.Carro_ID,
             carro = carro,
             Ativo = true
@@ -79,7 +78,7 @@ public class AdaptacaoService : IAdaptacaoService
 
         adaptacao.Nome = dto.Nome;
         adaptacao.Tipo = dto.Tipo;
-        adaptacao.Descricao = dto.Descricao;
+        
         await _context.SaveChangesAsync();
         return ConverterParaResposta(adaptacao);
     }
@@ -107,7 +106,6 @@ public class AdaptacaoService : IAdaptacaoService
             ID = adaptacao.ID,
             Nome = adaptacao.Nome,
             Tipo = adaptacao.Tipo,
-            Descricao = adaptacao.Descricao,
             Carro_ID = adaptacao.Carro_ID,
             carro = adaptacao.carro,
             Ativo = adaptacao.Ativo

@@ -2,8 +2,8 @@
 	"use strict";
 
 	// POST de cliente recebe os campos do formulário e deve gerar o identificador.
-	const API_BASE_URL = "";
-	const API_ROUTES = { customers: "" };
+	
+	const API_ROUTES = { customers: "/api/Cliente" };
 	const form = document.querySelector("#registration-form");
 	const message = document.querySelector("#registration-message");
 	const photoField = document.querySelector("#photo");
@@ -15,13 +15,13 @@
 	let photoData = "";
 	let selectedBodyRegions = new Set();
 
-	async function request(routeName, payload) {
+	async function request(routeName, payload, method = "POST") {
 		const route = API_ROUTES[routeName];
 		if (!API_BASE_URL.trim() || !route.trim()) {
 			throw new Error(`Configure API_BASE_URL e API_ROUTES.${routeName} em cadastro-cliente.js.`);
 		}
 		const response = await fetch(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
-			method: "POST",
+			method: method,
 			credentials: "include",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(payload)
@@ -76,14 +76,15 @@
 
 	function createCustomerRecord() {
 		return {
-			name: formValue("name"),
-			cpf: formValue("cpf"),
-			address: formValue("address"),
-			phone: formValue("phone"),
-			email: formValue("email"),
-			cnh: formValue("cnh"),
-			bodyRegions: Array.from(selectedBodyRegions),
-			photo: photoData
+			Nome: document.getElementById("Nome").value,
+			CPF: document.getElementById("CPF").value,
+			Telefone: document.getElementById("Telefone").value,
+			Endereco: document.getElementById("Endereco").value,
+			Estado: "OK",
+			Email: document.getElementById("Email").value,
+			Ativo: true,
+			CNH: photoData ? photoData.split(",")[1] : null,
+			Membros: Array.from(selectedBodyRegions).join(",")
 		};
 	}
 
@@ -109,11 +110,11 @@
 			showMessage("Selecione um arquivo de imagem válido.", true);
 			return;
 		}
-		if (file.size > 1024 * 1024) {
-			photoField.value = "";
-			showMessage("A foto deve ter no máximo 1 MB.", true);
-			return;
-		}
+		// if (file.size > 1024 * 1024) {
+		// 	photoField.value = "";
+		// 	showMessage("A foto deve ter no máximo 1 MB.", true);
+		// 	return;
+		// }
 		try {
 			photoData = await readPhoto(file);
 			photoPreview.src = photoData;

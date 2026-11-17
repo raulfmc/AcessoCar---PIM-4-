@@ -10,16 +10,17 @@ public class AtualizarClienteDTO
     public string CPF { get; set; } = string.Empty;
     [RegularExpression(@"^\([1-9]{2}\)9[0-9]{4}-[0-9]{4}")]
     public string Telefone { get; set; }  = string.Empty;
-
+    public string Membros {get; set;} = string.Empty;
     [EmailAddress]
     public string Email { get; set; }  = string.Empty;
 
     public string Endereco { get; set; }  = string.Empty;
     public string Estado {get; set;} = string.Empty;
 
+    public byte[]? CNH {get; set;}
     public bool Ativo { get; set; }
 
-
+    
 
 }
 

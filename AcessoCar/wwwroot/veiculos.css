@@ -33,6 +33,36 @@
 :root[data-theme="light"] .vehicle-delete { border-color: rgba(180, 35, 24, 0.18); background: #fff4f2; color: #b42318; }
 :root[data-theme="light"] .vehicle-delete:hover { background: #ffe7e3; color: #9f1d14; }
 .vehicle-empty { height: 100px !important; color: var(--muted) !important; text-align: center; }
+.status-badge { display: inline-flex; min-height: 24px; align-items: center; gap: 6px; padding: 0 8px; border: 1px solid transparent; border-radius: 5px; font-size: 10px; font-weight: 750; letter-spacing: 0.35px; white-space: nowrap; }
+.status-badge::before { width: 6px; height: 6px; border-radius: 50%; background: currentColor; content: ""; }
+.disponivel { border-color: rgba(91, 214, 170, 0.2); background: rgba(91, 214, 170, 0.1); color: var(--success);} 
+.locado { border-color: rgba(242, 226, 9, 0.2); background: rgba(236, 236, 0, 0.1); color: yellow;}
+.emmanutencao { border-color: rgba(220, 47, 8, 0.2); background: rgba(229, 38, 5, 0.1); color: red;}
+.btn-edit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 8px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+
+    background: var(--surface-secondary);
+    color: var(--text-primary);
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-edit:hover {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+}
 
 @media (max-width: 900px) {
 	.vehicle-toolbar { align-items: flex-start; flex-direction: column; }

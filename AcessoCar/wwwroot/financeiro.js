@@ -6,17 +6,17 @@
 	const API_ROUTES = {
 		customers: "/api/Cliente",
 		installments: "/api/Parcela",
-		financeiro: "/api/Financeiro"
-
+		financeiro: "/api/Financeiro",
+		confirmPayment: "/api/Parcela/:id"
 	};
 	const customerTableBody = document.querySelector("#customer-table-body");
 	const installmentTableBody = document.querySelector("#installment-table-body");
 	const overview = document.querySelector("#customer-overview");
 	const detail = document.querySelector("#customer-detail");
 	const searchInput = document.querySelector("#installment-search");
-	const rentalFilter = document.querySelector("#rental-filter");
-	const periodStart = document.querySelector("#period-start");
-	const periodEnd = document.querySelector("#period-end");
+	// const rentalFilter = document.querySelector("#rental-filter");
+	// const periodStart = document.querySelector("#period-start");
+	// const periodEnd = document.querySelector("#period-end");
 	const paymentDialog = document.querySelector("#payment-dialog");
 	const confirmPaymentButton = document.querySelector("#confirm-payment-button");
 	const dialogError = document.querySelector("#dialog-error");
@@ -28,15 +28,180 @@
 	main.insertBefore(statusMessage, main.querySelector("section"));
 	const currency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 	const dateFormatter = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeZone: "UTC" });
+	const currentPage = window.location.pathname.toLowerCase();
 	const requestedStatus = new URLSearchParams(window.location.search).get("filter");
-	const activeStatus = ["ATRASADO", "PENDENTE"].includes(requestedStatus) ? requestedStatus : "PENDENTE";
+	const activeStatus = currentPage.includes("atrasado")
+		? "ATRASADO"
+		: currentPage.includes("pendente")
+			? "PENDENTE"
+			: ["ATRASADO", "PENDENTE"].includes(requestedStatus)
+				? requestedStatus
+				: "PENDENTE";
 	let selectedCustomerId = null;
 	let selectedInstallmentId = null;
 	let customers = [];
 	let installments = [];
 	let finanças = [];
+	const USE_MOCK = false;
+
+	let mockCustomers = [
+		{
+			id: 1,
+			nome: "João da Silva",
+			cpf: "123.456.789-00"
+		},
+		{
+			id: 2,
+			nome: "Maria Oliveira",
+			cpf: "987.654.321-00"
+		},
+		{
+			id: 3,
+			nome: "Carlos Souza",
+			cpf: "456.789.123-00"
+		}
+	];
+
+	let mockInstallments = [
+		// JOÃO
+		// JOÃO
+		{
+			id: 1,
+			cliente_ID: 1,
+			aluguel_Id: 10,
+			number: 1,
+			valor: 450.00,
+			estado: "PENDENTE",
+			data_Vencimento: "2026-11-20",
+			data_Confirmacao: null
+		},
+		{
+			id: 2,
+			cliente_ID: 1,
+			aluguel_Id: 10,
+			number: 2,
+			valor: 450.00,
+			estado: "ATRASADO",
+			data_Vencimento: "2026-10-20",
+			data_Confirmacao: null
+		},
+
+		// MARIA
+		{
+			id: 3,
+			cliente_ID: 2,
+			aluguel_Id: 11,
+			number: 1,
+			valor: 600.00,
+			estado: "PENDENTE",
+			data_Vencimento: "2026-11-25",
+			data_Confirmacao: null
+		},
+		{
+			id: 4,
+			cliente_ID: 2,
+			aluguel_Id: 11,
+			number: 2,
+			valor: 600.00,
+			estado: "PENDENTE",
+			data_Vencimento: "2026-12-25",
+			data_Confirmacao: null
+		},
+
+		// CARLOS
+		{
+			id: 5,
+			cliente_ID: 3,
+			aluguel_Id: 12,
+			number: 1,
+			valor: 350.00,
+			estado: "ATRASADO",
+			data_Vencimento: "2026-10-15",
+			data_Confirmacao: null
+		},
+		{
+			id: 6,
+			cliente_ID: 3,
+			aluguel_Id: 12,
+			number: 2,
+			valor: 350.00,
+			estado: "OK",
+			data_Vencimento: "2026-09-15",
+			data_Confirmacao: "2026-09-14"
+		}
+	];
+	function getMockFinance() {
+
+		return mockCustomers.map(customer => {
+
+			const customerInstallments = mockInstallments.filter(item =>
+				Number(item.cliente_ID) === Number(customer.id) &&
+				(activeStatus === "ATRASADO"
+					? item.estado === "ATRASADO"
+					: item.estado !== "OK")
+			);
+
+			if (customerInstallments.length === 0) return null;
+
+			const nextDue = [...customerInstallments]
+				.sort((a, b) =>
+					a.data_Vencimento.localeCompare(b.data_Vencimento)
+				)[0];
+
+			return {
+				clienteID: customer.id,
+				clienteNome: customer.nome,
+				qtdParcelas: customerInstallments.length,
+				valorEmAberto: customerInstallments.reduce(
+					(total, item) => total + item.valor, 0
+				),
+				proxVencimento: nextDue.data_Vencimento
+			};
+
+		}).filter(Boolean);
+	}
 
 	async function request(routeName, options = {}) {
+		if (USE_MOCK) {
+
+			if (routeName === "customers") {
+				return [...mockCustomers];
+			}
+
+			if (routeName === "installments") {
+				return [...mockInstallments];
+			}
+
+			if (routeName === "financeiro") {
+				return getMockFinance();
+			}
+
+			if (routeName === "confirmPayment") {
+
+				const installmentId = Number(
+					(options.url || "").split("/").pop()
+				);
+
+				const installment = mockInstallments.find(
+					item => Number(item.id) === installmentId
+				);
+
+				if (!installment) {
+					throw new Error("Parcela não encontrada.");
+				}
+
+				if (installment.estado === "OK") {
+					throw new Error("Esta parcela já foi confirmada.");
+				}
+
+				const payload = JSON.parse(options.body);
+
+				installment.estado = payload.status;
+				installment.data_Confirmacao = payload.paidAt;
+
+				return installment;
+			}
+		}
 		const route = options.url || API_ROUTES[routeName];
 		if (!API_BASE_URL.trim() || !route.trim()) {
 			throw new Error(`Configure API_BASE_URL e API_ROUTES.${routeName} em financeiro.js.`);
@@ -60,7 +225,7 @@
 			request("financeiro")
 
 		]);
-		if (!Array.isArray(customerData) || !Array.isArray(installmentData || !Array.isArray(fin))) {
+		if (!Array.isArray(customerData) || !Array.isArray(installmentData || !Array.isArray(financeData))) {
 			throw new Error("As rotas de clientes e parcelas devem retornar listas (ou { data: lista }).");
 		}
 		customers = customerData;
@@ -93,20 +258,26 @@
 	function getFilters() {
 		return {
 			search: searchInput.value.trim().toLocaleLowerCase("pt-BR"),
-			aluguel_ID: rentalFilter.value.trim().toLocaleLowerCase("pt-BR"),
-			data_Inicio: periodStart.value,
-			data_Fim: periodEnd.value
+			// aluguel_ID: rentalFilter.value.trim().toLocaleLowerCase("pt-BR"),
+			// data_Inicio: periodStart.value,
+			// data_Fim: periodEnd.value
 		};
 	}
 
 	function installmentsForCustomer(customerId) {
 		const filters = getFilters();
+
 		return installments.filter((item) =>
-			item.id === customerId
-			&& (activeStatus === "PENDENTE" ? item.estado !== "OK" : item.estado === activeStatus)
-			&& (!filters.aluguel_ID || String(item.aluguel_Id).toLocaleLowerCase("pt-BR").includes(filters.aluguel_ID))
-			&& (!filters.data_Inicio || item.data_Vencimento >= filters.data_Inicio)
-			&& (!filters.data_Fim || item.data_Vencimento <= filters.data_Fim)
+			Number(item.cliente_ID) === Number(customerId)
+			&& (activeStatus === "PENDENTE"
+				? item.estado !== "OK"
+				: item.estado === activeStatus)
+			// && (!filters.aluguel_ID ||
+			// 	String(item.aluguel_Id).toLowerCase().includes(filters.aluguel_ID))
+			// && (!filters.data_Inicio ||
+			// 	item.data_Vencimento >= filters.data_Inicio)
+			// && (!filters.data_Fim ||
+			// 	item.data_Vencimento <= filters.data_Fim)
 		);
 	}
 
@@ -123,11 +294,11 @@
             ${customer?.cpf || ""}
         `.toLocaleLowerCase("pt-BR");
 
-			return (!filters.search || searchable.includes(filters.search))
-				&& (!filters.startDate ||
-					finance.proxVencimento >= filters.startDate)
-				&& (!filters.endDate ||
-					finance.proxVencimento <= filters.endDate);
+			return (!filters.search || searchable.includes(filters.search));
+				// && (!filters.data_Inicio ||
+				// 	finance.proxVencimento >= filters.data_Fim)
+				// && (!filters.endDate ||
+				// 	finance.proxVencimento <= filters.data_Fim);
 		});
 	}
 
@@ -136,7 +307,7 @@
 		customerTableBody.replaceChildren();
 		if (rows.length === 0) {
 			const row = document.createElement("tr");
-			const cell = createCell(activeStatus === "ATRASADO" || "PENDENTE"
+			const cell = createCell(activeStatus === "ATRASADO" || activeStatus === "PENDENTE"
 				? "Nenhuma pessoa possui parcelas vencidas com estes filtros."
 				: "Nenhuma pessoa possui parcelas pendentes com estes filtros.", "empty-cell");
 			cell.colSpan = 7;
@@ -171,7 +342,7 @@
 				badge.className = `status-badge ${customerStatus}`;
 
 				badge.textContent = customerStatus === "ATRASADO"
-					? "PENDENTE / ATRASADO"
+					? "ATRASADO"
 					: "PENDENTE";
 				row.children[5].append(badge);
 				const actionCell = document.createElement("td");
@@ -213,20 +384,20 @@
 			const row = document.createElement("tr");
 			row.append(
 				createCell(installment.id, "table-id"),
-				//createCell(installment.rentalId, "table-id"),
-				//createCell(`${installment.number}ª`, "table-number"),
+				createCell(installment.aluguel_ID, "table-id"),
+				createCell(`${installment.number}ª`, "table-number"),
 				createCell(currency.format(installment.valor), "table-value"),
 				createCell(displayDate(installment.data_Vencimento)),
 				createCell("", "status-cell"),
-				createCell(displayDate(installment.data_Confirmacao)),
-				createCell(installment.notes || "—", "table-note")
+				
 			);
 			const badge = document.createElement("span");
-			badge.className = `status-badge status-${installment.estado}`;
-			badge.textContent = installment.estado === "ATRASADO" ? "DEVENDO / VENCIDO" : "PENDENTE";
+			badge.className = `status-badge ${installment.estado}`;
+			badge.textContent = installment.estado === "ATRASADO" ? "ATRASADO" : "PENDENTE";
 			row.children[5].append(badge);
 			const actionCell = document.createElement("td");
 			const button = document.createElement("button");
+
 			button.className = "confirm-button";
 			button.type = "button";
 			button.dataset.confirmInstallment = installment.id;
@@ -278,14 +449,29 @@
 	}
 
 	function openConfirmation(installmentId) {
-		const installment = installments.find((item) => item.id === installmentId);
-		const customer = installment && customers.find((item) => item.id === installment.id);
+		const installment = installments.find(
+			item => Number(item.id) === Number(installmentId)
+		);
+
+		const customer = installment && customers.find(
+			item => Number(item.id) === Number(installment.cliente_ID)
+		);
+
 		if (!installment || !customer || installment.estado === "OK") return;
+
 		selectedInstallmentId = installment.id;
-		document.querySelector("#dialog-customer").textContent = `${customer.nome} · ${customer.id}`;
-		//document.querySelector("#dialog-installment").textContent = `${installment.id} · ${installment.number}ª parcela da locação ${installment.id}`;
-		document.querySelector("#dialog-amount").textContent = currency.format(installment.valor);
+
+		document.querySelector("#dialog-customer").textContent =
+			`${customer.nome} · ${customer.id}`;
+
+		document.querySelector("#dialog-installment").textContent =
+			`${installment.id} · Locação ${installment.aluguel_Id}`;
+
+		document.querySelector("#dialog-amount").textContent =
+			currency.format(installment.valor);
+
 		dialogError.textContent = "";
+
 		paymentDialog.showModal();
 	}
 
@@ -301,7 +487,7 @@
 		menuToggle.setAttribute("aria-expanded", String(isOpen));
 		menuToggle.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
 	});
-	[searchInput, rentalFilter, periodStart, periodEnd].forEach((control) => {
+	[searchInput].forEach((control) => {//, rentalFilter, periodStart, periodEnd]
 		control.addEventListener("input", render);
 		control.addEventListener("change", render);
 	});

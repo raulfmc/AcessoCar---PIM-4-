@@ -68,7 +68,7 @@ public class ManutencaoService : IManutencaoService
         
         manutencao.Descricao_Problema = dto.Descricao_Problema;
         manutencao.Data_Prevista_Conclusao = dto.Data_Prevista_Conclusao;
-       
+        manutencao.Valor = dto.Valor;
         
         _context.Manutencao.Update(manutencao);
         await _context.SaveChangesAsync();
@@ -97,7 +97,8 @@ public class ManutencaoService : IManutencaoService
         {
             ID = manutencao.ID,
             Descricao_Problema = manutencao.Descricao_Problema,
-            Data_Prevista_Conclusao = manutencao.Data_Prevista_Conclusao,        
+            Data_Prevista_Conclusao = manutencao.Data_Prevista_Conclusao, 
+            //Valor = manutencao.Valor,       
             carro = manutencao.carro,
             Ativo = manutencao.Ativo
            

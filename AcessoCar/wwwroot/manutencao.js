@@ -2,12 +2,12 @@
 	"use strict";
 
 	// Listas retornam arrays; releaseMaintenance usa :id do registro de manutenção.
-	
+
 	const API_ROUTES = {
 		vehicles: "/api/Carro",
 		maintenance: "/api/Manutencao",
 		createMaintenance: "/api/Manutencao",
-		releaseMaintenance: "/api/Manutencao"
+		releaseMaintenance: "/api/Manutencao/:id"
 	};
 	const themeToggle = document.querySelector("#theme-toggle");
 	const themeLabel = document.querySelector("#theme-label");
@@ -24,21 +24,168 @@
 	const currency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 	let vehicles = [];
 	let maintenanceRecords = [];
+	const USE_MOCK = true;
 
+	let mockVehicles = [
+		{
+			id: 1,
+			name: "Fiat Argo 1.0",
+			plate: "ABC-1234",
+			estado: "Disponível"
+		},
+		{
+			id: 2,
+			name: "Chevrolet Onix LT",
+			plate: "DEF-5678",
+			estado: "Em Manutenção"
+		},
+		{
+			id: 3,
+			name: "Volkswagen Polo",
+			plate: "GHI-9012",
+			estado: "Disponível"
+		},
+		{
+			id: 4,
+			name: "Hyundai HB20",
+			plate: "JKL-3456",
+			estado: "Em Manutenção"
+		},
+		{
+			id: 5,
+			name: "Renault Kwid",
+			plate: "MNO-7890",
+			estado: "Disponível"
+		}
+	];
+
+	let mockMaintenanceRecords = [
+		{
+			id: 1,
+			Carro_ID: 2,
+			Ativo: 1,
+			report: "Problema no sistema de freios.",
+			cost: 450.00,
+			date: "2026-11-10"
+		},
+		{
+			id: 2,
+			Carro_ID: 4,
+			Ativo: 1,
+			report: "Troca de óleo e revisão do motor.",
+			cost: 280.00,
+			date: "2026-11-11"
+		}
+	];
 	async function request(routeName, options = {}) {
+		// MOCK ATIVADO
+		if (USE_MOCK) {
+
+			const method = options.method || "GET";
+
+			// LISTAR VEÍCULOS
+			if (routeName === "vehicles") {
+				return [...mockVehicles];
+			}
+
+			// LISTAR MANUTENÇÕES
+			if (routeName === "maintenance" && method === "GET") {
+				return [...mockMaintenanceRecords];
+			}
+
+			// CADASTRAR MANUTENÇÃO
+			if (routeName === "createMaintenance" && method === "POST") {
+
+				const payload = JSON.parse(options.body);
+
+				const vehicle = mockVehicles.find(
+					v => v.id === Number(payload.vehicleId)
+				);
+
+				if (!vehicle) {
+					throw new Error("Veículo não encontrado.");
+				}
+
+				if (vehicle.estado !== "Disponível") {
+					throw new Error("Este veículo não está disponível.");
+				}
+
+				const newRecord = {
+					id: mockMaintenanceRecords.length
+						? Math.max(...mockMaintenanceRecords.map(r => r.id)) + 1
+						: 1,
+
+					Carro_ID: vehicle.id,
+					Ativo: 1,
+					report: payload.report,
+					cost: payload.cost,
+					date: payload.date
+				};
+
+				mockMaintenanceRecords.push(newRecord);
+
+				vehicle.estado = "Em Manutenção";
+
+				return newRecord;
+			}
+
+			// LIBERAR VEÍCULO
+			if (routeName === "releaseMaintenance" && method === "PATCH") {
+
+				const route = options.url || "";
+				const maintenanceId = Number(route.split("/").pop());
+
+				const record = mockMaintenanceRecords.find(
+					r => r.id === maintenanceId && r.Ativo === 1
+				);
+
+				if (!record) {
+					throw new Error("Registro de manutenção não encontrado.");
+				}
+
+				record.Ativo = 0;
+
+				const vehicle = mockVehicles.find(
+					v => v.id === record.Carro_ID
+				);
+
+				if (vehicle) {
+					vehicle.estado = "Disponível";
+				}
+
+				return record;
+			}
+
+			throw new Error("Operação não encontrada no mock.");
+		}
+
+		// API REAL
 		const route = options.url || API_ROUTES[routeName];
+
 		if (!API_BASE_URL.trim() || !route.trim()) {
 			throw new Error(`Configure API_BASE_URL e API_ROUTES.${routeName} em manutencao.js.`);
 		}
+
 		const { url, ...fetchOptions } = options;
-		const response = await fetchProtegido(`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`, {
-			...fetchOptions,
-			
-			headers: { ...(fetchOptions.body ? { "Content-Type": "application/json" } : {}), ...fetchOptions.headers }
-		});
+
+		const response = await fetchProtegido(
+			`${API_BASE_URL.replace(/\/+$/, "")}/${route.replace(/^\/+/, "")}`,
+			{
+				...fetchOptions,
+				headers: {
+					...(fetchOptions.body ? { "Content-Type": "application/json" } : {}),
+					...fetchOptions.headers
+				}
+			}
+		);
+
 		const text = await response.text();
 		const body = text ? JSON.parse(text) : null;
-		if (!response.ok) throw new Error(body?.message || `A API respondeu com HTTP ${response.status}.`);
+
+		if (!response.ok) {
+			throw new Error(body?.detail || body?.message || body?.mensagem || body?.title || `A API respondeu com HTTP ${response.status}.`);
+		}
+
 		return body?.data ?? body;
 	}
 
@@ -91,7 +238,11 @@
 	}
 
 	function activeRecordForVehicle(vehicleId) {
-		return maintenanceRecords.find((record) => record.Carro_ID === vehicleId && record.Ativo === 1);
+		return maintenanceRecords.find(
+			record =>
+				Number(record.Carro_ID) === Number(vehicleId) &&
+				(record.Ativo === 1 || record.Ativo === true)
+		);
 	}
 
 	function renderVehicleOptions() {

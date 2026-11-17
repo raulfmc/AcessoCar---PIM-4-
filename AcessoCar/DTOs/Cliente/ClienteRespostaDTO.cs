@@ -10,6 +10,7 @@ public class ClienteRespostaDTO
     [RegularExpression(@"^\([1-9]{2}\)9[0-9]{4}-[0-9]{4}")]
     public string Telefone { get; set; }  = string.Empty;
 
+    public string Membros {get; set;} = string.Empty;
     [EmailAddress]
     public string Email { get; set; }  = string.Empty;
 
@@ -17,8 +18,9 @@ public class ClienteRespostaDTO
 
     public string Estado {get; set;} = string.Empty;
 
-
     public bool Ativo { get; set; }
+
+    public byte[]? CNH { get; set; }
 
 
 }

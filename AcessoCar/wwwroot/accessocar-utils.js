@@ -62,7 +62,7 @@
 		shapes.forEach(([key, tagName, attributes]) => {
 			const element = document.createElementNS("http://www.w3.org/2000/svg", tagName);
 			element.classList.add("body-mini-part", `part-${key}`);
-			element.setAttribute("fill", selected.has(key) ? "#5bd6aa" : "#c9ccd5");
+			element.style.fill = selected.has(key) ? "#5bd6aa" : "#c9ccd5"; //element.setAttribute("fill", selected.has(key) ? "#5bd6aa" : "#c9ccd5");
 			Object.entries(attributes).forEach(([name, value]) => element.setAttribute(name, value));
 			svg.append(element);
 		});

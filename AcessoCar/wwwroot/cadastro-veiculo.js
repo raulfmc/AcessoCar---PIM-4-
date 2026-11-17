@@ -2,18 +2,20 @@
 	"use strict";
 
 	// POST de veículo recebe os campos do formulário e deve gerar o identificador.
-	const API_BASE_URL = "";
-	const API_ROUTES = { vehicles: "" };
+	const API_ROUTES = {
+		vehicles: "/api/Carro",
+		adaptations: "/api/Adaptacao"
+	};
 	const form = document.querySelector("#registration-form");
 	const message = document.querySelector("#registration-message");
-	const photoField = document.querySelector("#photo");
-	const photoPreview = document.querySelector("#photo-preview");
+	// const photoField = document.querySelector("#photo");
+	// const photoPreview = document.querySelector("#photo-preview");
 	const themeToggle = document.querySelector("#theme-toggle");
 	const themeLabel = document.querySelector("#theme-label");
-	const bodyRegionSelector = document.querySelector(".body-selector");
-	const bodyRegionsInput = document.querySelector("#body-regions");
-	let photoData = "";
-	let selectedBodyRegions = new Set();
+	// const bodyRegionSelector = document.querySelector(".body-selector");
+	// const bodyRegionsInput = document.querySelector("#body-regions");
+	// let photoData = "";
+	// let selectedBodyRegions = new Set();
 
 	async function request(routeName, payload) {
 		const route = API_ROUTES[routeName];
@@ -48,91 +50,115 @@
 		return form.elements.namedItem(name).value.trim();
 	}
 
-	function syncBodySelectionUI() {
-		bodyRegionSelector.querySelectorAll(".body-region, .body-region-option").forEach((region) => {
-			const selected = selectedBodyRegions.has(region.dataset.bodyPart);
-			region.classList.toggle("is-selected", selected);
-			region.setAttribute("aria-pressed", String(selected));
-		});
-		bodyRegionsInput.value = Array.from(selectedBodyRegions).join(",");
-	}
+	// function syncBodySelectionUI() {
+	// 	bodyRegionSelector.querySelectorAll(".body-region, .body-region-option").forEach((region) => {
+	// 		const selected = selectedBodyRegions.has(region.dataset.bodyPart);
+	// 		region.classList.toggle("is-selected", selected);
+	// 		region.setAttribute("aria-pressed", String(selected));
+	// 	});
+	// 	bodyRegionsInput.value = Array.from(selectedBodyRegions).join(",");
+	// }
 
-	function toggleBodyRegion(region) {
-		const part = region.dataset.bodyPart;
-		if (!part) return;
-		if (selectedBodyRegions.has(part)) selectedBodyRegions.delete(part);
-		else selectedBodyRegions.add(part);
-		syncBodySelectionUI();
-	}
+	// function toggleBodyRegion(region) {
+	// 	const part = region.dataset.bodyPart;
+	// 	if (!part) return;
+	// 	if (selectedBodyRegions.has(part)) selectedBodyRegions.delete(part);
+	// 	else selectedBodyRegions.add(part);
+	// 	syncBodySelectionUI();
+	// }
 
-	function readPhoto(file) {
-		return new Promise((resolve, reject) => {
-			const reader = new FileReader();
-			reader.addEventListener("load", () => resolve(reader.result));
-			reader.addEventListener("error", () => reject(new Error("Não foi possível carregar a foto selecionada.")));
-			reader.readAsDataURL(file);
-		});
-	}
+	// function readPhoto(file) {
+	// 	return new Promise((resolve, reject) => {
+	// 		const reader = new FileReader();
+	// 		reader.addEventListener("load", () => resolve(reader.result));
+	// 		reader.addEventListener("error", () => reject(new Error("Não foi possível carregar a foto selecionada.")));
+	// 		reader.readAsDataURL(file);
+	// 	});
+	// }
 
-	function createVehicleRecord() {
-		const brand = formValue("brand");
-		const model = formValue("model");
-		const version = formValue("version");
-		return {
-			brand,
-			model,
-			name: [brand, model, version].filter(Boolean).join(" "),
-			year: formValue("year"),
-			number: formValue("number"),
-			version,
-			transmission: formValue("transmission"),
-			plate: formValue("plate").toUpperCase(),
-			color: formValue("color"),
-			dailyRate: Number(formValue("dailyRate")),
-			mainFeature: formValue("mainFeature"),
-			category: formValue("mainFeature") || "Não informada",
-			bodyRegions: Array.from(selectedBodyRegions),
-			photo: photoData
+	async function createVehicleRecord() {
+		const dados = {
+			carro: {
+				Marca: document.getElementById("Marca").value,
+				Modelo: document.getElementById("Modelo").value,
+				Ano_Fabricacao: parseInt(document.getElementById("Ano_Fabricacao").value),
+				Numero: parseInt(document.getElementById("Numero").value),
+				Versao: document.getElementById("Versao").value,
+				Cambio: document.getElementById("Cambio").value,
+				Placa: document.getElementById("Placa").value,
+				Cor: document.getElementById("Cor").value,
+				Valor_Diaria: parseFloat(document.getElementById("Valor_Diaria").value)
+			},
+
+			adaptacao: {
+				Nome: document.getElementById("Nome").value,
+				Tipo: document.getElementById("Tipo").value,
+				Ativo: true
+			}
 		};
+
+		const vehicle = await request("vehicles", dados);
+
+		return vehicle;
+		// const brand = formValue("brand");
+		// const model = formValue("model");
+		// const version = formValue("version");
+		// return {
+		// 	Marca: document.getElementById("Marca").value,
+		// 	Modelo: document.getElementById("Modelo").value,
+		// 	Ano_Fabricacao: parseInt(document.getElementById("Ano_Fabricacao").value),
+		// 	Numero: parseInt(document.getElementById("Numero").value),
+		// 	Versao: document.getElementById("Versao").value,
+		// 	Cambio: document.getElementById("Cambio").value,
+		// 	Placa: document.getElementById("Placa").value,
+		// 	Cor: document.getElementById("Cor").value,
+		// 	Estado: "DISPONÍVEL",
+		// 	Valor_Diaria: parseFloat(document.getElementById("Valor_Diaria").value),
+		// 	Ativo: true,
+		// 	Nome: document.getElementById("Nome").value,
+		// 	Tipo: document.getElementById("Tipo").value
+		// 	// bodyRegions: Array.from(selectedBodyRegions),
+		// 	// photo: photoData
+		// };
 	}
 
-	bodyRegionSelector.addEventListener("click", (event) => {
-		const region = event.target.closest(".body-region, .body-region-option");
-		if (region) toggleBodyRegion(region);
-	});
-	bodyRegionSelector.addEventListener("keydown", (event) => {
-		const region = event.target.closest(".body-region");
-		if (region && (event.key === "Enter" || event.key === " ")) {
-			event.preventDefault();
-			toggleBodyRegion(region);
-		}
-	});
-	photoField.addEventListener("change", async () => {
-		const file = photoField.files[0];
-		photoData = "";
-		photoPreview.classList.remove("is-visible");
-		photoPreview.removeAttribute("src");
-		if (!file) return;
-		if (!file.type.startsWith("image/")) {
-			photoField.value = "";
-			showMessage("Selecione um arquivo de imagem válido.", true);
-			return;
-		}
-		if (file.size > 1024 * 1024) {
-			photoField.value = "";
-			showMessage("A foto deve ter no máximo 1 MB.", true);
-			return;
-		}
-		try {
-			photoData = await readPhoto(file);
-			photoPreview.src = photoData;
-			photoPreview.classList.add("is-visible");
-			message.classList.remove("is-visible");
-		} catch (error) {
-			photoField.value = "";
-			showMessage(error.message, true);
-		}
-	});
+	// bodyRegionSelector.addEventListener("click", (event) => {
+	// 	const region = event.target.closest(".body-region, .body-region-option");
+	// 	if (region) toggleBodyRegion(region);
+	// });
+	// bodyRegionSelector.addEventListener("keydown", (event) => {
+	// 	const region = event.target.closest(".body-region");
+	// 	if (region && (event.key === "Enter" || event.key === " ")) {
+	// 		event.preventDefault();
+	// 		toggleBodyRegion(region);
+	// 	}
+	// });
+	// photoField.addEventListener("change", async () => {
+	// 	const file = photoField.files[0];
+	// 	photoData = "";
+	// 	photoPreview.classList.remove("is-visible");
+	// 	photoPreview.removeAttribute("src");
+	// 	if (!file) return;
+	// 	if (!file.type.startsWith("image/")) {
+	// 		photoField.value = "";
+	// 		showMessage("Selecione um arquivo de imagem válido.", true);
+	// 		return;
+	// 	}
+	// 	if (file.size > 1024 * 1024) {
+	// 		photoField.value = "";
+	// 		showMessage("A foto deve ter no máximo 1 MB.", true);
+	// 		return;
+	// 	}
+	// 	try {
+	// 		photoData = await readPhoto(file);
+	// 		photoPreview.src = photoData;
+	// 		photoPreview.classList.add("is-visible");
+	// 		message.classList.remove("is-visible");
+	// 	} catch (error) {
+	// 		photoField.value = "";
+	// 		showMessage(error.message, true);
+	// 	}
+	// });
 
 	setTheme(localStorage.getItem("acessocar-theme") === "light");
 	themeToggle.addEventListener("change", () => {
@@ -141,24 +167,24 @@
 	});
 	form.addEventListener("submit", async (event) => {
 		event.preventDefault();
-		if (!form.reportValidity()) return;
-		if (photoField.files.length && !photoData) {
-			showMessage("Aguarde o carregamento da foto antes de salvar.", true);
-			return;
-		}
-		if (selectedBodyRegions.size === 0) {
-			showMessage("Selecione pelo menos um membro funcional do veículo.", true);
-			return;
-		}
+		// if (!form.reportValidity()) return;
+		// if (photoField.files.length && !photoData) {
+		// 	showMessage("Aguarde o carregamento da foto antes de salvar.", true);
+		// 	return;
+		// }
+		// if (selectedBodyRegions.size === 0) {
+		// 	showMessage("Selecione pelo menos um membro funcional do veículo.", true);
+		// 	return;
+		// }
 		try {
-			const vehicle = await request("vehicles", createVehicleRecord());
+			const vehicle = await createVehicleRecord();
 			showMessage(`Veículo ${vehicle?.id || ""} cadastrado com sucesso.`.trim());
 			form.reset();
-			selectedBodyRegions.clear();
-			syncBodySelectionUI();
-			photoData = "";
-			photoPreview.classList.remove("is-visible");
-			photoPreview.removeAttribute("src");
+			// selectedBodyRegions.clear();
+			// syncBodySelectionUI();
+			// photoData = "";
+			// photoPreview.classList.remove("is-visible");
+			// photoPreview.removeAttribute("src");
 		} catch (error) {
 			showMessage(`Não foi possível cadastrar o veículo: ${error.message}`, true);
 		}

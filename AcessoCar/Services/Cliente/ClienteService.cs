@@ -46,10 +46,14 @@ public class ClienteService : IClienteService
             Nome = dto.Nome,
             CPF = dto.CPF,
             Telefone = dto.Telefone,
+            Membros = dto.Membros,
             Email = dto.Email,
             Endereco = dto.Endereco,
             Estado = "OK",
-            Ativo = true
+            Ativo = true,
+            CNH = string.IsNullOrEmpty(dto.CNH)
+            ? null
+            : Convert.FromBase64String(dto.CNH)
             
         };
         try{
@@ -81,8 +85,10 @@ public class ClienteService : IClienteService
         cliente.Nome = dto.Nome;
         cliente.CPF = dto.CPF;
         cliente.Telefone = dto.Telefone;
+        cliente.Membros = dto.Membros;
         cliente.Email = dto.Email;
         cliente.Endereco = dto.Endereco;
+        cliente.CNH = dto.CNH;
         cliente.Ativo = dto.Ativo;
         
         
@@ -116,10 +122,14 @@ public class ClienteService : IClienteService
             Nome = cliente.Nome,
             CPF = cliente.CPF,
             Telefone = cliente.Telefone,
+            Membros = cliente.Membros,
             Email = cliente.Email,
             Endereco = cliente.Endereco,
             Estado = cliente.Estado,
-            Ativo = cliente.Ativo
+            Ativo = cliente.Ativo,
+            CNH = cliente.CNH
+          
+            
 
             
         };

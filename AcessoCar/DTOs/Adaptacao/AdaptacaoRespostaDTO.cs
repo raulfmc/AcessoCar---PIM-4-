@@ -10,7 +10,7 @@ public class AdaptacaoRespostaDTO
 
     public string Tipo { get; set; } = string.Empty;
 
-    public string Descricao { get; set; } = string.Empty;
+
 
     public int Carro_ID {get; set;}
     
