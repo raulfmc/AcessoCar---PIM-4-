@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using AcessoCar.Data;
 using AcessoCar.Services.Carros;
 using AcessoCar.Services.Clientes;
+
 using AcessoCar.Services.Manutencoes;
 using AcessoCar.Services.Alugueis;
 using AcessoCar.Exceptions.Handlers;
@@ -32,6 +33,7 @@ builder.Services.AddScoped<IAdaptacaoService, AdaptacaoService>();
 builder.Services.AddScoped<IAluguelService, AluguelService>();
 builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<ICarroService, CarroService>();
+
 builder.Services.AddScoped<IManutencaoService, ManutencaoService>();
 builder.Services.AddScoped<IParcelaService, ParcelaService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
