@@ -19,5 +19,5 @@ public class Adaptacao
     [ForeignKey("Carro_ID")]
     public Carro? carro { get; set; }
 
-
+ 
 }

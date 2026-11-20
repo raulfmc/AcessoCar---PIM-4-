@@ -88,7 +88,7 @@
 						createCell(vehicle.placa, "placa"),
 						createCell(String(vehicle.ano_Fabricacao), "ano_Fabricacao"),
 						createCell(Number(vehicle.valor_Diaria).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }), "valor_Diaria"),
-						createCell(Number(vehicle.qtd_Alugueis)),						
+						createCell(Number(vehicle.qtd_Alugueis)),
 						createCell(
 							vehicleAdaptations.length > 0
 								? vehicleAdaptations.map(adaptation =>
@@ -130,7 +130,23 @@
 			statusMessage.hidden = false;
 		}
 	}
+	function abrirEdicaoVeiculo() {
+		const carroId = prompt("Digite o ID do veículo que deseja editar:");
 
+		if (carroId === null || carroId.trim() === "") {
+			return;
+		}
+
+		if (!/^[1-9]\d*$/.test(carroId.trim())) {
+			alert("Informe um ID válido.");
+			return;
+		}
+
+		window.location.href = `EdicaoVeiculo.html?id=${carroId.trim()}`;
+	}
+	document.querySelector(".btn-edit").addEventListener("click", () => {
+		abrirEdicaoVeiculo();
+	});
 	setTheme(localStorage.getItem("acessocar-theme") === "light");
 	themeToggle.addEventListener("change", () => {
 		setTheme(themeToggle.checked);

@@ -47,22 +47,22 @@ public class CarroController : ControllerBase
         return Ok(Carro);
     }
     [HttpPost]
-    public async Task<ActionResult<CarroRespostaDTO>> Criar(CriarCarroCompletoDTO dto)
+    public async Task<ActionResult<CarroCompletoRespostaDTO>> Criar(CriarCarroCompletoDTO dto)
     {
-        CarroRespostaDTO? carroCriado =
-        await _CarroService.Criar(dto.carro, dto.adaptacao);
+        CarroCompletoRespostaDTO? carroCriado =
+        await _CarroService.Criar(dto);
 
         return CreatedAtAction(
         nameof(BuscarPorId),
-        new {id = carroCriado!.ID },
+        new {id = carroCriado!.Carro.ID },
         carroCriado);
 
     }
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<CarroRespostaDTO>> Atualizar(int id, AtualizarCarroDTO dto)
+    public async Task<ActionResult<CarroCompletoRespostaDTO>> Atualizar(int id, AtualizarCarroCompletoDTO dto)
     {
-        CarroRespostaDTO? carroAtualizado =
+        CarroCompletoRespostaDTO? carroAtualizado =
         await _CarroService.Atualizar(id, dto);
 
         if (carroAtualizado == null)

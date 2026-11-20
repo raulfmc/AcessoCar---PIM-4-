@@ -78,14 +78,14 @@ public class AdaptacaoService : IAdaptacaoService
 
         adaptacao.Nome = dto.Nome;
         adaptacao.Tipo = dto.Tipo;
-        
+
         await _context.SaveChangesAsync();
         return ConverterParaResposta(adaptacao);
     }
     public async Task<AdaptacaoRespostaDTO?> Excluir(int id)
     {
         Adaptacao? adaptacao = await _context.Adaptacao
-        .Include(Adaptacao => Adaptacao.carro)
+        // .Include(Adaptacao => Adaptacao.carro)
         .FirstOrDefaultAsync(Adaptacao => Adaptacao.ID == id);
 
         if (adaptacao is null)

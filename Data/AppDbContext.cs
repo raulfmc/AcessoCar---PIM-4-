@@ -20,6 +20,10 @@ public class AppDbContext : DbContext
             .HasPrecision(16, 2);
         modelBuilder.Entity<Aluguel>()
             .ToTable("Aluguel", tb => tb.HasTrigger("AtualizarQtdAlugueis"));
+            
+       
+
+        
     }
     public DbSet<Carro> Carro { get; set; }
     public DbSet<Cliente> Cliente { get; set; }
@@ -27,6 +31,7 @@ public class AppDbContext : DbContext
     public DbSet<Aluguel> Aluguel { get; set; }
     public DbSet<Adaptacao> Adaptacao { get; set; }
     public DbSet<Parcela> Parcela { get; set; }
+    
 }
 
 

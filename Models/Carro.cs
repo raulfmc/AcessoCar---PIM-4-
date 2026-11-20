@@ -20,7 +20,7 @@ public class Carro
     public string Versao { get; set; } = string.Empty;
 
     public int Numero { get; set; }
-     
+
     public string Cambio { get; set; } = string.Empty;
 
     [RegularExpression("^[A-Z]{3}-?[0-9][A-Z0-9][0-9]{2}$")] //garantir unicidade depois (no controller)

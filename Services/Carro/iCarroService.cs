@@ -7,8 +7,8 @@ public interface ICarroService
 {
     Task<IReadOnlyCollection<CarroRespostaDTO>> Listar();
     Task<CarroRespostaDTO?> BuscarPorId(int ID);
-    Task<CarroRespostaDTO?> Criar(CriarCarroDTO dto, CriarAdaptacaoDTO adaptacaoDTO);
-    Task<CarroRespostaDTO?> Atualizar(int id, AtualizarCarroDTO dto);
+    Task<CarroCompletoRespostaDTO?> Criar(CriarCarroCompletoDTO dto);
+    Task<CarroCompletoRespostaDTO?> Atualizar(int id, AtualizarCarroCompletoDTO dto);
     Task<CarroRespostaDTO?> Excluir(int id);
     
 }

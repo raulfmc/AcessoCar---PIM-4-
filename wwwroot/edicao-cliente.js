@@ -87,22 +87,8 @@ function configuracaoEdicaoCliente(cliente_Id) {
 		})
 	};
 };
-// function abrirEdicaoCliente() {
-// 	const clienteId = prompt("Digite o ID do cliente que deseja editar:");
 
-// 	// Verifica se o usuário cancelou ou não informou nada
-// 	if (clienteId === null || clienteId.trim() === "") {
-// 		return;
-// 	}
 
-// 	// Verifica se o ID é numérico e positivo
-// 	if (!/^[1-9]\d*$/.test(clienteId.trim())) {
-// 		alert("Informe um ID válido.");
-// 		return;
-// 	}
-
-// 	window.location.href = `EdiçãoCliente.html?id=${clienteId.trim()}`;
-// }
 async function iniciarEdicaoCliente() {
 	const parametros = new URLSearchParams(window.location.search);
 	const clienteId = parametros.get("id");
@@ -114,6 +100,17 @@ async function iniciarEdicaoCliente() {
 		console.error("Elementos do seletor corporal não encontrados.");
 		return;
 	}
+	bodyRegionSelector.addEventListener("click", (event) => {
+		const region = event.target.closest(
+			".body-region, .body-region-option"
+		);
+
+		if (!region || !bodyRegionSelector.contains(region)) {
+			return;
+		}
+
+		toggleBodyRegion(region);
+	});
 	if (!clienteId) {
 		alert("ID do cliente não informado.");
 		return;
@@ -139,10 +136,5 @@ async function iniciarEdicaoCliente() {
 		showMessage("Não foi possível carregar os dados do cliente.", true);
 	}
 }
-// tableBody.addEventListener("click", (event) => {
-// 	const editButton = event.target.closest("[data-edit-customer]");
-// 	if (!editButton) return;
 
-// 	abrirEdicaoCliente();
-// });
 document.addEventListener("DOMContentLoaded", iniciarEdicaoCliente);

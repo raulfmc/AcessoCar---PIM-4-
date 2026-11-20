@@ -249,12 +249,10 @@ themeToggle.addEventListener("change", () => {
 function abrirEdicaoCliente() {
 	const clienteId = prompt("Digite o ID do cliente que deseja editar:");
 
-	// Verifica se o usuário cancelou ou não informou nada
 	if (clienteId === null || clienteId.trim() === "") {
 		return;
 	}
-
-	// Verifica se o ID é numérico e positivo
+	
 	if (!/^[1-9]\d*$/.test(clienteId.trim())) {
 		alert("Informe um ID válido.");
 		return;

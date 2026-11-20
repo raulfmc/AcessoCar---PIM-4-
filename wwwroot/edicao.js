@@ -4,21 +4,24 @@ async function editarRegistro(config) {
         endpoint,
         formulario,
         mapearDados,
-        montarPayload
+        buscarDados
     } = config;
 
     try {
-        // Busca os dados atuais
+        let dados;
 
-        const response = await fetch(`${endpoint}/${id}`);
+        if (buscarDados) {
+            dados = await buscarDados(id);
+        } else {
+            const response = await fetch(`${endpoint}/${id}`);
 
-        if (!response.ok) {
-            throw new Error("Não foi possível buscar o registro.");
+            if (!response.ok) {
+                throw new Error("Não foi possível buscar o registro.");
+            }
+
+            dados = await response.json();
         }
 
-        const dados = await response.json();
-
-        // Preenche os campos do formulário
         const dadosFormulario = mapearDados(dados);
 
         Object.entries(dadosFormulario).forEach(([campo, valor]) => {
@@ -32,7 +35,6 @@ async function editarRegistro(config) {
             }
         });
 
-        // Retorna os dados para uso posterior
         return dados;
 
     } catch (error) {
@@ -51,7 +53,9 @@ async function salvarEdicao(config) {
 
     try {
         const payload = montarPayload(formulario);
-
+        console.log("ID enviado:", id);
+        console.log("URL:", `${endpoint}/${id}`);
+        console.log("PAYLOAD:", payload);
         const response = await fetch(`${endpoint}/${id}`, {
             method: "PUT",
             headers: {
