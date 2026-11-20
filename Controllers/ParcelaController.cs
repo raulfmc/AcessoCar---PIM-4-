@@ -52,7 +52,7 @@ public class ParcelaController : ControllerBase
 
         return CreatedAtAction(
         nameof(BuscarPorId),
-        new {id = ParcelaCriada!.ID },
+        new { id = ParcelaCriada!.ID },
         ParcelaCriada);
 
     }
@@ -75,13 +75,20 @@ public class ParcelaController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Excluir(int id)
     {
-        ParcelaRespostaDTO? ParcelaExcluida = 
+        ParcelaRespostaDTO? ParcelaExcluida =
         await _ParcelaService.Excluir(id);
 
         if (ParcelaExcluida == null)
         {
-            return NotFound(new {mensagem = "Manutenção não encontrada"});
+            return NotFound(new { mensagem = "Manutenção não encontrada" });
         }
+
+        return NoContent();
+    }
+    [HttpPatch("{id:int}/confirmar-pagamento")]
+    public async Task<IActionResult> ConfirmarPagamento(int id)
+    {
+        await _ParcelaService.ConfirmarPagamento(id);
 
         return NoContent();
     }

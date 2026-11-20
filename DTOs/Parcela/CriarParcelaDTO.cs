@@ -8,7 +8,7 @@ public class CriarParcelaDTO
 
     public DateTime Data_Vencimento {get; set;}
 
-    public DateTime Data_Confirmacao {get; set;}
+    public DateTime? Data_Confirmacao {get; set;}
 
     public string Estado {get; set;} = string.Empty; 
 

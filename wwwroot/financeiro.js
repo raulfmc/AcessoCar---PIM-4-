@@ -7,7 +7,7 @@
 		customers: "/api/Cliente",
 		installments: "/api/Parcela",
 		financeiro: "/api/Financeiro",
-		confirmPayment: "/api/Parcela/:id"
+		confirmPayment: "/api/Parcela/:id/confirmar-pagamento"
 	};
 	const customerTableBody = document.querySelector("#customer-table-body");
 	const installmentTableBody = document.querySelector("#installment-table-body");
@@ -44,122 +44,122 @@
 	let finanças = [];
 	const USE_MOCK = false;
 
-	let mockCustomers = [
-		{
-			id: 1,
-			nome: "João da Silva",
-			cpf: "123.456.789-00"
-		},
-		{
-			id: 2,
-			nome: "Maria Oliveira",
-			cpf: "987.654.321-00"
-		},
-		{
-			id: 3,
-			nome: "Carlos Souza",
-			cpf: "456.789.123-00"
-		}
-	];
+	// let mockCustomers = [
+	// 	{
+	// 		id: 1,
+	// 		nome: "João da Silva",
+	// 		cpf: "123.456.789-00"
+	// 	},
+	// 	{
+	// 		id: 2,
+	// 		nome: "Maria Oliveira",
+	// 		cpf: "987.654.321-00"
+	// 	},
+	// 	{
+	// 		id: 3,
+	// 		nome: "Carlos Souza",
+	// 		cpf: "456.789.123-00"
+	// 	}
+	// ];
 
-	let mockInstallments = [
-		// JOÃO
-		// JOÃO
-		{
-			id: 1,
-			cliente_ID: 1,
-			aluguel_Id: 10,
-			number: 1,
-			valor: 450.00,
-			estado: "PENDENTE",
-			data_Vencimento: "2026-11-20",
-			data_Confirmacao: null
-		},
-		{
-			id: 2,
-			cliente_ID: 1,
-			aluguel_Id: 10,
-			number: 2,
-			valor: 450.00,
-			estado: "ATRASADO",
-			data_Vencimento: "2026-10-20",
-			data_Confirmacao: null
-		},
+	// let mockInstallments = [
+	// 	// JOÃO
+	// 	// JOÃO
+	// 	{
+	// 		id: 1,
+	// 		cliente_ID: 1,
+	// 		aluguel_Id: 10,
+	// 		number: 1,
+	// 		valor: 450.00,
+	// 		estado: "PENDENTE",
+	// 		data_Vencimento: "2026-11-20",
+	// 		data_Confirmacao: null
+	// 	},
+	// 	{
+	// 		id: 2,
+	// 		cliente_ID: 1,
+	// 		aluguel_Id: 10,
+	// 		number: 2,
+	// 		valor: 450.00,
+	// 		estado: "ATRASADO",
+	// 		data_Vencimento: "2026-10-20",
+	// 		data_Confirmacao: null
+	// 	},
 
-		// MARIA
-		{
-			id: 3,
-			cliente_ID: 2,
-			aluguel_Id: 11,
-			number: 1,
-			valor: 600.00,
-			estado: "PENDENTE",
-			data_Vencimento: "2026-11-25",
-			data_Confirmacao: null
-		},
-		{
-			id: 4,
-			cliente_ID: 2,
-			aluguel_Id: 11,
-			number: 2,
-			valor: 600.00,
-			estado: "PENDENTE",
-			data_Vencimento: "2026-12-25",
-			data_Confirmacao: null
-		},
+	// 	// MARIA
+	// 	{
+	// 		id: 3,
+	// 		cliente_ID: 2,
+	// 		aluguel_Id: 11,
+	// 		number: 1,
+	// 		valor: 600.00,
+	// 		estado: "PENDENTE",
+	// 		data_Vencimento: "2026-11-25",
+	// 		data_Confirmacao: null
+	// 	},
+	// 	{
+	// 		id: 4,
+	// 		cliente_ID: 2,
+	// 		aluguel_Id: 11,
+	// 		number: 2,
+	// 		valor: 600.00,
+	// 		estado: "PENDENTE",
+	// 		data_Vencimento: "2026-12-25",
+	// 		data_Confirmacao: null
+	// 	},
 
-		// CARLOS
-		{
-			id: 5,
-			cliente_ID: 3,
-			aluguel_Id: 12,
-			number: 1,
-			valor: 350.00,
-			estado: "ATRASADO",
-			data_Vencimento: "2026-10-15",
-			data_Confirmacao: null
-		},
-		{
-			id: 6,
-			cliente_ID: 3,
-			aluguel_Id: 12,
-			number: 2,
-			valor: 350.00,
-			estado: "OK",
-			data_Vencimento: "2026-09-15",
-			data_Confirmacao: "2026-09-14"
-		}
-	];
-	function getMockFinance() {
+	// 	// CARLOS
+	// 	{
+	// 		id: 5,
+	// 		cliente_ID: 3,
+	// 		aluguel_Id: 12,
+	// 		number: 1,
+	// 		valor: 350.00,
+	// 		estado: "ATRASADO",
+	// 		data_Vencimento: "2026-10-15",
+	// 		data_Confirmacao: null
+	// 	},
+	// 	{
+	// 		id: 6,
+	// 		cliente_ID: 3,
+	// 		aluguel_Id: 12,
+	// 		number: 2,
+	// 		valor: 350.00,
+	// 		estado: "OK",
+	// 		data_Vencimento: "2026-09-15",
+	// 		data_Confirmacao: "2026-09-14"
+	// 	}
+	// ];
+	// function getMockFinance() {
 
-		return mockCustomers.map(customer => {
+	// 	return mockCustomers.map(customer => {
 
-			const customerInstallments = mockInstallments.filter(item =>
-				Number(item.cliente_ID) === Number(customer.id) &&
-				(activeStatus === "ATRASADO"
-					? item.estado === "ATRASADO"
-					: item.estado !== "OK")
-			);
+	// 		const customerInstallments = mockInstallments.filter(item =>
+	// 			Number(item.cliente_ID) === Number(customer.id) &&
+	// 			(activeStatus === "ATRASADO"
+	// 				? item.estado === "ATRASADO"
+	// 				: item.estado !== "OK")
+	// 		);
 
-			if (customerInstallments.length === 0) return null;
+	// 		if (customerInstallments.length === 0) return null;
 
-			const nextDue = [...customerInstallments]
-				.sort((a, b) =>
-					a.data_Vencimento.localeCompare(b.data_Vencimento)
-				)[0];
+	// 		const nextDue = [...customerInstallments]
+	// 			.sort((a, b) =>
+	// 				a.data_Vencimento.localeCompare(b.data_Vencimento)
+	// 			)[0];
 
-			return {
-				clienteID: customer.id,
-				clienteNome: customer.nome,
-				qtdParcelas: customerInstallments.length,
-				valorEmAberto: customerInstallments.reduce(
-					(total, item) => total + item.valor, 0
-				),
-				proxVencimento: nextDue.data_Vencimento
-			};
+	// 		return {
+	// 			clienteID: customer.id,
+	// 			clienteNome: customer.nome,
+	// 			qtdParcelas: customerInstallments.length,
+	// 			valorEmAberto: customerInstallments.reduce(
+	// 				(total, item) => total + item.valor, 0
+	// 			),
+	// 			proxVencimento: nextDue.data_Vencimento
+	// 		};
 
-		}).filter(Boolean);
-	}
+	// 	}).filter(Boolean);
+	// }
 
 	async function request(routeName, options = {}) {
 		if (USE_MOCK) {
@@ -225,6 +225,8 @@
 			request("financeiro")
 
 		]);
+		// console.log("Parcelas recebidas:", installmentData);
+		// console.log("Primeira parcela:", installmentData[0]);
 		if (!Array.isArray(customerData) || !Array.isArray(installmentData || !Array.isArray(financeData))) {
 			throw new Error("As rotas de clientes e parcelas devem retornar listas (ou { data: lista }).");
 		}
@@ -263,22 +265,69 @@
 			// data_Fim: periodEnd.value
 		};
 	}
+	function getInstallmentCustomerId(installment) {
+		return installment.aluguel?.cliente_ID;
+	}
+	function getInstallmentStatus(installment) {
+		// Parcela já paga
+		if (installment.estado === "OK") {
+			return "OK";
+		}
 
+		// Obtém a data atual no horário local
+		const hoje = new Date();
+		const ano = hoje.getFullYear();
+		const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+		const dia = String(hoje.getDate()).padStart(2, "0");
+
+		const dataAtual = `${ano}-${mes}-${dia}`;
+
+		// Compara somente as datas, sem considerar horários
+		const vencimento = String(installment.data_Vencimento).slice(0, 10);
+		// console.log({
+		// 	id: installment.id,
+		// 	estadoAPI: installment.estado,
+		// 	vencimentoAPI: installment.data_Vencimento,
+		// 	vencimentoComparado: vencimento,
+		// 	hoje: hoje.toLocaleDateString("pt-BR")
+		// });
+		return vencimento < dataAtual ? "ATRASADO" : "PENDENTE";
+	}
+	function getCustomerStatus(customerId) {
+		const customerInstallments = installments.filter(
+			item => Number(getInstallmentCustomerId(item)) === Number(customerId)
+		);
+
+		const unpaidInstallments = customerInstallments.filter(
+			item => item.estado !== "OK"
+		);
+
+		const hasOverdue = unpaidInstallments.some(
+			item => getInstallmentStatus(item) === "ATRASADO"
+		);
+
+		return hasOverdue ? "ATRASADO" :
+			unpaidInstallments.length > 0 ? "PENDENTE" : "OK";
+	}
 	function installmentsForCustomer(customerId) {
 		const filters = getFilters();
-
 		return installments.filter((item) =>
-			Number(item.cliente_ID) === Number(customerId)
-			&& (activeStatus === "PENDENTE"
-				? item.estado !== "OK"
-				: item.estado === activeStatus)
-			// && (!filters.aluguel_ID ||
-			// 	String(item.aluguel_Id).toLowerCase().includes(filters.aluguel_ID))
-			// && (!filters.data_Inicio ||
-			// 	item.data_Vencimento >= filters.data_Inicio)
-			// && (!filters.data_Fim ||
-			// 	item.data_Vencimento <= filters.data_Fim)
+			Number(getInstallmentCustomerId(item)) === Number(customerId)
+			&& getInstallmentStatus(item) === activeStatus
 		);
+		// return installments.filter((item) =>
+		// 	Number(item.cliente_ID) === Number(customerId)
+		// 	&& (activeStatus === "PENDENTE"
+		// 		? item.estado !== "OK"
+		// 		: item.estado === activeStatus
+		// 		&& getInstallmentStatus(item) === activeStatus)
+		// && (!filters.aluguel_ID ||
+		// 	String(item.aluguel_Id).toLowerCase().includes(filters.aluguel_ID))
+		// && (!filters.data_Inicio ||
+		// 	item.data_Vencimento >= filters.data_Inicio)
+		// && (!filters.data_Fim ||
+		// 	item.data_Vencimento <= filters.data_Fim)
+		// );
 	}
 
 	function getCustomerRows() {
@@ -293,12 +342,15 @@
             ${finance.clienteID}
             ${customer?.cpf || ""}
         `.toLocaleLowerCase("pt-BR");
-
-			return (!filters.search || searchable.includes(filters.search));
-				// && (!filters.data_Inicio ||
-				// 	finance.proxVencimento >= filters.data_Fim)
-				// && (!filters.endDate ||
-				// 	finance.proxVencimento <= filters.data_Fim);
+			return (
+				(!filters.search || searchable.includes(filters.search)) &&
+				getCustomerStatus(finance.clienteID) === activeStatus
+			);
+			// return (!filters.search || searchable.includes(filters.search));
+			// && (!filters.data_Inicio ||
+			// 	finance.proxVencimento >= filters.data_Fim)
+			// && (!filters.endDate ||
+			// 	finance.proxVencimento <= filters.data_Fim);
 		});
 	}
 
@@ -331,14 +383,16 @@
 					createCell(displayDate(finance.proxVencimento)),
 					createCell("", "status-cell")
 				);
-				const customerInstallments = installments.filter(
-					(item) => Number(item.cliente_ID) === Number(finance.clienteID));
-				const hasOverdue = customerInstallments.some((item) => item.estado === "ATRASADO");
+				// const customerInstallments = installments.filter(
+				// 	(item) => Number(item.cliente_ID) === Number(finance.clienteID));
+				// const hasOverdue = customerInstallments.some((item) => item.estado === "ATRASADO");
+				// const badge = document.createElement("span");
+				// const customerStatus = activeStatus === "PENDENTE" && hasOverdue
+				// 	? "ATRASADO"
+				// 	: activeStatus;
 				const badge = document.createElement("span");
-				const customerStatus = activeStatus === "PENDENTE" && hasOverdue
-					? "ATRASADO"
-					: activeStatus;
 
+				const customerStatus = getCustomerStatus(finance.clienteID);
 				badge.className = `status-badge ${customerStatus}`;
 
 				badge.textContent = customerStatus === "ATRASADO"
@@ -358,7 +412,35 @@
 		}
 		document.querySelector("#installment-count").textContent = `${rows.length} ${rows.length === 1 ? "pessoa" : "pessoas"}`;
 	}
+	async function confirmarPagamento(installmentId) {
+		const route = API_ROUTES.confirmPayment.replace(":id", installmentId);
 
+
+		const dataConfirmacao = new Date().toISOString();
+
+		try {
+			const response = await fetch(`${API_BASE_URL}${route}`, {
+				method: "PATCH",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					data_Confirmacao: dataConfirmacao
+				})
+			});
+
+			if (!response.ok) {
+				throw new Error("Erro ao confirmar pagamento.");
+			}
+
+			await loadData();
+			render();
+
+		} catch (error) {
+			console.error(error);
+			alert("Não foi possível confirmar o pagamento.");
+		}
+	}
 	function renderCustomerDetail() {
 		if (!selectedCustomerId) return;
 		const customer = customers.find((item) => Number(item.id) === Number(selectedCustomerId));
@@ -385,16 +467,20 @@
 			row.append(
 				createCell(installment.id, "table-id"),
 				createCell(installment.aluguel_ID, "table-id"),
-				createCell(`${installment.number}ª`, "table-number"),
 				createCell(currency.format(installment.valor), "table-value"),
 				createCell(displayDate(installment.data_Vencimento)),
 				createCell("", "status-cell"),
-				
+
 			);
 			const badge = document.createElement("span");
-			badge.className = `status-badge ${installment.estado}`;
-			badge.textContent = installment.estado === "ATRASADO" ? "ATRASADO" : "PENDENTE";
-			row.children[5].append(badge);
+			const installmentStatus = getInstallmentStatus(installment);
+
+			badge.className = `status-badge ${installmentStatus}`;
+
+			badge.textContent = installmentStatus;
+			// badge.className = `status-badge ${installment.estado}`;
+			// badge.textContent = installment.estado === "ATRASADO" ? "ATRASADO" : "PENDENTE";
+			row.children[4].append(badge);
 			const actionCell = document.createElement("td");
 			const button = document.createElement("button");
 
@@ -402,6 +488,9 @@
 			button.type = "button";
 			button.dataset.confirmInstallment = installment.id;
 			button.textContent = "Confirmar pagamento";
+			button.addEventListener("click", async () => {
+				await confirmarPagamento(installment.id);
+			});
 			actionCell.append(button);
 			row.append(actionCell);
 			installmentTableBody.append(row);
@@ -411,14 +500,30 @@
 	async function render() {
 		statusMessage.hidden = true;
 		try {
+
 			await loadData();
 			console.log("Finanças:", finanças);
 			renderCustomerList();
 			renderCustomerDetail();
-			const unpaid = installments.filter((item) => item.estado !== "OK");
-			const overdue = unpaid.filter((item) => item.estado === "ATRASADO");
-			document.querySelector("#pending-summary").textContent = String(unpaid.filter((item) => item.estado === "PENDENTE").length);
-			document.querySelector("#overdue-summary").textContent = String(overdue.length);
+			// const unpaid = installments.filter((item) => item.estado !== "OK");
+			// const overdue = unpaid.filter((item) => item.estado === "ATRASADO");
+			// document.querySelector("#pending-summary").textContent = String(unpaid.filter((item) => item.estado === "PENDENTE").length);
+			// document.querySelector("#overdue-summary").textContent = String(overdue.length);
+			const unpaid = installments.filter(item => item.estado !== "OK");
+
+			const pending = unpaid.filter(
+				item => getInstallmentStatus(item) === "PENDENTE"
+			);
+
+			const overdue = unpaid.filter(
+				item => getInstallmentStatus(item) === "ATRASADO"
+			);
+
+			document.querySelector("#pending-summary").textContent =
+				String(pending.length);
+
+			document.querySelector("#overdue-summary").textContent =
+				String(overdue.length);
 			document.querySelector("#receivable-summary").textContent = currency.format(unpaid.reduce((total, item) => total + item.valor, 0));
 		} catch (error) {
 			console.error("Erro completo:", error);
@@ -496,26 +601,7 @@
 		if (button) openCustomerDetail(button.dataset.viewCustomer);
 	});
 	document.querySelector("#back-to-customers").addEventListener("click", closeCustomerDetail);
-	installmentTableBody.addEventListener("click", (event) => {
-		const button = event.target.closest("[data-confirm-installment]");
-		if (button) openConfirmation(button.dataset.confirmInstallment);
-	});
-	confirmPaymentButton.addEventListener("click", async () => {
-		if (!selectedInstallmentId) return;
-		try {
-			const route = API_ROUTES.confirmPayment.replace(":id", encodeURIComponent(selectedInstallmentId));
-			await request("confirmPayment", {
-				url: route,
-				method: "PATCH",
-				body: JSON.stringify({ status: "OK", paidAt: new Date().toISOString().slice(0, 10) })
-			});
-			selectedInstallmentId = null;
-			paymentDialog.close();
-			await render();
-		} catch (error) {
-			dialogError.textContent = `Não foi possível confirmar o pagamento: ${error.message}`;
-		}
-	});
+
 
 	document.querySelector("#installments-title").textContent = activeStatus === "ATRASADO"
 		? "Pessoas com pagamentos em atraso"

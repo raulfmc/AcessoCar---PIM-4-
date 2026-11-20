@@ -263,7 +263,6 @@ C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\lyij
 C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\z02n0kfls9-{0}-xf7h463yop-xf7h463yop.gz
 C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\hrm2erxnum-{0}-4xq0qr0k4g-4xq0qr0k4g.gz
 C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\mw1g4bii2o-{0}-1oco2bd4h3-1oco2bd4h3.gz
-C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\2sfn9ks6ju-{0}-3snnkyhxp4-3snnkyhxp4.gz
 C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\s8feezzs0w-{0}-jx2rd1ohkn-jx2rd1ohkn.gz
 C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\dk1gkp0sow-{0}-10e0insve0-10e0insve0.gz
 C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\3scbv4hr3v-{0}-o7z2m274ll-o7z2m274ll.gz
@@ -273,7 +272,6 @@ C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\9m88
 C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\9rcl8cthv4-{0}-tmb6r1oz1k-tmb6r1oz1k.gz
 C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\kmh2t3focf-{0}-w4mavac3v9-w4mavac3v9.gz
 C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\k2pzn4v8g7-{0}-bgydxvajxg-bgydxvajxg.gz
-C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\pwx9t0gg70-{0}-uymvf3e640-uymvf3e640.gz
 C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\60wfc0evrx-{0}-h9ufkzaghy-h9ufkzaghy.gz
 C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\twxintoij0-{0}-5fupp8e7qz-5fupp8e7qz.gz
 C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\7qm9uvkb0i-{0}-89oksdufe9-89oksdufe9.gz
@@ -284,3 +282,6 @@ C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\3jpu
 C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\fts7bpw5e1-{0}-8345e3mxpl-8345e3mxpl.gz
 C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\0kfzqawjn5-{0}-9buzlh3nr0-9buzlh3nr0.gz
 C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\g6ahqisptv-{0}-a8gje0bsz9-a8gje0bsz9.gz
+C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\t5n569oky6-{0}-d9nk44kpkf-d9nk44kpkf.gz
+C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\2sfn9ks6ju-{0}-79cozde8zm-79cozde8zm.gz
+C:\Users\muril\Desktop\Estudos\PIM 4\AcessoCar\obj\Debug\net10.0\compressed\pwx9t0gg70-{0}-o1977okb24-o1977okb24.gz

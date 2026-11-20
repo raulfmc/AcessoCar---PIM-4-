@@ -57,10 +57,11 @@ public class DashboardService : IDashboardService
                 .CountAsync(c => c.Ativo && c.Estado == "Manutenção"),
 
 
-
+                    
             pagamentoMensal = _context.Parcela
-            .Where(p => p.Estado == "OK")
-            .GroupBy(p => p.Data_Confirmacao.Month)
+            .Where(p => p.Estado == "OK" &&
+                p.Data_Confirmacao.HasValue)
+            .GroupBy(p => p.Data_Confirmacao.Value.Month)
             .Select(g => new
             {
                 Mes = g.Key,

@@ -17,13 +17,15 @@ public class AluguelService : IAluguelService
     }
     public async Task<IReadOnlyCollection<AluguelRespostaDTO>> Listar()
     {
-        var Adaptacoes = await _context.Aluguel
+        var alugueis = await _context.Aluguel
         .Include(Aluguel => Aluguel.carro)
         .Include(Aluguel => Aluguel.cliente)
+        // .Include(Aluguel => Aluguel.Parcelas)
+        .Include(Aluguel => Aluguel.ParcelasDetalhes)
         .Where(Aluguel => Aluguel.Ativo == true)
         .ToListAsync();
 
-        return Adaptacoes
+        return alugueis
         .Select(ConverterParaResposta)
         .ToList();
 
@@ -35,6 +37,7 @@ public class AluguelService : IAluguelService
         Aluguel? aluguel = await _context.Aluguel
         .Include(aluguel => aluguel.carro)
         .Include(aluguel => aluguel.cliente)
+        .Include(aluguel => aluguel.ParcelasDetalhes)
         .FirstOrDefaultAsync(aluguel => aluguel.ID == ID);
 
         if (aluguel == null || aluguel.Ativo == false)
@@ -59,17 +62,11 @@ public class AluguelService : IAluguelService
             a.Data_Inicio < dto.Data_Fim &&
             a.Data_Fim > dto.Data_Inicio
             );
-            // bool possuiDivida = await _context.Divida.AnyAsync(d =>
-            // d.Ativo &&
-            // d.aluguel != null &&
-            // d.aluguel.Cliente_ID == dto.Cliente_ID
-            // );
+
             bool emManutencao = await _context.Manutencao.AnyAsync(m =>
             m.Ativo &&
             m.carro != null &&
             m.Carro_ID == dto.Carro_ID);
-
-
             Carro? carro = await _context.Carro
             .FirstOrDefaultAsync(c => dto.Carro_ID == c.ID);
             if (carro == null)
@@ -78,15 +75,10 @@ public class AluguelService : IAluguelService
             }
             Cliente? cliente = await _context.Cliente
             .FirstOrDefaultAsync(c => dto.Cliente_ID == c.ID);
-
             if (cliente == null)
             {
                 throw new KeyNotFoundException($"Cliente não encontrado");
             }
-            // if (possuiDivida)
-            // {
-            //     throw new ClienteDevedorException("Cliente não pode alugar pois está em dívida");
-            // }
             if (emManutencao)
             {
                 throw new CarroEmManutencaoException("Carro não pode ser alugado, está em manutenção");
@@ -113,7 +105,7 @@ public class AluguelService : IAluguelService
                 cliente = cliente
             };
             _context.Aluguel.Add(Aluguel);
-            
+
             await _context.SaveChangesAsync();
             await _context.Entry(carro).ReloadAsync();
             await transacao.CommitAsync();
@@ -129,6 +121,7 @@ public class AluguelService : IAluguelService
     public async Task<AluguelRespostaDTO?> Atualizar(int id, AtualizarAluguelDTO dto)
     {
         Aluguel? aluguel = await _context.Aluguel
+        .Include(aluguel => aluguel.ParcelasDetalhes)
         .FirstOrDefaultAsync(Aluguel => Aluguel.ID == id);
 
         if (aluguel == null)
@@ -146,6 +139,7 @@ public class AluguelService : IAluguelService
     {
         Aluguel? aluguel = await _context.Aluguel
         .Include(Aluguel => Aluguel.carro)
+        .Include(Aluguel => Aluguel.ParcelasDetalhes)
         .FirstOrDefaultAsync(Aluguel => Aluguel.ID == id);
 
         if (aluguel is null)
@@ -161,6 +155,18 @@ public class AluguelService : IAluguelService
         Aluguel aluguel
     )
     {
+        Console.WriteLine($"Aluguel ID: {aluguel.ID}");
+        Console.WriteLine($"Quantidade de parcelas: {aluguel.ParcelasDetalhes?.Count}");
+
+        foreach (var parcela in aluguel.ParcelasDetalhes ?? new List<Parcela>())
+        {
+            Console.WriteLine(
+                $"Parcela: {parcela.ID} | " +
+                $"Estado: {parcela.Estado} | " +
+                $"Vencimento: {parcela.Data_Vencimento} | " +
+                $"Pagamento: {parcela.Data_Confirmacao}"
+            );
+        }
         return new AluguelRespostaDTO
         {
             ID = aluguel.ID,
@@ -169,7 +175,7 @@ public class AluguelService : IAluguelService
             Valor_Total = aluguel.Valor_Total,
             Forma_Pagamento = aluguel.Forma_Pagamento,
             Parcelas = aluguel.Parcelas,
-            Estado = aluguel.Estado,
+            Estado = StatusFinanceiro.Calcular(aluguel.ParcelasDetalhes),
             Carro_ID = aluguel.Carro_ID,
             Cliente_ID = aluguel.Cliente_ID,
             carro = aluguel.carro,

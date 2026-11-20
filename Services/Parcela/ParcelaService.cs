@@ -43,7 +43,8 @@ public class ParcelaService : IParcelaService
     }
     async public Task<ParcelaRespostaDTO?> Criar(CriarParcelaDTO dto)
     {
-        Parcela Parcela = new Parcela(){
+        Parcela Parcela = new Parcela()
+        {
 
             Valor = dto.Valor,
             Data_Vencimento = dto.Data_Vencimento,
@@ -72,10 +73,10 @@ public class ParcelaService : IParcelaService
 
 
         Parcela.Valor = dto.Valor;
-        Parcela.Data_Vencimento  = dto.Data_Vencimento;
-        Parcela.Data_Confirmacao  = dto.Data_Confirmacao;
+        Parcela.Data_Vencimento = dto.Data_Vencimento;
+        Parcela.Data_Confirmacao = dto.Data_Confirmacao;
         Parcela.Estado = dto.Estado;
-        
+
 
         _context.Parcela.Update(Parcela);
         await _context.SaveChangesAsync();
@@ -96,6 +97,22 @@ public class ParcelaService : IParcelaService
 
         return ConverterParaResposta(Parcela);
     }
+    public async Task ConfirmarPagamento(int id)
+    {
+        var parcela = await _context.Parcela
+            .FirstOrDefaultAsync(p => p.ID == id);
+
+        if (parcela == null)
+            throw new KeyNotFoundException("Parcela não encontrada.");
+
+        if (parcela.Data_Confirmacao.HasValue)
+            throw new InvalidOperationException("Esta parcela já foi paga.");
+
+        parcela.Data_Confirmacao = DateTime.Now;
+        parcela.Estado = "OK";
+
+        await _context.SaveChangesAsync();
+    }
     private static ParcelaRespostaDTO ConverterParaResposta(
         Parcela Parcela
     )
@@ -105,7 +122,7 @@ public class ParcelaService : IParcelaService
             ID = Parcela.ID,
             Valor = Parcela.Valor,
             Data_Vencimento = Parcela.Data_Vencimento,
-            Estado = Parcela.Estado,
+            Estado = ParcelaRegras.ObterSituacao(Parcela),
             Data_Confirmacao = Parcela.Data_Confirmacao,
             Aluguel_ID = Parcela.Aluguel_ID,
             aluguel = Parcela.aluguel,

@@ -9,6 +9,9 @@ public interface IParcelaService
     Task<ParcelaRespostaDTO?> BuscarPorId(int ID);
     Task<ParcelaRespostaDTO?> Criar(CriarParcelaDTO dto);
     Task<ParcelaRespostaDTO?> Atualizar(int id, AtualizarParcelaDTO dto);
+    Task ConfirmarPagamento(int id);
     Task<ParcelaRespostaDTO?> Excluir(int id);
+
+    
     
 }
