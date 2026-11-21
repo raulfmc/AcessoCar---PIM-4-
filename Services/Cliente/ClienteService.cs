@@ -5,6 +5,7 @@ using AcessoCar.Models;
 using AcessoCar.Exceptions;
 using Microsoft.Data.SqlClient;
 namespace AcessoCar.Services.Clientes;
+
 public class ClienteService : IClienteService
 {
 
@@ -15,13 +16,25 @@ public class ClienteService : IClienteService
     }
     public async Task<IReadOnlyCollection<ClienteRespostaDTO>> Listar()
     {
-        var Clientes = await _context.Cliente
-        .Where(c => c.Ativo == true)
-        .ToListAsync();
-        
-        return Clientes
-        .Select(ConverterParaResposta)
-        .ToList();
+        var clientes = await _context.Cliente
+       .Where(c => c.Ativo == true)
+       .ToListAsync();
+
+        var respostas = new List<ClienteRespostaDTO>();
+
+        foreach (var cliente in clientes)
+        {
+            respostas.Add(await ConverterParaResposta(cliente));
+        }
+
+        return respostas;
+        // var Clientes = await _context.Cliente
+        // .Where(c => c.Ativo == true)
+        // .ToListAsync();
+
+        // return Clientes
+        // .Select(ConverterParaResposta)
+        // .ToList();
 
 
     }
@@ -30,19 +43,20 @@ public class ClienteService : IClienteService
     {
         Cliente? Cliente = await _context.Cliente
         .FirstOrDefaultAsync(Cliente => Cliente.ID == id);
-        
+
         if (Cliente == null || Cliente.Ativo == false)
         {
             throw new KeyNotFoundException("Cliente não encontrado");
         }
-       
-        
-        return ConverterParaResposta(Cliente);
+
+
+        return await ConverterParaResposta(Cliente);
 
     }
     async public Task<ClienteRespostaDTO?> Criar(CriarClienteDTO dto)
     {
-        Cliente Cliente = new Cliente(){
+        Cliente Cliente = new Cliente()
+        {
             Nome = dto.Nome,
             CPF = dto.CPF,
             Telefone = dto.Telefone,
@@ -54,9 +68,10 @@ public class ClienteService : IClienteService
             CNH = string.IsNullOrEmpty(dto.CNH)
             ? null
             : Convert.FromBase64String(dto.CNH)
-            
+
         };
-        try{
+        try
+        {
             _context.Cliente.Add(Cliente);
             await _context.SaveChangesAsync();
         }
@@ -65,16 +80,16 @@ public class ClienteService : IClienteService
         {
             throw new CpfRepetidoException("Esse CPF já existe/é inválido, insira outro CPF");
         }
-        
-            
 
-        
-        return ConverterParaResposta(Cliente);
+
+
+
+        return await ConverterParaResposta(Cliente);
     }
 
     public async Task<ClienteRespostaDTO?> Atualizar(int id, AtualizarClienteDTO dto)
     {
-        
+
         Cliente? cliente = await _context.Cliente
         .FirstOrDefaultAsync(Cliente => Cliente.ID == id);
 
@@ -90,12 +105,13 @@ public class ClienteService : IClienteService
         cliente.Endereco = dto.Endereco;
         cliente.CNH = dto.CNH;
         cliente.Ativo = dto.Ativo;
-        
-        
+
+
         _context.Cliente.Update(cliente);
         await _context.SaveChangesAsync();
-        return ConverterParaResposta(cliente);
+        return await ConverterParaResposta(cliente);
     }
+
     public async Task<ClienteRespostaDTO?> Excluir(int id)
     {
         Cliente? cliente = await _context.Cliente
@@ -106,15 +122,53 @@ public class ClienteService : IClienteService
             return null;
         }
         cliente.Ativo = false;
-        
+
         _context.Cliente.Update(cliente);
         await _context.SaveChangesAsync();
 
-        return ConverterParaResposta(cliente);
+        return await ConverterParaResposta(cliente);
     }
-    private static ClienteRespostaDTO ConverterParaResposta(
-        Cliente cliente
-    )
+    public async Task<string> CalcularEstado(int clienteId)
+    {
+        var parcelas = await _context.Parcela
+        .Where(p => _context.Aluguel.Any(a =>
+            a.ID == p.Aluguel_ID &&
+            a.Cliente_ID == clienteId
+        ))
+        .ToListAsync();
+
+        return StatusFinanceiro.Calcular(parcelas);
+        // DateTime hoje = DateTime.Today;
+
+        // bool atrasado = await _context.Parcela.AnyAsync(p =>
+        //     p.Data_Confirmacao == null &&
+        //     p.Data_Vencimento.Date < hoje &&
+        //     _context.Aluguel.Any(a =>
+        //         a.ID == p.Aluguel_ID &&
+        //         a.Cliente_ID == clienteId
+        //     )
+        // );
+
+        // if (atrasado)
+        //     return "ATRASADO";
+
+        // bool pendente = await _context.Parcela.AnyAsync(p =>
+        //     p.Data_Confirmacao == null &&
+        //     p.Data_Vencimento.Date >= hoje &&
+        //     _context.Aluguel.Any(a =>
+        //         a.ID == p.Aluguel_ID &&
+        //         a.Cliente_ID == clienteId
+        //     )
+        // );
+
+        // if (pendente)
+        //     return "PENDENTE";
+
+        // return "OK";
+    }
+    private async Task<ClienteRespostaDTO> ConverterParaResposta(
+    Cliente cliente
+)
     {
         return new ClienteRespostaDTO
         {
@@ -125,15 +179,33 @@ public class ClienteService : IClienteService
             Membros = cliente.Membros,
             Email = cliente.Email,
             Endereco = cliente.Endereco,
-            Estado = cliente.Estado,
+            Estado = await CalcularEstado(cliente.ID),
             Ativo = cliente.Ativo,
             CNH = cliente.CNH
-          
-            
-
-            
         };
     }
+
+
+
+    // private static ClienteRespostaDTO ConverterParaResposta (
+    //     Cliente cliente
+    // )
+    // {
+    //     return new ClienteRespostaDTO
+    //     {
+    //         ID = cliente.ID,
+    //         Nome = cliente.Nome,
+    //         CPF = cliente.CPF,
+    //         Telefone = cliente.Telefone,
+    //         Membros = cliente.Membros,
+    //         Email = cliente.Email,
+    //         Endereco = cliente.Endereco,
+    //         Estado = cliente.Estado,
+    //         Ativo = cliente.Ativo,
+    //         CNH = cliente.CNH
+
+    //     };
+    // }
 
 
 

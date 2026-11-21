@@ -19,6 +19,7 @@ public class Parcela
 
     public string Estado {get; set;} = string.Empty; 
 
+    public int Numero {get; set;}
     public bool Ativo {get; set;}
     public int Aluguel_ID {get; set;} 
     [JsonIgnore]

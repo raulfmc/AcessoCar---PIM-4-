@@ -15,6 +15,7 @@ public class ManutencaoService : IManutencaoService
     {
         var Manutencoes = await _context.Manutencao
         .Where(manutencao => manutencao.Ativo == true)
+        .Include(m => m.carro)
         .ToListAsync();
         
         return Manutencoes
@@ -42,7 +43,7 @@ public class ManutencaoService : IManutencaoService
     {
         Manutencao manutencao = new Manutencao(){
             
-            Descricao_Problema = dto.Descricao_Problema,
+            Descricao = dto.Descricao,
             Data_Prevista_Conclusao = dto.Data_Prevista_Conclusao,
             Ativo = true,
             Carro_ID = dto.Carro_ID
@@ -66,7 +67,7 @@ public class ManutencaoService : IManutencaoService
         }
         
         
-        manutencao.Descricao_Problema = dto.Descricao_Problema;
+        manutencao.Descricao = dto.Descricao;
         manutencao.Data_Prevista_Conclusao = dto.Data_Prevista_Conclusao;
         manutencao.Valor = dto.Valor;
         
@@ -96,9 +97,9 @@ public class ManutencaoService : IManutencaoService
         return new ManutencaoRespostaDTO
         {
             ID = manutencao.ID,
-            Descricao_Problema = manutencao.Descricao_Problema,
+            Descricao = manutencao.Descricao,
             Data_Prevista_Conclusao = manutencao.Data_Prevista_Conclusao, 
-            //Valor = manutencao.Valor,       
+            Valor = manutencao.Valor,       
             carro = manutencao.carro,
             Ativo = manutencao.Ativo
            

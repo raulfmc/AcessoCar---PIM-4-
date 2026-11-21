@@ -101,107 +101,117 @@
 
 				<div class="finance-panel">
 					<div id="customer-overview">
-						<div class="advanced-filters customer-filters">
+						<!-- <div class="advanced-filters customer-filters">
 							<div class="field search-field"><label for="installment-search">Pesquisar pessoa ou ID da
 									locação</label><input id="installment-search" type="search"
-									placeholder="Nome ou identificador" /></div>
-							<!-- <div class="field"><label for="rental-filter">Número da locação</label><input id="rental-filter" type="search" placeholder="Identificador da locação" /></div>
+									placeholder="Nome ou identificador" /></div> -->
+						<div class="advanced-filters customer-filters">
+							<div class="field search-field">
+								<label for="installment-search">
+									Pesquisar pessoa ou ID da locação
+								</label>
+
+								<input id="installment-search" type="search" placeholder="Nome ou identificador"
+									autocomplete="off" />
+							</div>
+						</div>
+						<!-- <div class="field"><label for="rental-filter">Número da locação</label><input id="rental-filter" type="search" placeholder="Identificador da locação" /></div>
 							<div class="field"><label for="period-start">Vencimento a partir de</label><input id="period-start" type="date" /></div>
 							<div class="field"><label for="period-end">Vencimento até</label><input id="period-end" type="date" /></div>  -->
-						</div>
-						<p class="installment-count" id="installment-count" aria-live="polite"></p>
-						<div class="customer-table-scroll" tabindex="0" aria-label="Tabela de clientes com parcelas">
-							<table class="installment-table customer-installment-table">
-								<caption class="visually-hidden">Clientes com parcelas no status selecionado</caption>
-								<thead>
-									<tr>
-										<th scope="col">Cliente</th>
-										<th scope="col">Identificador</th>
-										<th scope="col">Parcelas</th>
-										<th scope="col">Valor em aberto</th>
-										<th scope="col">Próximo vencimento</th>
-										<th scope="col">Situação</th>
-										<th scope="col">Ação</th>
-									</tr>
-								</thead>
-								<tbody id="customer-table-body"></tbody>
-							</table>
-						</div>
 					</div>
-					<div class="customer-detail" id="customer-detail" hidden>
-						<div class="detail-heading">
-							<div>
-								<h3 id="detail-customer-name"></h3>
-								<p id="detail-customer-id"></p>
-							</div>
+					<p class="installment-count" id="installment-count" aria-live="polite"></p>
+					<div class="customer-table-scroll" tabindex="0" aria-label="Tabela de clientes com parcelas">
+						<table class="installment-table customer-installment-table">
+							<caption class="visually-hidden">Clientes com parcelas no status selecionado</caption>
+							<thead>
+								<tr>
+									<th scope="col">Cliente</th>
+									<th scope="col">Identificador</th>
+									<th scope="col">Parcelas</th>
+									<th scope="col">Valor em aberto</th>
+									<th scope="col">Próximo vencimento</th>
+									<th scope="col">Situação</th>
+									<th scope="col">Ação</th>
+								</tr>
+							</thead>
+							<tbody id="customer-table-body"></tbody>
+						</table>
+					</div>
+				</div>
+				<div class="customer-detail" id="customer-detail" hidden>
+					<div class="detail-heading">
+						<div>
+							<h3 id="detail-customer-name"></h3>
+							<p id="detail-customer-id"></p>
+						</div>
 
-							<div class="detail-actions">
+						<!-- <div class="detail-actions">
 								<a class="new-installment-button" href="#">
 									<svg viewBox="0 0 24 24" aria-hidden="true">
 										<path d="M12 5v14M5 12h14"></path>
 									</svg>
 									<span>Nova parcela</span>
 								</a>
-							</div>
+							</div> -->
 
-								<button class="secondary-button" id="back-to-customers" type="button">Voltar para
-									pessoas</button>
-							</div>
-							<div class="installment-table-scroll" tabindex="0"
-								aria-label="Parcelas da pessoa selecionada">
-								<table class="installment-table detail-table">
-									<caption class="visually-hidden">Parcelas da pessoa selecionada</caption>
-									<thead>
-										<tr>
-											<th scope="col">ID da parcela</th>
-											<th scope="col">Locação</th>
-											<th scope="col">Valor</th>
-											<th scope="col">Vencimento</th>
-											<th scope="col">Status</th>
-
-
-											<th scope="col">Ação</th>
-										</tr>
-									</thead>
-									<tbody id="installment-table-body"></tbody>
-								</table>
-							</div>
-						</div>
+						<button class="secondary-button" id="back-to-customers" type="button">Voltar para
+							pessoas</button>
 					</div>
-			</section>
+					<div class="installment-table-scroll" tabindex="0" aria-label="Parcelas da pessoa selecionada">
+						<table class="installment-table detail-table">
+							<caption class="visually-hidden">Parcelas da pessoa selecionada</caption>
+							<thead>
+								<tr>
+									<th scope="col">ID da parcela</th>
+									<th scope="col">Locação</th>
+									<th scope="col">Parcela</th>
+									<th scope="col">Valor</th>
+									<th scope="col">Vencimento</th>
+									<th scope="col">Status</th>
 
-			<dialog class="confirm-dialog" id="payment-dialog" aria-labelledby="dialog-title">
-				<form method="dialog" id="payment-confirm-form">
-					<p class="panel-kicker">CONFIRMAÇÃO MANUAL</p>
-					<h2 id="dialog-title">Confirmar pagamento recebido?</h2>
-					<p class="dialog-description">O sistema não processa pagamentos. Confirme somente se o recebimento
-						aconteceu fora do sistema.</p>
-					<dl class="confirmation-details">
-						<div>
-							<dt>Cliente</dt>
-							<dd id="dialog-customer"></dd>
-						</div>
-						<div>
-							<dt>Parcela</dt>
-							<dd id="dialog-installment"></dd>
-						</div>
-						<div>
-							<dt>Valor</dt>
-							<dd id="dialog-amount"></dd>
-						</div>
-					</dl>
-					<p class="dialog-error" id="dialog-error" role="alert"></p>
-					<div class="dialog-actions">
-						<button class="secondary-button" value="cancel">Voltar</button>
-						<button class="primary-button" id="confirm-payment-button" type="button">Confirmar como
-							pago</button>
+
+									<th scope="col">Ação</th>
+								</tr>
+							</thead>
+							<tbody id="installment-table-body"></tbody>
+						</table>
 					</div>
-				</form>
-			</dialog>
+				</div>
+	</div>
+	</section>
 
-			<footer class="page-footer"><span>© 2026 acessoCar</span><span>Uma viagem melhor começa com acesso.</span>
-			</footer>
-		</main>
+	<dialog class="confirm-dialog" id="payment-dialog" aria-labelledby="dialog-title">
+		<form method="dialog" id="payment-confirm-form">
+			<p class="panel-kicker">CONFIRMAÇÃO MANUAL</p>
+			<h2 id="dialog-title">Confirmar pagamento recebido?</h2>
+			<p class="dialog-description">O sistema não processa pagamentos. Confirme somente se o recebimento
+				aconteceu fora do sistema.</p>
+			<dl class="confirmation-details">
+				<div>
+					<dt>Cliente</dt>
+					<dd id="dialog-customer"></dd>
+				</div>
+				<div>
+					<dt>Parcela</dt>
+					<dd id="dialog-installment"></dd>
+				</div>
+				<div>
+					<dt>Valor</dt>
+					<dd id="dialog-amount"></dd>
+				</div>
+			</dl>
+			<p class="dialog-error" id="dialog-error" role="alert"></p>
+			<div class="dialog-actions">
+				<button class="secondary-button" value="cancel">Voltar</button>
+				<button class="primary-button" id="confirm-payment-button" type="button">Confirmar como
+					pago</button>
+			</div>
+		</form>
+	</dialog>
+
+	<footer class="page-footer"><span>© 2026 acessoCar</span><span>Uma viagem melhor começa com acesso.</span>
+	</footer>
+	</main>
 	</div>
 </body>
 

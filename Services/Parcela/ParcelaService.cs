@@ -43,15 +43,31 @@ public class ParcelaService : IParcelaService
     }
     async public Task<ParcelaRespostaDTO?> Criar(CriarParcelaDTO dto)
     {
+        var aluguel = await _context.Aluguel
+        .FirstOrDefaultAsync(a => a.ID == dto.Aluguel_ID);
+
+        if (aluguel == null)
+            throw new KeyNotFoundException("Aluguel não encontrado.");
+
+        // int numeroParcela =
+        //     (dto.Data_Vencimento.Year - aluguel.Data_Inicio.Year) * 12
+        //     + dto.Data_Vencimento.Month - aluguel.Data_Inicio.Month
+        //     + 1;
+
+        // if (numeroParcela <= 0)
+        //     throw new ArgumentException("A data de vencimento deve ser posterior ou igual ao início do aluguel.");
         Parcela Parcela = new Parcela()
         {
 
             Valor = dto.Valor,
             Data_Vencimento = dto.Data_Vencimento,
             Data_Confirmacao = dto.Data_Confirmacao,
+            Numero = dto.Numero,
+            // Numero = numeroParcela,
             Estado = dto.Estado,
             Ativo = true,
             Aluguel_ID = dto.Aluguel_ID
+
 
 
         };
@@ -123,6 +139,7 @@ public class ParcelaService : IParcelaService
             Valor = Parcela.Valor,
             Data_Vencimento = Parcela.Data_Vencimento,
             Estado = ParcelaRegras.ObterSituacao(Parcela),
+            Numero = Parcela.Numero,
             Data_Confirmacao = Parcela.Data_Confirmacao,
             Aluguel_ID = Parcela.Aluguel_ID,
             aluguel = Parcela.aluguel,

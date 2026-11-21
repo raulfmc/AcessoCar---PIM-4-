@@ -16,7 +16,7 @@ public class AluguelRespostaDTO
 
     public string Forma_Pagamento {get; set;} = string.Empty;
     public string Estado {get; set;} = string.Empty;
-
+    public DateTime Primeiro_Vencimento { get; set; }
     public bool Ativo { get; set; }
 
     public int Carro_ID { get; set; }

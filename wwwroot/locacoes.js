@@ -98,8 +98,8 @@
 
 	function getCompatibleVehicles(customer) {
 		return vehicles.filter((vehicle) =>
-			vehicle.estado === "Disponível"
-			&& AccessoCarUtils.bodyRegionsAreCompatible(customer?.bodyRegions || [], vehicle.bodyRegions || [])
+			vehicle.estado === "DISPONÍVEL"
+			//&& AccessoCarUtils.bodyRegionsAreCompatible(customer?.bodyRegions || [], vehicle.bodyRegions || [])
 		);
 	}
 
@@ -131,7 +131,7 @@
 	}
 
 	function updateVehicleDetails() {
-		const vehicle = vehicles.find((item) => String(item.id) === vehicleSelect.value && item.estado === "Disponível");
+		const vehicle = vehicles.find((item) => String(item.id) === vehicleSelect.value && item.estado === "DISPONÍVEL");
 		vehiclePlate.value = vehicle ? vehicle.placa : "";
 		dailyRate.value = vehicle ? currency.format(vehicle.valor_Diaria) : "";
 		updatePrice();
@@ -148,7 +148,7 @@
 		const start = new Date(`${startDate.value}T12:00:00`);
 		const end = new Date(`${returnDate.value}T12:00:00`);
 		const days = Math.round((Date.UTC(end.getFullYear(), end.getMonth(), end.getDate()) - Date.UTC(start.getFullYear(), start.getMonth(), start.getDate())) / 86400000);
-		const vehicle = vehicles.find((item) => String(item.id) === vehicleSelect.value && item.estado === "Disponível");
+		const vehicle = vehicles.find((item) => String(item.id) === vehicleSelect.value && item.estado === "DISPONÍVEL");
 		const rental = rentals.find((item) => String(item.id) == item.id && item.ativo === true);
 		rentalDays.value = String(days);
 		valorTotalCalculado = vehicle ? days * vehicle.valor_Diaria : 0;
@@ -310,9 +310,9 @@
 			data_Fim: returnDate.value,
 			valor_Total: valorTotalCalculado,
 			forma_Pagamento: paymentMethod.value,
-			installments: paymentMethod.value === "Parcelado" ? Number(installmentCount.value) : 1,
+			parcelas: paymentMethod.value === "Parcelado" ? Number(installmentCount.value) : 1,
 			estado: "OK",
-			data_Vencimento: paymentMethod.value === "Parcelado" ? firstDueDate.value : startDate.value,
+			primeiro_Vencimento: paymentMethod.value === "Parcelado" ? firstDueDate.value : startDate.value,
 			//notes: document.querySelector("#rental-notes").value.trim()
 		};
 		try {

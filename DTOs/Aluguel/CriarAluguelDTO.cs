@@ -16,6 +16,8 @@ public class CriarAluguelDTO
     public string Forma_Pagamento {get; set;} = string.Empty;
     public int Parcelas { get; set; }
 
+    public DateTime Primeiro_Vencimento { get; set; }
+
     //public bool Ativo { get; set; } = true;
 
     public int Carro_ID { get; set; }

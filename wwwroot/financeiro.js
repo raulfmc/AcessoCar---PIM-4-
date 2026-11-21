@@ -467,6 +467,7 @@
 			row.append(
 				createCell(installment.id, "table-id"),
 				createCell(installment.aluguel_ID, "table-id"),
+				createCell(`${installment.numero}ª`, "table-number"),
 				createCell(currency.format(installment.valor), "table-value"),
 				createCell(displayDate(installment.data_Vencimento)),
 				createCell("", "status-cell"),
@@ -480,7 +481,7 @@
 			badge.textContent = installmentStatus;
 			// badge.className = `status-badge ${installment.estado}`;
 			// badge.textContent = installment.estado === "ATRASADO" ? "ATRASADO" : "PENDENTE";
-			row.children[4].append(badge);
+			row.children[5].append(badge);
 			const actionCell = document.createElement("td");
 			const button = document.createElement("button");
 

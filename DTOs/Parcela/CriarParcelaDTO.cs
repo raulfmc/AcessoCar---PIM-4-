@@ -10,6 +10,8 @@ public class CriarParcelaDTO
 
     public DateTime? Data_Confirmacao {get; set;}
 
+    public int Numero {get; set;}
+
     public string Estado {get; set;} = string.Empty; 
 
     public int Aluguel_ID {get; set;} 

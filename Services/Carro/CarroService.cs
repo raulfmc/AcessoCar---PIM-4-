@@ -20,13 +20,25 @@ public class CarroService : ICarroService
     }
     public async Task<IReadOnlyCollection<CarroRespostaDTO>> Listar()
     {
-        var Carros = await _context.Carro
-        .Where(c => c.Ativo == true)
-        .ToListAsync();
 
-        return Carros
-        .Select(ConverterParaResposta)
-        .ToList();
+        var carros = await _context.Carro
+       .Where(c => c.Ativo == true)
+       .ToListAsync();
+
+        var respostas = new List<CarroRespostaDTO>();
+
+        foreach (var carro in carros)
+        {
+            respostas.Add(await ConverterParaResposta(carro));
+        }
+        return respostas;
+        // var Carros = await _context.Carro
+        // .Where(c => c.Ativo == true)
+        // .ToListAsync();
+
+        // return Carros
+        // .Select(ConverterParaResposta)
+        // .ToList();
 
 
     }
@@ -43,7 +55,7 @@ public class CarroService : ICarroService
             throw new KeyNotFoundException("Carro não encontrado");
         }
 
-        return ConverterParaResposta(carro);
+        return await ConverterParaResposta(carro);
 
     }
     async public Task<CarroCompletoRespostaDTO?> Criar(CriarCarroCompletoDTO dto)
@@ -87,7 +99,7 @@ public class CarroService : ICarroService
 
             return new CarroCompletoRespostaDTO
             {
-                Carro = ConverterParaResposta(carro),
+                Carro = await ConverterParaResposta(carro),
                 Adaptacao = adaptacao
             };
         }
@@ -198,7 +210,7 @@ public class CarroService : ICarroService
 
         return new CarroCompletoRespostaDTO
         {
-            Carro = ConverterParaResposta(carro),
+            Carro = await ConverterParaResposta(carro),
 
             Adaptacao = new AdaptacaoRespostaDTO
             {
@@ -266,11 +278,31 @@ public class CarroService : ICarroService
         _context.Carro.Update(carro);
         await _context.SaveChangesAsync();
 
-        return ConverterParaResposta(carro);
+        return await ConverterParaResposta(carro);
     }
-    private static CarroRespostaDTO ConverterParaResposta(
-        Carro carro
-    )
+    public async Task<string> CalcularEstado(int carroId)
+    {
+        bool emManutencao = await _context.Manutencao.AnyAsync(m =>
+            m.Carro_ID == carroId &&
+            m.Ativo == true
+        );
+
+        if (emManutencao)
+            return "EM MANUTENÇÃO";
+
+        bool locado = await _context.Aluguel.AnyAsync(a =>
+            a.Carro_ID == carroId &&
+            a.Ativo == true
+        );
+
+        if (locado)
+            return "LOCADO";
+
+        return "DISPONÍVEL";
+    }
+    private async Task<CarroRespostaDTO> ConverterParaResposta(
+    Carro carro
+)
     {
         return new CarroRespostaDTO
         {
@@ -283,13 +315,35 @@ public class CarroService : ICarroService
             Cambio = carro.Cambio,
             Placa = carro.Placa,
             Cor = carro.Cor,
-            Estado = carro.Estado,
+            Estado = await CalcularEstado(carro.ID),
             Qtd_Alugueis = carro.Qtd_Alugueis,
             Valor_Diaria = carro.Valor_Diaria,
             Ativo = carro.Ativo
-
         };
     }
+
+    // private static CarroRespostaDTO ConverterParaResposta(
+    //     Carro carro
+    // )
+    // {
+    //     return new CarroRespostaDTO
+    //     {
+    //         ID = carro.ID,
+    //         Marca = carro.Marca,
+    //         Modelo = carro.Modelo,
+    //         Ano_Fabricacao = carro.Ano_Fabricacao,
+    //         Numero = carro.Numero,
+    //         Versao = carro.Versao,
+    //         Cambio = carro.Cambio,
+    //         Placa = carro.Placa,
+    //         Cor = carro.Cor,
+    //         Estado = carro.Estado,
+    //         Qtd_Alugueis = carro.Qtd_Alugueis,
+    //         Valor_Diaria = carro.Valor_Diaria,
+    //         Ativo = carro.Ativo
+
+    //     };
+    // }
 
 
 

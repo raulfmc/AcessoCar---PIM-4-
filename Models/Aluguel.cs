@@ -17,6 +17,8 @@ public class Aluguel
     public int Parcelas {get; set;}
 
     public ICollection<Parcela> ParcelasDetalhes { get; set; } = new List<Parcela>();
+
+    public DateTime Primeiro_Vencimento { get; set; }
     public string Forma_Pagamento {get; set;} = string.Empty;
 
     public string Estado {get; set;} = string.Empty;

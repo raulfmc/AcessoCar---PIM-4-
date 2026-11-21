@@ -24,38 +24,38 @@
 	const currency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 	let vehicles = [];
 	let maintenanceRecords = [];
-	const USE_MOCK = true;
+	const USE_MOCK = false;
 
 	let mockVehicles = [
 		{
 			id: 1,
 			name: "Fiat Argo 1.0",
 			plate: "ABC-1234",
-			estado: "Disponível"
+			estado: "DISPONÍVEL"
 		},
 		{
 			id: 2,
 			name: "Chevrolet Onix LT",
 			plate: "DEF-5678",
-			estado: "Em Manutenção"
+			estado: "EM MANUTENÇÃO"
 		},
 		{
 			id: 3,
 			name: "Volkswagen Polo",
 			plate: "GHI-9012",
-			estado: "Disponível"
+			estado: "DISPONÍVEL"
 		},
 		{
 			id: 4,
 			name: "Hyundai HB20",
 			plate: "JKL-3456",
-			estado: "Em Manutenção"
+			estado: "EM MANUTENÇÃO"
 		},
 		{
 			id: 5,
 			name: "Renault Kwid",
 			plate: "MNO-7890",
-			estado: "Disponível"
+			estado: "DISPONÍVEL"
 		}
 	];
 
@@ -106,7 +106,7 @@
 					throw new Error("Veículo não encontrado.");
 				}
 
-				if (vehicle.estado !== "Disponível") {
+				if (vehicle.estado !== "DISPONÍVEL") {
 					throw new Error("Este veículo não está disponível.");
 				}
 
@@ -124,7 +124,7 @@
 
 				mockMaintenanceRecords.push(newRecord);
 
-				vehicle.estado = "Em Manutenção";
+				vehicle.estado = "EM MANUTENÇÃO";
 
 				return newRecord;
 			}
@@ -150,7 +150,7 @@
 				);
 
 				if (vehicle) {
-					vehicle.estado = "Disponível";
+					vehicle.estado = "DISPONÍVEL";
 				}
 
 				return record;
@@ -194,11 +194,14 @@
 			request("vehicles"),
 			request("maintenance")
 		]);
+
 		if (!Array.isArray(vehicleData) || !Array.isArray(maintenanceData)) {
 			throw new Error("As rotas de veículos e manutenção devem retornar listas (ou { data: lista }).");
 		}
 		vehicles = vehicleData;
 		maintenanceRecords = maintenanceData;
+		console.log("Veículos:", vehicles);
+		console.log("Manutenções:", maintenanceRecords);
 	}
 
 	function setTheme(isLight) {
@@ -209,9 +212,16 @@
 	}
 
 	function formatDate(value) {
+		// if (!value) return "—";
+		// const date = new Date(`${value}T12:00:00`);
+		// return Number.isNaN(date.getTime()) ? "—" : date.toLocaleDateString("pt-BR");
 		if (!value) return "—";
-		const date = new Date(`${value}T12:00:00`);
-		return Number.isNaN(date.getTime()) ? "—" : date.toLocaleDateString("pt-BR");
+
+		const [year, month, day] = value.split("T")[0].split("-");
+
+		if (!year || !month || !day) return "—";
+
+		return `${day}/${month}/${year}`;
 	}
 
 	function formatCurrencyInput(value) {
@@ -240,16 +250,16 @@
 	function activeRecordForVehicle(vehicleId) {
 		return maintenanceRecords.find(
 			record =>
-				Number(record.Carro_ID) === Number(vehicleId) &&
-				(record.Ativo === 1 || record.Ativo === true)
+				Number(record.carro.id) === Number(vehicleId) &&
+				(record.ativo === 1 || record.ativo === true)
 		);
 	}
 
 	function renderVehicleOptions() {
 		const previousValue = vehicleSelect.value;
-		const availableVehicles = vehicles.filter((vehicle) => vehicle.estado === "Disponível");
+		const availableVehicles = vehicles.filter((vehicle) => vehicle.estado === "DISPONÍVEL");
 		vehicleSelect.replaceChildren(new Option("Selecione um veículo disponível", ""));
-		availableVehicles.forEach((vehicle) => vehicleSelect.add(new Option(`${vehicle.name} · ${vehicle.plate}`, vehicle.id)));
+		availableVehicles.forEach((vehicle) => vehicleSelect.add(new Option(`${vehicle.marca} ${vehicle.modelo} · ${vehicle.placa}`, vehicle.id)));
 		if (availableVehicles.some((vehicle) => vehicle.id === previousValue)) vehicleSelect.value = previousValue;
 		addButton.disabled = availableVehicles.length === 0;
 		addButton.title = addButton.disabled ? "Não há veículos disponíveis para encaminhar." : "";
@@ -257,7 +267,7 @@
 
 	function renderMaintenance() {
 		renderVehicleOptions();
-		const vehiclesInMaintenance = vehicles.filter((vehicle) => vehicle.estado === "Em Manutenção");
+		const vehiclesInMaintenance = vehicles.filter((vehicle) => vehicle.estado === "EM MANUTENÇÃO");
 		tableBody.replaceChildren();
 		if (vehiclesInMaintenance.length === 0) {
 			const row = document.createElement("tr");
@@ -270,11 +280,11 @@
 				const record = activeRecordForVehicle(vehicle.id);
 				const row = document.createElement("tr");
 				row.append(
-					createCell(vehicle.name, "maintenance-vehicle"),
-					createCell(vehicle.plate, "maintenance-id"),
-					createCell(record ? record.report : "Sem relatório registrado para esta manutenção.", "maintenance-report"),
-					createCell(record ? currency.format(record.cost) : "—", "maintenance-cost"),
-					createCell(record ? formatDate(record.date) : "—", "maintenance-date")
+					createCell(`${vehicle.marca} ${vehicle.modelo}`, "maintenance-vehicle"),
+					createCell(vehicle.placa, "maintenance-id"),
+					createCell(record ? record.descricao : "Sem relatório registrado para esta manutenção.", "maintenance-report"),
+					createCell(record ? currency.format(record.valor) : "—", "maintenance-cost"),
+					createCell(record ? formatDate(record.data_Prevista_Conclusao) : "—", "maintenance-date")
 				);
 				const statusCell = document.createElement("td");
 				const status = document.createElement("span");
@@ -291,7 +301,7 @@
 				releaseButton.disabled = !record;
 				releaseButton.title = record ? "Concluir manutenção" : "A API não retornou o registro desta manutenção.";
 				releaseButton.textContent = "Liberar veículo";
-				releaseButton.setAttribute("aria-label", `Concluir manutenção e liberar ${vehicle.name}`);
+				releaseButton.setAttribute("aria-label", `Concluir manutenção e liberar ${vehicle.marca} ${vehicle.modelo}`);
 				actionCell.append(releaseButton);
 				row.append(actionCell);
 				tableBody.append(row);
