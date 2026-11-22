@@ -196,12 +196,52 @@ public class AluguelService : IAluguelService
         {
             return null;
         }
+        if (aluguel.ParcelasDetalhes.Any(p => p.Estado == "OK"))
+        {
+            throw new ParcelaPagaException(
+                "Não é possível alterar uma locação que possui parcelas pagas."
+            );
+        }
+        Console.WriteLine($"Quantidade de parcelas: {aluguel.ParcelasDetalhes.Count}");
 
+        foreach (var parcela in aluguel.ParcelasDetalhes)
+        {
+            Console.WriteLine($"Estado: {parcela.Estado}");
+        }
         aluguel.Data_Inicio = dto.Data_Inicio;
         aluguel.Data_Fim = dto.Data_Fim;
         aluguel.Valor_Total = dto.Valor_Total;
+
+        List<Parcela> parcelas = aluguel.ParcelasDetalhes.ToList();
+        int quantidadeParcelas = aluguel.ParcelasDetalhes.Count;
+
+        if (quantidadeParcelas > 0)
+        {
+            decimal valorParcela = Math.Round(
+            dto.Valor_Total / quantidadeParcelas,
+            2,
+            MidpointRounding.AwayFromZero
+        );
+
+            decimal valorDistribuido = 0;
+
+            for (int i = 0; i < quantidadeParcelas; i++)
+            {
+                if (i == quantidadeParcelas - 1)
+                {
+                    parcelas[i].Valor = dto.Valor_Total - valorDistribuido;
+                }
+                else
+                {
+                    parcelas[i].Valor = valorParcela;
+                    valorDistribuido += valorParcela;
+                }
+            }
+
+        }
         await _context.SaveChangesAsync();
         return ConverterParaResposta(aluguel);
+
     }
     public async Task<AluguelRespostaDTO?> Excluir(int id)
     {

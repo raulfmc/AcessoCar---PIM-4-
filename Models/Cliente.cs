@@ -10,7 +10,7 @@ public class Cliente
     public int ID { get; set; }
     public string Nome { get; set; } = string.Empty;
 
-    [RegularExpression(@"^[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}")]
+    [RegularExpression(@"^[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}$")]
     public string CPF { get; set; } = string.Empty;
     [Phone]
     public string Telefone { get; set; }  = string.Empty;

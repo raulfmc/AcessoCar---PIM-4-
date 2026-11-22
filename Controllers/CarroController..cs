@@ -46,19 +46,29 @@ public class CarroController : ControllerBase
 
         return Ok(Carro);
     }
-    [HttpPost]
-    public async Task<ActionResult<CarroCompletoRespostaDTO>> Criar(CriarCarroCompletoDTO dto)
+    // [HttpPost]
+    // public async Task<ActionResult<CarroCompletoRespostaDTO>> Criar(CriarCarroCompletoDTO dto)
+    // {
+    //     CarroCompletoRespostaDTO? carroCriado =
+    //     await _CarroService.Criar(dto);
+
+    //     return CreatedAtAction(
+    //     nameof(BuscarPorId),
+    //     new { id = carroCriado!.Carro.ID },
+    //     carroCriado);
+
+    // }
+    [HttpPost("simples")]
+    public async Task<IActionResult> CriarSimples(CriarCarroDTO dto)
     {
-        CarroCompletoRespostaDTO? carroCriado =
-        await _CarroService.Criar(dto);
+        var carro = await _CarroService.CriarSimples(dto);
 
         return CreatedAtAction(
-        nameof(BuscarPorId),
-        new {id = carroCriado!.Carro.ID },
-        carroCriado);
-
+            nameof(BuscarPorId),
+            new { id = carro!.ID },
+            carro
+        );
     }
-
     [HttpPut("{id:int}")]
     public async Task<ActionResult<CarroCompletoRespostaDTO>> Atualizar(int id, AtualizarCarroCompletoDTO dto)
     {
@@ -77,12 +87,12 @@ public class CarroController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Excluir(int id)
     {
-        CarroRespostaDTO? carroExcluido = 
+        CarroRespostaDTO? carroExcluido =
         await _CarroService.Excluir(id);
 
         if (carroExcluido == null)
         {
-            return NotFound(new {mensagem = "Carro não encontrado"});
+            return NotFound(new { mensagem = "Carro não encontrado" });
         }
 
         return NoContent();

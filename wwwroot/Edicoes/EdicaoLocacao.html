@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="theme-color" content="#080d16" />
+	<title>Editar locação | acessoCar</title>
+	<link rel="stylesheet" href="../PG_HOME.css" />
+	<link rel="stylesheet" href="../Cadastros/cadastros.css" />
+	<script src="../csrf.js" defer></script>
+	<script src="edicao.js" defer></script>
+	<script src="edicao-locacao.js" defer></script>
+</head>
+<body>
+	<div class="app-shell">
+		<aside class="sidebar" id="sidebar" aria-label="Menu principal">
+			<div class="sidebar-top">
+				<a class="brand" href="../PG_HOME.html" aria-label="acessoCar, página inicial">
+					<span class="brand-mark" aria-hidden="true"><span>A</span><span>C</span></span>
+					<span class="brand-name">acesso<span>Car</span></span>
+				</a>
+				<button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar-content" aria-label="Abrir menu">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+				</button>
+			</div>
+			<div class="sidebar-content" id="sidebar-content">
+				<nav class="primary-nav" aria-label="Navegação">
+					<a class="nav-link" href="../PG_HOME.html"><span>Home</span></a>
+					<a class="nav-link" href="../clientes.html"><span>Clientes</span></a>
+					<a class="nav-link" href="../veiculos.html"><span>Veículos</span></a>
+					<a class="nav-link is-active" href="../locacoes.html" aria-current="page"><span>Locações</span></a>
+					<a class="nav-link" href="../financeiro.html"><span>Financeiro</span></a>
+					<a class="nav-link" href="../manutencao.html"><span>Manutenção</span></a>
+				</nav>
+			</div>
+		</aside>
+
+		<main class="main-content">
+			<header class="page-header">
+				<div>
+					<p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> GESTÃO DE LOCAÇÕES</p>
+					<h1>Editar <span>locação</span></h1>
+					<p class="page-description">Atualize o período da locação. Cliente e veículo são mantidos.</p>
+				</div>
+				<label class="theme-control" for="theme-toggle">
+					<span class="theme-label" id="theme-label">Tema escuro</span>
+					<span class="switch"><input id="theme-toggle" type="checkbox" role="switch" aria-label="Ativar tema claro" /><span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span></span>
+				</label>
+			</header>
+
+			<section class="registration-section" aria-labelledby="registration-title">
+				<div class="registration-card">
+					<div class="registration-heading">
+						<h2 id="registration-title">Dados da locação</h2>
+						<p id="rental-record-label">Carregando locação...</p>
+					</div>
+					<p class="registration-message" id="registration-message" role="status" aria-live="polite"></p>
+					<form id="rental-edit-form">
+						<div class="registration-grid">
+							<div class="registration-field">
+								<label for="customer-name">Cliente</label>
+								<input id="customer-name" readonly />
+							</div>
+							<div class="registration-field">
+								<label for="vehicle-name">Veículo</label>
+								<input id="vehicle-name" readonly />
+							</div>
+							<div class="registration-field">
+								<label for="vehicle-plate">Placa</label>
+								<input id="vehicle-plate" readonly />
+							</div>
+							<div class="registration-field">
+								<label for="payment-info">Pagamento</label>
+								<input id="payment-info" readonly />
+							</div>
+							<div class="registration-field">
+								<label for="start-date">Início da locação</label>
+								<input id="start-date" name="startDate" type="date" required />
+							</div>
+							<div class="registration-field">
+								<label for="return-date">Devolução prevista</label>
+								<input id="return-date" name="returnDate" type="date" required />
+							</div>
+							<div class="registration-field">
+								<label for="rental-days">Quantidade de dias</label>
+								<input id="rental-days" readonly />
+							</div>
+							<div class="registration-field">
+								<label for="rental-total">Valor total</label>
+								<input id="rental-total" readonly />
+							</div>
+						</div>
+						<div class="registration-actions">
+							<a class="registration-button" href="locacoes.html">Cancelar</a>
+							<div class="registration-actions-group">
+								<a class="registration-button" href="locacoes.html">Ver locações</a>
+								<button class="registration-button registration-button-primary" id="save-rental-button" type="submit" disabled>Salvar alterações</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</section>
+			<footer class="page-footer"><span>© 2026 acessoCar</span><span>Uma viagem melhor começa com acesso.</span></footer>
+		</main>
+	</div>
+</body>
+</html>

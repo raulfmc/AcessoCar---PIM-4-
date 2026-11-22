@@ -227,7 +227,7 @@
 		]);
 		// console.log("Parcelas recebidas:", installmentData);
 		// console.log("Primeira parcela:", installmentData[0]);
-		if (!Array.isArray(customerData) || !Array.isArray(installmentData || !Array.isArray(financeData))) {
+		if (!Array.isArray(customerData) || !Array.isArray(installmentData) || !Array.isArray(financeData)) {
 			throw new Error("As rotas de clientes e parcelas devem retornar listas (ou { data: lista }).");
 		}
 		customers = customerData;
@@ -329,30 +329,66 @@
 		// 	item.data_Vencimento <= filters.data_Fim)
 		// );
 	}
-
 	function getCustomerRows() {
 		const filters = getFilters();
-		return finanças.filter((finance) => {
-			const customer = customers.find(
-				(item) => item.id === finance.clienteID
+
+		return customers.map(customer => {
+			const customerInstallments = installments.filter(item =>
+				Number(getInstallmentCustomerId(item)) === Number(customer.id) &&
+				getInstallmentStatus(item) === activeStatus
 			);
 
+			if (customerInstallments.length === 0) return null;
+
 			const searchable = `
-            ${finance.clienteNome}
-            ${finance.clienteID}
-            ${customer?.cpf || ""}
+            ${customer.nome}
+            ${customer.id}
+            ${customer.cpf || ""}
         `.toLocaleLowerCase("pt-BR");
-			return (
-				(!filters.search || searchable.includes(filters.search)) &&
-				getCustomerStatus(finance.clienteID) === activeStatus
-			);
-			// return (!filters.search || searchable.includes(filters.search));
-			// && (!filters.data_Inicio ||
-			// 	finance.proxVencimento >= filters.data_Fim)
-			// && (!filters.endDate ||
-			// 	finance.proxVencimento <= filters.data_Fim);
-		});
+
+			if (filters.search && !searchable.includes(filters.search)) {
+				return null;
+			}
+
+			const proxVencimento = customerInstallments
+				.map(item => item.data_Vencimento)
+				.sort()[0];
+
+			return {
+				clienteID: customer.id,
+				clienteNome: customer.nome,
+				qtdParcelas: customerInstallments.length,
+				valorEmAberto: customerInstallments.reduce(
+					(total, item) => total + Number(item.valor),
+					0
+				),
+				proxVencimento
+			};
+		}).filter(Boolean);
 	}
+	// function getCustomerRows() {
+	// 	const filters = getFilters();
+	// 	return finanças.filter((finance) => {
+	// 		const customer = customers.find(
+	// 			(item) => item.id === finance.clienteID
+	// 		);
+
+	// 		const searchable = `
+	//         ${finance.clienteNome}
+	//         ${finance.clienteID}
+	//         ${customer?.cpf || ""}
+	//     `.toLocaleLowerCase("pt-BR");
+	// 		return (
+	// 			(!filters.search || searchable.includes(filters.search)) &&
+	// 			getCustomerStatus(finance.clienteID) === activeStatus
+	// 		);
+	// 		return (!filters.search || searchable.includes(filters.search));
+	// 		&& (!filters.data_Inicio ||
+	// 			finance.proxVencimento >= filters.data_Fim)
+	// 		&& (!filters.endDate ||
+	// 			finance.proxVencimento <= filters.data_Fim);
+	// 	});
+	// }
 
 	function renderCustomerList() {
 		const rows = getCustomerRows();

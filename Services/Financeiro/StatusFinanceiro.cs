@@ -7,7 +7,7 @@ public static class StatusFinanceiro
         var lista = parcelas.ToList();
 
         if (!lista.Any())
-            return "PENDENTE";
+            return "OK";
         var parcelasNaoPagas = parcelas
             .Where(p => p.Estado != "OK" &&
                         p.Data_Confirmacao == null)

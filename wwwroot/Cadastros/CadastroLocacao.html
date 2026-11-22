@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080d16" />
+
+    <title>Cadastrar locação | acessoCar</title>
+
+    <link rel="stylesheet" href="../PG_HOME.css" />
+    <link rel="stylesheet" href="../locacoes.css" />
+
+    <script src="../csrf.js" defer></script>
+	<script src="../accessocar-utils.js" defer></script>
+    <script src="../locacoes.js" defer></script>
+</head>
+
+<body>
+    <div class="app-shell">
+
+        <aside class="sidebar" id="sidebar" aria-label="Menu principal">
+            <div class="sidebar-top">
+                <a class="brand" href="../PG_HOME.html" aria-label="acessoCar, página inicial">
+                    <span class="brand-mark" aria-hidden="true">
+                        <span>A</span><span>C</span>
+                    </span>
+                    <span class="brand-name">acesso<span>Car</span></span>
+                </a>
+
+                <button class="menu-toggle" id="menu-toggle"
+                    type="button"
+                    aria-expanded="false"
+                    aria-controls="sidebar-content"
+                    aria-label="Abrir menu">
+
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 7h16M4 12h16M4 17h16"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="sidebar-content" id="sidebar-content">
+                <nav class="primary-nav" aria-label="Navegação">
+                    <a class="nav-link" href="../PG_HOME.html"><span>Home</span></a>
+                    <a class="nav-link" href="../clientes.html"><span>Clientes</span></a>
+                    <a class="nav-link" href="../veiculos.html"><span>Veículos</span></a>
+                    <a class="nav-link is-active" href="../locacoes.html" aria-current="page">
+                        <span>Locações</span>
+                    </a>
+                    <a class="nav-link" href="../financeiro.html"><span>Financeiro</span></a>
+                    <a class="nav-link" href="../manutencao.html"><span>Manutenção</span></a>
+                </nav>
+            </div>
+        </aside>
+
+        <main class="main-content">
+
+            <header class="page-header">
+                <div>
+                    <p class="eyebrow">
+                        <span class="status-dot" aria-hidden="true"></span>
+                        GESTÃO DE LOCAÇÕES
+                    </p>
+
+                    <h1>Cadastrar <span>locação</span></h1>
+
+                    <p class="page-description">
+                        Preencha os dados para registrar uma nova locação.
+                    </p>
+                </div>
+
+                <label class="theme-control" for="theme-toggle">
+                    <span class="theme-label" id="theme-label">Tema escuro</span>
+
+                    <span class="switch">
+                        <input id="theme-toggle"
+                            type="checkbox"
+                            role="switch"
+                            aria-label="Ativar tema claro" />
+
+                        <span class="switch-track" aria-hidden="true">
+                            <span class="switch-thumb"></span>
+                        </span>
+                    </span>
+                </label>
+            </header>
+
+            <section class="rental-section"
+                id="new-rental-section"
+                aria-labelledby="rental-form-title">
+
+                <div class="rental-heading">
+                    <div>
+                        <h2 id="rental-form-title">Dados da nova locação</h2>
+                    </div>
+
+                    <button class="secondary-button"
+                        id="cancel-rental-form"
+                        type="button">
+                        Voltar à lista
+                    </button>
+                </div>
+
+                <form class="rental-panel" id="rental-form">
+
+                    <div class="form-grid">
+
+                        <div class="field field-wide">
+                            <label for="customer-select">Cliente</label>
+
+                            <select id="customer-select" required>
+                                <option value="">
+                                    Selecione ou pesquise pelo nome
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="customer-id">CPF / Identificador</label>
+
+                            <input id="customer-id"
+                                type="text"
+                                readonly
+                                placeholder="Selecione um cliente" />
+                        </div>
+
+                        <div class="field field-wide">
+                            <label for="vehicle-select">Veículo disponível</label>
+
+                            <select id="vehicle-select" required>
+                                <option value="">
+                                    Selecione um veículo disponível
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="vehicle-plate">Placa</label>
+
+                            <input id="vehicle-plate"
+                                type="text"
+                                readonly
+                                placeholder="—" />
+                        </div>
+
+                        <div class="field">
+                            <label for="daily-rate">Valor da diária</label>
+
+                            <input id="daily-rate"
+                                type="text"
+                                readonly
+                                placeholder="—" />
+                        </div>
+
+                        <div class="field">
+                            <label for="start-date">Início da locação</label>
+
+                            <input id="start-date"
+                                name="startDate"
+                                type="date"
+                                required />
+                        </div>
+
+                        <div class="field">
+                            <label for="return-date">Devolução prevista</label>
+
+                            <input id="return-date"
+                                name="returnDate"
+                                type="date"
+                                required />
+                        </div>
+
+                        <div class="field">
+                            <label for="rental-days">Quantidade de dias</label>
+
+                            <input id="rental-days"
+                                type="number"
+                                readonly
+                                placeholder="Calculado pelas datas" />
+                        </div>
+
+                        <div class="field">
+                            <label for="rental-total">Valor total</label>
+
+                            <input id="rental-total"
+                                type="text"
+                                readonly
+                                placeholder="Calculado após a seleção" />
+                        </div>
+
+                        <div class="field">
+                            <label for="payment-method">Forma de pagamento</label>
+
+                            <select id="payment-method" name="paymentMethod">
+                                <option value="À vista">À vista</option>
+                                <option value="Parcelado">Parcelado</option>
+                            </select>
+                        </div>
+
+                        <div class="field" id="installments-field">
+                            <label for="installment-count">
+                                Quantidade de parcelas
+                            </label>
+
+                            <select id="installment-count"
+                                name="installments"
+                                disabled>
+
+                                <option value="2">2 parcelas</option>
+                                <option value="3">3 parcelas</option>
+                                <option value="4">4 parcelas</option>
+                                <option value="6">6 parcelas</option>
+                                <option value="12">12 parcelas</option>
+                            </select>
+                        </div>
+
+                        <div class="field field-wide" id="first-due-field" hidden>
+                            <label for="first-due-date">
+                                Vencimento da primeira parcela
+                            </label>
+
+                            <input id="first-due-date"
+                                name="firstDueDate"
+                                type="date" />
+                        </div>
+
+                    </div>
+
+                    <p class="form-message"
+                        id="rental-message"
+                        role="status"
+                        aria-live="polite">
+                    </p>
+
+                    <div class="form-actions">
+                        <p>
+                            O pagamento é realizado fora do sistema.
+                            O Financeiro apenas registra e acompanha as parcelas.
+                        </p>
+
+                        <button class="primary-button" type="submit">
+                            Confirmar locação
+                        </button>
+                    </div>
+
+                </form>
+            </section>
+
+            <footer class="page-footer">
+                <span>© 2026 acessoCar</span>
+                <span>Uma viagem melhor começa com acesso.</span>
+            </footer>
+
+        </main>
+    </div>
+</body>
+</html>

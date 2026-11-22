@@ -68,7 +68,7 @@
 		localStorage.setItem("acessocar-theme", themeToggle.checked ? "light" : "dark");
 	})
 })();
-const criacaoCliente = "CadastroCliente.html";
+const criacaoCliente = "Cadastros/CadastroCliente.html";
 async function loadCustomers() {
 	const resposta = await fetchProtegido('https://localhost:7240/api/Cliente');
 
@@ -85,7 +85,7 @@ async function loadCustomers() {
 	return customers;
 }
 
-let customers = loadCustomers();
+let customers = [];
 
 //Puxar o status do banco, vai ter que ter condições pro front saber as labels de acordo com o status do banco
 const statusLabels = {
@@ -232,6 +232,67 @@ async function renderCustomers() {
 	const customerWord = visibleCustomers.length === 1 ? "cliente" : "clientes";
 	customerCount.textContent = `${visibleCustomers.length} ${customerWord}`;
 }
+tableBody.addEventListener("click", async (event) => {
+	const deleteButton = event.target.closest("[data-delete-customer]");
+
+	if (!deleteButton) return;
+
+	const customerId = deleteButton.dataset.deleteCustomer;
+
+	const customer = customers.find(
+		item => String(item.id) === String(customerId)
+	);
+
+	if (!customer) {
+		alert("Cliente não encontrado na lista.");
+		return;
+	}
+
+	if (!confirm(`Deseja excluir o cliente ${customer.nome}?`)) {
+		return;
+	}
+
+	try {
+		deleteButton.disabled = true;
+
+		const resposta = await fetchProtegido(
+			`https://localhost:7240/api/Cliente/${encodeURIComponent(customerId)}`,
+			{
+				method: "DELETE",
+				credentials: "include"
+			}
+		);
+
+		let body = null;
+
+		if (resposta.status !== 204) {
+			const texto = await resposta.text();
+			body = texto ? JSON.parse(texto) : null;
+		}
+
+		if (!resposta.ok) {
+			throw new Error(
+				body?.detail ||
+				body?.message ||
+				body?.mensagem ||
+				body?.title ||
+				`Erro HTTP ${resposta.status}`
+			);
+		}
+
+		alert(`Cliente ${customer.nome} excluído com sucesso!`);
+
+		await renderCustomers();
+
+	} catch (error) {
+		console.error("Erro ao excluir cliente:", error);
+
+		alert(`Não foi possível excluir o cliente: ${error.message}`);
+
+		deleteButton.disabled = false;
+	}
+	
+});
 
 setTheme(savedTheme === "light");
 newCustomerLink.href = criacaoCliente;
@@ -252,13 +313,13 @@ function abrirEdicaoCliente() {
 	if (clienteId === null || clienteId.trim() === "") {
 		return;
 	}
-	
+
 	if (!/^[1-9]\d*$/.test(clienteId.trim())) {
 		alert("Informe um ID válido.");
 		return;
 	}
 
-	window.location.href = `EdiçãoCliente.html?id=${clienteId.trim()}`;
+	window.location.href = `Edicoes/EdiçãoCliente.html?id=${clienteId.trim()}`;
 }
 tableBody.addEventListener("click", (event) => {
 	const editButton = event.target.closest("[data-edit-customer]");
@@ -272,40 +333,40 @@ filterButtons.forEach((button) => {
 		updateActiveFilterButton();
 		renderCustomers();
 	});
-	tableBody.addEventListener("click", async (event) => {
-		const deleteButton = event.target.closest("[data-delete-customer]");
-		if (!deleteButton) return;
-		const customer = customers.find((item) => item.id === deleteButton.dataset.deleteCustomer);
-		if (!customer || !window.confirm(`Deseja excluir o cliente ${customer.name}?`)) return;
-		try {
-			await request("customerById", {
-				method: "DELETE",
-				url: API_ROUTES.customerById.replace(":id", encodeURIComponent(customer.id))
-			});
-			await renderCustomers();
-		} catch (error) {
-			statusMessage.textContent = `Não foi possível excluir o cliente: ${error.message}`;
-			statusMessage.hidden = false;
-		}
-	});
+	// tableBody.addEventListener("click", async (event) => {
+	// 	const deleteButton = event.target.closest("[data-delete-customer]");
+	// 	if (!deleteButton) return;
+	// 	const customer = customers.find((item) => item.id === deleteButton.dataset.deleteCustomer);
+	// 	if (!customer || !window.confirm(`Deseja excluir o cliente ${customer.name}?`)) return;
+	// 	try {
+	// 		await request("customerById", {
+	// 			method: "DELETE",
+	// 			url: API_ROUTES.customerById.replace(":id", encodeURIComponent(customer.id))
+	// 		});
+	// 		await renderCustomers();
+	// 	} catch (error) {
+	// 		statusMessage.textContent = `Não foi possível excluir o cliente: ${error.message}`;
+	// 		statusMessage.hidden = false;
+	// 	}
+	// });
 
-	tableBody.addEventListener("click", (event) => {
-		const deleteButton = event.target.closest("[data-delete-customer]");
-		if (!deleteButton) return;
+	// tableBody.addEventListener("click", (event) => {
+	// 	const deleteButton = event.target.closest("[data-delete-customer]");
+	// 	if (!deleteButton) return;
 
-		const customer = customers.find((item) => item.id === deleteButton.dataset.deleteCustomer);
-		if (!customer || !window.confirm(`Deseja excluir o cliente ${customer.name}?`)) return;
+	// 	const customer = customers.find((item) => item.id === deleteButton.dataset.deleteCustomer);
+	// 	if (!customer || !window.confirm(`Deseja excluir o cliente ${customer.name}?`)) return;
 
-		const state = AccessoCarData.read();
-		const hasRentalHistory = state.rentals.some((rental) => rental.cliente_Id === customer.id)
-			|| state.installments.some((installment) => installment.cliente_Id === customer.id);
-		if (hasRentalHistory) {
-			window.alert("Este cliente possui registros financeiros ou de locação e não pode ser excluído.");
-			return;
-		}
-		state.customers = state.customers.filter((item) => item.ID !== customer.ID);
-		AccessoCarData.write(state);
-	});
+	// 	const state = AccessoCarData.read();
+	// 	const hasRentalHistory = state.rentals.some((rental) => rental.cliente_Id === customer.id)
+	// 		|| state.installments.some((installment) => installment.cliente_Id === customer.id);
+	// 	if (hasRentalHistory) {
+	// 		window.alert("Este cliente possui registros financeiros ou de locação e não pode ser excluído.");
+	// 		return;
+	// 	}
+	// 	state.customers = state.customers.filter((item) => item.ID !== customer.ID);
+	// 	AccessoCarData.write(state);
+	// });
 
 	const sidebar = document.querySelector("#sidebar");
 	const menuToggle = document.querySelector("#menu-toggle");

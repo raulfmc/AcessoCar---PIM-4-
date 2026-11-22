@@ -142,7 +142,7 @@
 			return;
 		}
 
-		window.location.href = `EdicaoVeiculo.html?id=${carroId.trim()}`;
+		window.location.href = `Edicoes/EdicaoVeiculo.html?id=${carroId.trim()}`;
 	}
 	document.querySelector(".btn-edit").addEventListener("click", () => {
 		abrirEdicaoVeiculo();
@@ -162,20 +162,65 @@
 		renderVehicles();
 	}));
 	tableBody.addEventListener("click", async (event) => {
-		const button = event.target.closest("[data-delete-vehicle]");
-		if (!button) return;
-		const vehicle = vehicles.find((item) => item.id === button.dataset.deleteVehicle);
-		if (!vehicle || !window.confirm(`Deseja excluir o veículo ${vehicle.nome}?`)) return;
-		try {
-			await request("vehicleById", {
-				method: "DELETE",
-				url: API_ROUTES.vehicleById.replace(":id", encodeURIComponent(vehicle.id))
-			});
-			await renderVehicles();
-		} catch (error) {
-			statusMessage.textContent = `Não foi possível excluir o veículo: ${error.message}`;
-			statusMessage.hidden = false;
+		const deleteButton = event.target.closest("[data-delete-vehicle]");
+
+		if (!deleteButton) return;
+
+		const vehicleId = deleteButton.dataset.deleteVehicle;
+
+		const vehicle = vehicles.find(
+			item => String(item.id) === String(vehicleId)
+		);
+
+		if (!vehicle) {
+			alert("Veículo não encontrado na lista.");
+			return;
 		}
+
+		if (!confirm(`Deseja excluir o veículo ${vehicle.marca} ${vehicle.modelo}?`)) {
+			return;
+		}
+
+		try {
+			deleteButton.disabled = true;
+
+			const resposta = await fetchProtegido(
+				`https://localhost:7240/api/Carro/${encodeURIComponent(vehicleId)}`,
+				{
+					method: "DELETE",
+					credentials: "include"
+				}
+			);
+
+			let body = null;
+
+			if (resposta.status !== 204) {
+				const texto = await resposta.text();
+				body = texto ? JSON.parse(texto) : null;
+			}
+
+			if (!resposta.ok) {
+				throw new Error(
+					body?.detail ||
+					body?.message ||
+					body?.mensagem ||
+					body?.title ||
+					`Erro HTTP ${resposta.status}`
+				);
+			}
+
+			alert(`Veículo ${vehicle.marca} ${vehicle.modelo} excluído com sucesso!`);
+
+			await renderVehicles();
+
+		} catch (error) {
+			console.error("Erro ao excluir veículo:", error);
+
+			alert(`Não foi possível excluir o veículo: ${error.message}`);
+
+			deleteButton.disabled = false;
+		}
+
 	});
 
 	const sidebar = document.querySelector("#sidebar");

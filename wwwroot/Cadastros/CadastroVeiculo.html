@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="theme-color" content="#080d16" />
+	<title>Novo veículo | acessoCar</title>
+	<link rel="stylesheet" href="../PG_HOME.css" />
+	<link rel="stylesheet" href="cadastros.css" />
+	<script src="../csrf.js" defer></script>
+	<script src="cadastro-veiculo.js" defer></script>
+</head>
+
+<body>
+	<div class="app-shell">
+		<aside class="sidebar" id="sidebar" aria-label="Menu principal">
+			<div class="sidebar-top">
+				<a class="brand" href="../PG_HOME.html" aria-label="acessoCar, página inicial">
+					<span class="brand-mark" aria-hidden="true"><span>A</span><span>C</span></span>
+					<span class="brand-name">acesso<span>Car</span></span>
+				</a>
+				<button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false"
+					aria-controls="sidebar-content" aria-label="Abrir menu">
+					<svg viewBox="0 0 24 24" aria-hidden="true">
+						<path d="M4 7h16M4 12h16M4 17h16"></path>
+					</svg>
+				</button>
+			</div>
+			<div class="sidebar-content" id="sidebar-content">
+				<nav class="primary-nav" aria-label="Navegação">
+					<a class="nav-link" href="../PG_HOME.html"><span>Home</span></a>
+					<a class="nav-link" href="../clientes.html"><span>Clientes</span></a>
+					<a class="nav-link is-active" href="../veiculos.html" aria-current="page"><span>Veículos</span></a>
+					<a class="nav-link" href="../locacoes.html"><span>Locações</span></a>
+					<a class="nav-link" href="../financeiro.html"><span>Financeiro</span></a>
+					<a class="nav-link" href="../manutencao.html"><span>Manutenção</span></a>
+				</nav>
+			</div>
+		</aside>
+
+		<main class="main-content">
+			<header class="page-header">
+				<div>
+					<p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> GESTÃO DE VEÍCULOS</p>
+					<h1>Novo <span>veículo</span></h1>
+					<p class="page-description">Cadastre os dados do veículo</p>
+				</div>
+				<label class="theme-control" for="theme-toggle">
+					<span class="theme-label" id="theme-label">Tema escuro</span>
+					<span class="switch"><input id="theme-toggle" type="checkbox" role="switch"
+							aria-label="Ativar tema claro" /><span class="switch-track" aria-hidden="true"><span
+								class="switch-thumb"></span></span></span>
+				</label>
+			</header>
+			<section class="registration-section" aria-labelledby="registration-title">
+				<div class="registration-card">
+
+					<div class="registration-heading">
+						<h2 id="registration-title">Dados do veículo</h2>
+						
+					</div>
+
+					<div class="registration-message" id="registration-message" role="status" aria-live="polite">
+					</div>
+
+					<form id="registration-form" data-kind="vehicle">
+
+						<div class="registration-grid">
+
+							<div class="registration-field">
+								<label for="Marca">Marca</label>
+								<input id="Marca" name="Marca" type="text" maxlength="60" required />
+							</div>
+
+							<div class="registration-field">
+								<label for="Modelo">Modelo</label>
+								<input id="Modelo" name="Modelo" type="text" maxlength="80" required />
+							</div>
+
+							<div class="registration-field">
+								<label for="Ano_Fabricacao">Ano de fabricação</label>
+								<input id="Ano_Fabricacao" name="Ano_Fabricacao" type="number" min="1950" max="2100"
+									required />
+							</div>
+
+							<div class="registration-field">
+								<label for="Numero">Número / chassi</label>
+								<input id="Numero" name="Numero" type="text" maxlength="40" required />
+							</div>
+
+							<div class="registration-field">
+								<label for="Versao">Versão</label>
+								<input id="Versao" name="Versao" type="text" maxlength="60" required />
+							</div>
+
+							<div class="registration-field">
+								<label for="Cambio">Câmbio</label>
+								<select id="Cambio" name="Cambio" required>
+									<option value="">Selecione</option>
+									<option value="Automático">Automático</option>
+									<option value="CVT">CVT</option>
+									<option value="Automatizado">Automatizado</option>
+								</select>
+							</div>
+
+							<div class="registration-field">
+								<label for="Placa">Placa</label>
+								<input id="Placa" name="Placa" type="text" maxlength="8" required />
+							</div>
+
+							<div class="registration-field">
+								<label for="Cor">Cor</label>
+								<input id="Cor" name="Cor" type="text" maxlength="40" required />
+							</div>
+
+							<div class="registration-field">
+								<label for="Valor_Diaria">Valor da diária (R$)</label>
+								<input id="Valor_Diaria" name="Valor_Diaria" type="number" min="0.01" step="0.01"
+									required />
+							</div>
+
+						</div>
+
+						<div class="registration-actions">
+							<a class="registration-button" href="veiculos.html">
+								Cancelar
+							</a>
+
+							<button class="registration-button registration-button-primary" type="submit">
+								Salvar veículo
+							</button>
+						</div>
+
+					</form>
+
+					<!-- CADASTRO DE ADAPTAÇÕES -->
+
+					<section id="adaptation-section" hidden>
+
+						<div class="registration-heading">
+							<h2>Adaptações do veículo</h2>
+							<p>Adicione quantas adaptações forem necessárias.</p>
+						</div>
+
+						<div class="registration-message" id="adaptation-message" role="status" aria-live="polite">
+						</div>
+
+						<div id="adaptation-list" class="registration-grid">
+						</div>
+
+						<div class="registration-heading">
+							<h2>Nova adaptação</h2>
+						</div>
+
+						<form id="adaptation-form">
+
+							<div class="registration-grid">
+
+								<div class="registration-field">
+									<label for="Nome">Nome</label>
+									<input id="Nome" name="Nome" type="text" maxlength="60"
+										placeholder="Ex.: Pomo giratório" required />
+								</div>
+
+								<div class="registration-field">
+									<label for="Tipo">Tipo</label>
+									<input id="Tipo" name="Tipo" type="text" maxlength="80" placeholder="Ex.: Direção"
+										required />
+								</div>
+
+							</div>
+
+							<div class="registration-actions">
+								<button class="registration-button" type="button" id="cancel-adaptation-edit" hidden>
+									Cancelar edição
+								</button>
+
+								<button class="registration-button registration-button-primary" type="submit">
+									Cadastrar adaptação
+								</button>
+							</div>
+
+						</form>
+
+					</section>
+
+				</div>
+			</section>
+			<!-- <section class="registration-section" aria-labelledby="registration-title">
+				<div class="registration-card">
+					<div class="registration-heading">
+						<h2 id="registration-title">Dados do veículo</h2>
+						<p>O identificador será gerado ao salvar</p>
+					</div>
+					<div class="registration-message" id="registration-message" role="status" aria-live="polite"></div>
+					<form id="registration-form" data-kind="vehicle">
+						<div class="registration-grid">
+							<div class="registration-field">
+								<label for="brand">Marca</label>
+								<input id="Marca" name="Marca" type="text" maxlength="60" placeholder="Ex.: Chevrolet"
+									required />
+							</div>
+							<div class="registration-field">
+								<label for="model">Modelo</label>
+								<input id="Modelo" name="Modelo" type="text" maxlength="80" placeholder="Ex.: Onix"
+									required />
+							</div>
+							<div class="registration-field">
+								<label for="year">Ano de fabricação</label>
+								<input id="Ano_Fabricacao" name="Ano_Fabricacao" type="number" min="1950" max="2100"
+									step="1" placeholder="2026" required />
+							</div>
+							<div class="registration-field">
+								<label for="number">Número / chassi</label>
+								<input id="Numero" name="Numero" type="text" maxlength="40"
+									placeholder="Número de identificação" required />
+							</div>
+							<div class="registration-field">
+								<label for="version">Versão</label>
+								<input id="Versao" name="Versao" type="text" maxlength="60"
+									placeholder="Ex.: LT 1.0 Turbo" required />
+							</div>
+							<div class="registration-field">
+								<label for="transmission">Câmbio</label>
+								<select id="Cambio" name="Cambio" required>
+									<option value="">Selecione</option>
+									<option value="Automático">Automático</option>
+									<option value="CVT">CVT</option>
+									<option value="Automatizado">Automatizado</option>
+								</select>
+							</div>
+							<div class="registration-field">
+								<label for="plate">Placa</label>
+								<input id="Placa" name="Placa" type="text" maxlength="8" placeholder="Placa do veículo"
+									required />
+							</div>
+							<div class="registration-field">
+								<label for="color">Cor</label>
+								<input id="Cor" name="Cor" type="text" maxlength="40" placeholder="Cor do veículo"
+									required />
+							</div>
+							<div class="registration-field">
+								<label for="dailyRate">Valor da diária (R$)</label>
+								<input id="Valor_Diaria" name="Valor_Diaria" type="number" min="0.01" step="0.01"
+									placeholder="Valor da diária" required />
+							</div>
+
+
+						</div>
+						<div class="registration-heading">
+							<div>
+								<br></br>
+
+							</div>
+							<h2 id="registration-title">Dados da adaptação</h2>
+							
+						</div>
+						<div class="registration-message" id="registration-message" role="status" aria-live="polite">
+						</div>
+						<form id="registration-form" data-kind="vehicle">
+							<div class="registration-grid">
+								<div class="registration-field">
+									<label for="brand">Nome</label>
+									<input id="Nome" name="Nome" type="text" maxlength="60"
+										placeholder="Ex.: Pomo giratório" required />
+								</div>
+								<div class="registration-field">
+									<label for="model">Tipo</label>
+									<input id="Tipo" name="Tipo" type="text" maxlength="80" 
+									placeholder="Ex.: Pedais"
+										required />
+								</div>
+								
+								
+
+
+							</div>
+							<div class="registration-actions">
+								<a class="registration-button" href="veiculos.html">Cancelar</a>
+								<div class="registration-actions-group">
+									<a class="registration-button" id="view-records" href="veiculos.html">Ver
+										veículos</a>
+									<button class="registration-button registration-button-primary" type="submit">Salvar
+										veículo</button>
+								</div>
+							</div>
+						</form>
+				</div>
+			</section> -->
+			<footer class="page-footer"><span>© 2026 acessoCar</span><span>Uma viagem melhor começa com acesso.</span>
+			</footer>
+		</main>
+	</div>
+</body>
+
+</html>

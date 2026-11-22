@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080d16" />
+    <title>Atualização de manutenção | acessoCar</title>
+
+    <link rel="stylesheet" href="../PG_HOME.css" />
+    <link rel="stylesheet" href="../Cadastros/cadastros.css" />
+
+    <script src="../accessocar-utils.js" defer></script>
+    <script src="../csrf.js" defer></script>
+    <script src="edicao.js" defer></script>
+    <script src="edicao-manutencao.js" defer></script>
+</head>
+
+<body>
+    <div class="app-shell">
+
+        <aside class="sidebar" id="sidebar" aria-label="Menu principal">
+            <div class="sidebar-top">
+                <a class="brand" href="../PG_HOME.html" aria-label="acessoCar, página inicial">
+                    <span class="brand-mark" aria-hidden="true">
+                        <span>A</span><span>C</span>
+                    </span>
+                    <span class="brand-name">acesso<span>Car</span></span>
+                </a>
+
+                <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false"
+                    aria-controls="sidebar-content" aria-label="Abrir menu">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 7h16M4 12h16M4 17h16"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="sidebar-content" id="sidebar-content">
+                <nav class="primary-nav" aria-label="Navegação">
+                    <a class="nav-link" href="../PG_HOME.html">
+                        <span>Home</span>
+                    </a>
+
+                    <a class="nav-link" href="../clientes.html">
+                        <span>Clientes</span>
+                    </a>
+
+                    <a class="nav-link" href="../veiculos.html">
+                        <span>Veículos</span>
+                    </a>
+
+                    <a class="nav-link" href="../locacoes.html">
+                        <span>Locações</span>
+                    </a>
+
+                    <a class="nav-link" href="../financeiro.html">
+                        <span>Financeiro</span>
+                    </a>
+
+                    <a class="nav-link is-active" href="../manutencao.html" aria-current="page">
+                        <span>Manutenção</span>
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        <main class="main-content">
+
+            <header class="page-header">
+                <div>
+                    <p class="eyebrow">
+                        <span class="status-dot" aria-hidden="true"></span>
+                        GESTÃO DA FROTA
+                    </p>
+
+                    <h1>Atualização <span>manutenção</span></h1>
+
+                    <p class="page-description">
+                        Altere os dados de uma manutenção registrada no sistema.
+                    </p>
+                </div>
+
+                <label class="theme-control" for="theme-toggle">
+                    <span class="theme-label" id="theme-label">
+                        Tema escuro
+                    </span>
+
+                    <span class="switch">
+                        <input id="theme-toggle" type="checkbox" role="switch" aria-label="Ativar tema claro" />
+
+                        <span class="switch-track" aria-hidden="true">
+                            <span class="switch-thumb"></span>
+                        </span>
+                    </span>
+                </label>
+            </header>
+
+            <section class="registration-section" aria-labelledby="registration-title">
+
+                <div class="registration-card">
+
+                    <div class="registration-heading">
+                        <h2 id="registration-title">Dados da manutenção</h2>
+                        <p>Atualize as informações da manutenção selecionada.</p>
+                    </div>
+
+                    <div class="registration-message" id="maintenance-message" role="status" aria-live="polite">
+                    </div>
+
+                    <form id="maintenance-form">
+
+                        <div class="registration-grid">
+
+                            <div class="registration-field">
+                                <label for="maintenance-vehicle">
+                                    Veículo
+                                </label>
+
+                                <input id="maintenance-vehicle" name="vehicleId" type="text"
+                                    placeholder="Veículo associado à manutenção" readonly />
+                            </div>
+
+                            <div class="registration-field">
+                                <label for="maintenance-date">
+                                    Data prevista de conclusão
+                                </label>
+
+                                <input id="maintenance-date" name="date" type="date" required />
+                            </div>
+
+                            <div class="registration-field">
+                                <label for="maintenance-cost">
+                                    Valor da manutenção (R$)
+                                </label>
+
+                                <input id="maintenance-cost" name="cost" type="text" inputmode="numeric" maxlength="20"
+                                    placeholder="Valor da manutenção" autocomplete="off" required />
+
+                                <p class="registration-help">
+                                    Informe o valor total previsto para a manutenção.
+                                </p>
+                            </div>
+
+                            <div class="registration-field is-wide">
+                                <label for="maintenance-report">
+                                    Relatório / motivo da manutenção
+                                </label>
+
+                                <textarea id="maintenance-report" name="report" rows="5" maxlength="1000"
+                                    placeholder="Descreva o problema, serviço solicitado ou realizado..."
+                                    required></textarea>
+                            </div>
+
+                        </div>
+
+                        <div class="registration-actions">
+
+                            <a class="registration-button" href="manutencao.html">
+                                Cancelar
+                            </a>
+
+                            <div class="registration-actions-group">
+
+                                <a class="registration-button" id="view-records" href="manutencao.html">
+                                    Ver manutenções
+                                </a>
+
+                                <button class="registration-button registration-button-primary"
+                                    id="save-maintenance-button" type="submit" disabled>
+                                    Salvar alterações
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </form>
+                </div>
+            </section>
+
+            <footer class="page-footer">
+                <span>© 2026 acessoCar</span>
+                <span>Uma viagem melhor começa com acesso.</span>
+            </footer>
+
+        </main>
+    </div>
+</body>
+
+</html>

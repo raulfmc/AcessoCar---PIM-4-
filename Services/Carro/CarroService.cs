@@ -58,50 +58,30 @@ public class CarroService : ICarroService
         return await ConverterParaResposta(carro);
 
     }
-    async public Task<CarroCompletoRespostaDTO?> Criar(CriarCarroCompletoDTO dto)
+    public async Task<CarroRespostaDTO?> CriarSimples(CriarCarroDTO dto)
     {
-        await using var transaction =
-       await _context.Database.BeginTransactionAsync();
-
         try
         {
             Carro carro = new Carro()
             {
-                Marca = dto.carro.Marca,
-                Modelo = dto.carro.Modelo,
-                Ano_Fabricacao = dto.carro.Ano_Fabricacao,
-                Numero = dto.carro.Numero,
-                Versao = dto.carro.Versao,
-                Cambio = dto.carro.Cambio,
-                Placa = dto.carro.Placa,
-                Cor = dto.carro.Cor,
+                Marca = dto.Marca,
+                Modelo = dto.Modelo,
+                Ano_Fabricacao = dto.Ano_Fabricacao,
+                Numero = dto.Numero,
+                Versao = dto.Versao,
+                Cambio = dto.Cambio,
+                Placa = dto.Placa,
+                Cor = dto.Cor,
                 Estado = "DISPONÍVEL",
                 Qtd_Alugueis = 0,
-                Valor_Diaria = dto.carro.Valor_Diaria,
+                Valor_Diaria = dto.Valor_Diaria,
                 Ativo = true
             };
 
             _context.Carro.Add(carro);
             await _context.SaveChangesAsync();
 
-            // Vincula a adaptação ao carro recém-criado
-            dto.adaptacao.Carro_ID = carro.ID;
-
-            var adaptacao = await _adaptacaoService.Criar(dto.adaptacao);
-
-            if (adaptacao == null)
-            {
-                throw new InvalidOperationException(
-                    "Não foi possível cadastrar a adaptação do veículo.");
-            }
-
-            await transaction.CommitAsync();
-
-            return new CarroCompletoRespostaDTO
-            {
-                Carro = await ConverterParaResposta(carro),
-                Adaptacao = adaptacao
-            };
+            return await ConverterParaResposta(carro);
         }
         catch (DbUpdateException ex)
             when (ex.InnerException is SqlException sql &&
@@ -109,70 +89,125 @@ public class CarroService : ICarroService
             sql.Message.Contains("UQ_Placa",
                 StringComparison.OrdinalIgnoreCase))
         {
-            await transaction.RollbackAsync();
-
             throw new PlacaRepetidaException(
                 "Essa placa já existe, insira outra placa.");
         }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
-        // await using var transaction =
-        // await _context.Database.BeginTransactionAsync();
-
-        // try
-        // {
-        //     Carro carro = new Carro()
-        //     {
-        //         Marca = dto.Marca,
-        //         Modelo = dto.Modelo,
-        //         Ano_Fabricacao = dto.Ano_Fabricacao,
-        //         Numero = dto.Numero,
-        //         Versao = dto.Versao,
-        //         Cambio = dto.Cambio,
-        //         Placa = dto.Placa,
-        //         Cor = dto.Cor,
-        //         Estado = "DISPONÍVEL",
-        //         Qtd_Alugueis = 0,
-        //         Valor_Diaria = dto.Valor_Diaria,
-        //         Ativo = true
-        //     };
-
-        //     _context.Carro.Add(carro);
-        //     await _context.SaveChangesAsync();
-        //     adaptacaoDTO.Carro_ID = carro.ID;
-
-        //     var adaptacao = await _adaptacaoService.Criar(adaptacaoDTO);
-        //     Console.WriteLine($"ID da adaptação retornado: {adaptacao?.ID}");
-        //     if (adaptacao == null)
-        //     {
-        //         throw new InvalidOperationException("Não foi possível cadastrar a adaptação do veículo.");
-        //     }
-
-        //     await transaction.CommitAsync();
-
-        //     return ConverterParaResposta(carro);
-
-        // }
-        // catch (DbUpdateException ex)
-        //     when (ex.InnerException is SqlException sql &&
-        //     (sql.Number == 2601 || sql.Number == 2627) &&
-        //     sql.Message.Contains("UQ_Placa",
-        //         StringComparison.OrdinalIgnoreCase))
-        // {
-        //     await transaction.RollbackAsync();
-
-        //     throw new PlacaRepetidaException(
-        //         "Essa placa já existe, insira outra placa.");
-        // }
-        // catch
-        // {
-        //     await transaction.RollbackAsync();
-        //     throw;
-        // }
     }
+    // async public Task<CarroCompletoRespostaDTO?> Criar(CriarCarroCompletoDTO dto)
+    // {
+    //     await using var transaction =
+    //    await _context.Database.BeginTransactionAsync();
+
+    //     try
+    //     {
+    //         Carro carro = new Carro()
+    //         {
+    //             Marca = dto.carro.Marca,
+    //             Modelo = dto.carro.Modelo,
+    //             Ano_Fabricacao = dto.carro.Ano_Fabricacao,
+    //             Numero = dto.carro.Numero,
+    //             Versao = dto.carro.Versao,
+    //             Cambio = dto.carro.Cambio,
+    //             Placa = dto.carro.Placa,
+    //             Cor = dto.carro.Cor,
+    //             Estado = "DISPONÍVEL",
+    //             Qtd_Alugueis = 0,
+    //             Valor_Diaria = dto.carro.Valor_Diaria,
+    //             Ativo = true
+    //         };
+
+    //         _context.Carro.Add(carro);
+    //         await _context.SaveChangesAsync();
+
+    //         // Vincula a adaptação ao carro recém-criado
+    //         dto.adaptacao.Carro_ID = carro.ID;
+
+    //         var adaptacao = await _adaptacaoService.Criar(dto.adaptacao);
+
+    //         if (adaptacao == null)
+    //         {
+    //             throw new InvalidOperationException(
+    //                 "Não foi possível cadastrar a adaptação do veículo.");
+    //         }
+
+    //         await transaction.CommitAsync();
+
+    //         return new CarroCompletoRespostaDTO
+    //         {
+    //             Carro = await ConverterParaResposta(carro),
+    //             Adaptacao = adaptacao
+    //         };
+    //     }
+    //     catch (DbUpdateException ex)
+    //         when (ex.InnerException is SqlException sql &&
+    //         (sql.Number == 2601 || sql.Number == 2627) &&
+    //         sql.Message.Contains("UQ_Placa",
+    //             StringComparison.OrdinalIgnoreCase))
+    //     {
+    //         await transaction.RollbackAsync();
+
+    //         throw new PlacaRepetidaException(
+    //             "Essa placa já existe, insira outra placa.");
+    //     }
+    //     catch
+    //     {
+    //         await transaction.RollbackAsync();
+    //         throw;
+    //     }
+    //     // await using var transaction =
+    //     // await _context.Database.BeginTransactionAsync();
+
+    //     // try
+    //     // {
+    //     //     Carro carro = new Carro()
+    //     //     {
+    //     //         Marca = dto.Marca,
+    //     //         Modelo = dto.Modelo,
+    //     //         Ano_Fabricacao = dto.Ano_Fabricacao,
+    //     //         Numero = dto.Numero,
+    //     //         Versao = dto.Versao,
+    //     //         Cambio = dto.Cambio,
+    //     //         Placa = dto.Placa,
+    //     //         Cor = dto.Cor,
+    //     //         Estado = "DISPONÍVEL",
+    //     //         Qtd_Alugueis = 0,
+    //     //         Valor_Diaria = dto.Valor_Diaria,
+    //     //         Ativo = true
+    //     //     };
+
+    //     //     _context.Carro.Add(carro);
+    //     //     await _context.SaveChangesAsync();
+    //     //     adaptacaoDTO.Carro_ID = carro.ID;
+
+    //     //     var adaptacao = await _adaptacaoService.Criar(adaptacaoDTO);
+    //     //     Console.WriteLine($"ID da adaptação retornado: {adaptacao?.ID}");
+    //     //     if (adaptacao == null)
+    //     //     {
+    //     //         throw new InvalidOperationException("Não foi possível cadastrar a adaptação do veículo.");
+    //     //     }
+
+    //     //     await transaction.CommitAsync();
+
+    //     //     return ConverterParaResposta(carro);
+
+    //     // }
+    //     // catch (DbUpdateException ex)
+    //     //     when (ex.InnerException is SqlException sql &&
+    //     //     (sql.Number == 2601 || sql.Number == 2627) &&
+    //     //     sql.Message.Contains("UQ_Placa",
+    //     //         StringComparison.OrdinalIgnoreCase))
+    //     // {
+    //     //     await transaction.RollbackAsync();
+
+    //     //     throw new PlacaRepetidaException(
+    //     //         "Essa placa já existe, insira outra placa.");
+    //     // }
+    //     // catch
+    //     // {
+    //     //     await transaction.RollbackAsync();
+    //     //     throw;
+    //     // }
+    // }
 
     public async Task<CarroCompletoRespostaDTO?> Atualizar(int id, AtualizarCarroCompletoDTO dto)
     {

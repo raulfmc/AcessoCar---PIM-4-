@@ -5,9 +5,9 @@ public class ClienteRespostaDTO
     public int ID { get; set; }
     public string Nome { get; set; } = string.Empty;
 
-    [RegularExpression(@"^[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}")]
+    [RegularExpression(@"^[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}$")]
     public string CPF { get; set; } = string.Empty;
-    [RegularExpression(@"^\([1-9]{2}\)9[0-9]{4}-[0-9]{4}")]
+    [RegularExpression(@"^\([1-9]{2}\)9[0-9]{4}-[0-9]{4}$")]
     public string Telefone { get; set; }  = string.Empty;
 
     public string Membros {get; set;} = string.Empty;

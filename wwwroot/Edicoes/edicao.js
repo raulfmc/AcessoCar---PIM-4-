@@ -1,0 +1,125 @@
+
+function arquivoParaBase64(arquivo) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => resolve(reader.result.split(",")[1]);
+        reader.onerror = reject;
+
+        reader.readAsDataURL(arquivo);
+    });
+}
+async function editarRegistro(config) {
+    const {
+        id,
+        endpoint,
+        formulario,
+        mapearDados,
+        buscarDados
+    } = config;
+
+    try {
+        let dados;
+
+        if (buscarDados) {
+            dados = await buscarDados(id);
+        } else {
+            const response = await fetchProtegido(`${endpoint}/${id}`);
+
+            if (!response.ok) {
+                throw new Error("Não foi possível buscar o registro.");
+            }
+
+            dados = await response.json();
+        }
+
+        const dadosFormulario = mapearDados(dados);
+
+        Object.entries(dadosFormulario).forEach(([campo, valor]) => {
+
+            if (campo === "Membros") return;
+
+            const elemento = formulario.querySelector(`#${campo}`);
+
+            if (elemento && elemento.type !== "file") {
+                elemento.value = valor ?? "";
+            }
+        });
+
+        return dados;
+
+    } catch (error) {
+        console.error("Erro na edição:", error);
+        throw error;
+    }
+}
+
+async function salvarEdicao(config) {
+    const {
+        id,
+        endpoint,
+        formulario,
+        montarPayload
+    } = config;
+
+    try {
+        const payload = await montarPayload(formulario);
+
+        console.log("ID enviado:", id);
+        console.log("URL:", `${endpoint}/${id}`);
+        console.log("PAYLOAD:", payload);
+        const response = await fetchProtegido(`${endpoint}/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        // if (!response.ok) {
+        //     const erro = await response.json();
+        //     throw new Error(
+        //         erro.detail ?? erro.message ?? erro.mensagem ??
+        //         erro.title ?? "Erro ao atualizar registro."
+        //     );
+        // }
+
+        if (!response.ok) {
+            const erro = await response.json();
+
+            console.log("STATUS:", response.status);
+            console.log("ERRO DA API:", erro);
+            console.log("PAYLOAD ENVIADO:", payload);
+            console.log("CPF:", JSON.stringify(payload.CPF));
+            console.log("Tamanho:", payload.CPF?.length);
+            if (erro.errors) {
+                Object.entries(erro.errors).forEach(([campo, mensagens]) => {
+                    console.error(`${campo}:`, mensagens);
+                });
+            }
+
+            throw new Error(
+                erro.detail ??
+                erro.message ??
+                erro.title ??
+                "Erro ao atualizar registro."
+            );
+        }
+        showMessage("Registro atualizado com sucesso!");
+
+        return true;
+
+    } catch (error) {
+        console.error("Erro ao salvar:", error);
+        showMessage(error.message, true);
+        return false;
+    }
+}
+function showMessage(text, isError = false) {
+    const message = document.querySelector("#registration-message");
+
+    if (!message) return;
+    message.textContent = text;
+    message.classList.add("is-visible");
+    message.classList.toggle("is-error", isError);
+}

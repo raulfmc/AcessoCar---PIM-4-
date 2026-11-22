@@ -103,7 +103,10 @@ public class ClienteService : IClienteService
         cliente.Membros = dto.Membros;
         cliente.Email = dto.Email;
         cliente.Endereco = dto.Endereco;
-        cliente.CNH = dto.CNH;
+        if (dto.CNH != null && dto.CNH.Length > 0)
+        {
+            cliente.CNH = dto.CNH;
+        }
         cliente.Ativo = dto.Ativo;
 
 

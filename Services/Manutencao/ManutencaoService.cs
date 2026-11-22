@@ -28,6 +28,7 @@ public class ManutencaoService : IManutencaoService
     async public Task<ManutencaoRespostaDTO?> BuscarPorId(int id)
     {
         Manutencao? manutencao = await _context.Manutencao
+        .Include(m => m.carro)
         .FirstOrDefaultAsync(Manutencao => Manutencao.ID == id);
         
         if (manutencao == null || manutencao.Ativo == false)
@@ -45,9 +46,9 @@ public class ManutencaoService : IManutencaoService
             
             Descricao = dto.Descricao,
             Data_Prevista_Conclusao = dto.Data_Prevista_Conclusao,
+            Valor = dto.Valor,
             Ativo = true,
             Carro_ID = dto.Carro_ID
-            
             
         };
         _context.Manutencao.Add(manutencao);
@@ -59,6 +60,7 @@ public class ManutencaoService : IManutencaoService
     {
         
         Manutencao? manutencao = await _context.Manutencao
+        .Include(m => m.carro)
         .FirstOrDefaultAsync(Manutencao => Manutencao.ID == id);
 
         if (manutencao == null)
@@ -78,6 +80,7 @@ public class ManutencaoService : IManutencaoService
     public async Task<ManutencaoRespostaDTO?> Excluir(int id)
     {
         Manutencao? manutencao = await _context.Manutencao
+        .Include(m => m.carro)
         .FirstOrDefaultAsync(Manutencao => Manutencao.ID == id);
 
         if (manutencao is null)

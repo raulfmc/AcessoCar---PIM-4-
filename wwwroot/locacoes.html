@@ -103,11 +103,10 @@
 						type="button" 
 						aria-expanded="false" 
 						aria-controls="rental-form">Nova locação</button>  -->
-						<button type="button" class="btn-edit" onclick="editarRegistro()">
-							<i class="fa-solid fa-pen"></i>
+						<button type="button" class="btn-edit" id="edit-rental-button">
+							<i class="fa-solid fa-pen" aria-hidden="true"></i>
 							<span>Editar</span>
 						</button>
-
 						<span class="recent-count" id="recent-count" aria-live="polite"></span>
 					</div> 
 					
@@ -125,16 +124,10 @@
 									<th scope="col">Valor</th>
 									<th scope="col">Parcelas</th>
 									<th scope="col">Estado</th>
-									<!-- <button type="button" class="btn-edit" onclick="editarRegistro()">
-										<i class="fa-solid fa-pen"></i>
-										<span>Editar</span>
-								</button> -->
-
-									<th scope="col">Deletar</th>
+									<th scope="col">Ações</th>
 								</tr>
 							</thead>
 							<tbody id="rental-table-body"></tbody>
-							<span class="recent-count" id="recent-count" aria-live="polite"></span>
 						</table>
 					</div>
 				</div>
