@@ -1,230 +1,337 @@
-function configuracaoEdicaoVeiculo(carro_Id) {
-    const endpointCarro = "https://localhost:7240/api/Carro";
-    const endpointAdaptacao = "https://localhost:7240/api/Adaptacao";
-    let adaptacaoId;
-    return {
-        id: carro_Id,
-        endpoint: endpointCarro,
-        formulario: document.querySelector("#registration-form"),
-        buscarDados: async (id) => {
+(() => {
+    "use strict";
 
-            const [resCarro, resAdaptacao] = await Promise.all([
-                fetch(`${endpointCarro}/${id}`),
-                fetch(endpointAdaptacao)
-            ]);
+    const API_ROUTES = {
+        vehicles: "/api/Carro",
+        adaptations: "/api/Adaptacao"
+    };
 
-            if (!resCarro.ok || !resAdaptacao.ok) {
-                throw new Error("Não foi possível buscar os dados do veículo.");
-            }
+    const form = document.querySelector("#registration-form");
+    const message = document.querySelector("#registration-message");
 
-            const [carro, respostaAdaptacoes] = await Promise.all([
-                resCarro.json(),
-                resAdaptacao.json()
-            ]);
+    const adaptationForm = document.querySelector("#adaptation-form");
+    const adaptationList = document.querySelector("#adaptation-list");
+    const adaptationMessage = document.querySelector("#adaptation-message");
 
-            const adaptacoes = respostaAdaptacoes.data ?? respostaAdaptacoes;
+    const adaptationSubmit = adaptationForm.querySelector('[type="submit"]');
+    const cancelEditButton = document.querySelector("#cancel-adaptation-edit");
 
-            const adaptacao = adaptacoes.find(
-                item => String(item.carro_ID) === String(id)
+    const themeToggle = document.querySelector("#theme-toggle");
+    const themeLabel = document.querySelector("#theme-label");
+
+    const parametros = new URLSearchParams(window.location.search);
+    const currentVehicleId = Number(parametros.get("id"));
+
+    let editingAdaptationId = null;
+
+    // Comunicação com a API
+    async function request(routeName, payload = null, method = "GET", id = null) {
+        const route = API_ROUTES[routeName];
+
+        if (!API_BASE_URL.trim() || !route) {
+            throw new Error("Configure API_BASE_URL e API_ROUTES.");
+        }
+
+        const baseUrl = API_BASE_URL.replace(/\/+$/, "");
+        const endpoint = route.replace(/^\/+/, "");
+
+        const url = `${baseUrl}/${endpoint}${id !== null ? `/${id}` : ""}`;
+
+        const options = {
+            method,
+            credentials: "include",
+            headers: {}
+        };
+
+        if (payload !== null) {
+            options.headers["Content-Type"] = "application/json";
+            options.body = JSON.stringify(payload);
+        }
+
+        const response = method === "GET"
+            ? await fetch(url, options)
+            : await fetchProtegido(url, options);
+
+        const body = response.status === 204
+            ? null
+            : await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                body?.detail ??
+                body?.message ??
+                body?.mensagem ??
+                body?.title ??
+                `A API respondeu com HTTP ${response.status}.`
             );
+        }
 
-            if (!adaptacao) {
-                throw new Error("Não foi encontrada uma adaptação para este veículo.");
-            }
+        return body?.data ?? body?.dados ?? body;
+    }
 
-            adaptacaoId = adaptacao.id;
+    // Mensagens
+    function showMessage(text, isError = false) {
+        message.textContent = text;
+        message.classList.add("is-visible");
+        message.classList.toggle("is-error", isError);
+    }
 
-            return { carro, adaptacao };
-        },
-        // buscarDados: async (id) => {
+    function showAdaptationMessage(text, isError = false) {
+        adaptationMessage.textContent = text;
+        adaptationMessage.classList.add("is-visible");
+        adaptationMessage.classList.toggle("is-error", isError);
+    }
 
-        //     const [resCarro, resAdaptacao] = await Promise.all([
-        //         fetch(`${endpointCarro}/${id}`),
+    // Tema
+    function setTheme(isLight) {
+        document.documentElement.dataset.theme = isLight ? "light" : "dark";
 
+        themeToggle.checked = isLight;
 
-        //         fetch(`${endpointAdaptacao}/${id}`)
-        //     ]);
+        themeToggle.setAttribute(
+            "aria-label",
+            isLight ? "Ativar tema escuro" : "Ativar tema claro"
+        );
 
-        //     if (!resCarro.ok || !resAdaptacao.ok) {
-        //         throw new Error("Não foi possível buscar os dados do veículo.");
-        //     }
+        themeLabel.textContent = isLight ? "Tema claro" : "Tema escuro";
+    }
 
-        //     const [carro, adaptacao] = await Promise.all([
-        //         resCarro.json(),
-        //         resAdaptacao.json()
-        //     ]);
+    // Buscar veículo
+    async function loadVehicle() {
+        const carro = await request("vehicles", null, "GET", currentVehicleId);
 
-        //     return { carro, adaptacao };
-        // },
+        document.getElementById("Marca").value = carro.marca ?? carro.Marca ?? "";
+        document.getElementById("Modelo").value = carro.modelo ?? carro.Modelo ?? "";
+        document.getElementById("Ano_Fabricacao").value =
+            carro.ano_Fabricacao ?? carro.Ano_Fabricacao ?? "";
 
-        mapearDados: (dados) => ({
-            Marca: dados.carro.marca,
-            Modelo: dados.carro.modelo,
-            Ano_Fabricacao: dados.carro.ano_Fabricacao,
-            Numero: dados.carro.numero,
-            Versao: dados.carro.versao,
-            Cambio: dados.carro.cambio,
-            Placa: dados.carro.placa,
-            Cor: dados.carro.cor,
-            Valor_Diaria: dados.carro.valor_Diaria,
-            Nome: dados.adaptacao.nome,
-            Tipo: dados.adaptacao.tipo
-        }),
-        montarPayload: (formulario) => ({
-            carro: {
-                Marca: formulario.querySelector("#Marca").value,
-                Modelo: formulario.querySelector("#Modelo").value,
-                Ano_Fabricacao: Number(formulario.querySelector("#Ano_Fabricacao").value),
-                Numero: formulario.querySelector("#Numero").value,
-                Versao: formulario.querySelector("#Versao").value,
-                Cambio: formulario.querySelector("#Cambio").value,
-                Placa: formulario.querySelector("#Placa").value,
-                Cor: formulario.querySelector("#Cor").value,
-                Valor_Diaria: Number(formulario.querySelector("#Valor_Diaria").value)
-            },
+        document.getElementById("Numero").value =
+            carro.numero ?? carro.Numero ?? "";
 
-            adaptacao: {
-                ID: adaptacaoId,
-                Nome: formulario.querySelector("#Nome").value,
-                Tipo: formulario.querySelector("#Tipo").value
-            }
-        }),
-        // montarPayload: (formulario) => ({
-        //     carro: {
-        //         Marca: formulario.querySelector("#Marca").value,
-        //         Modelo: formulario.querySelector("#Modelo").value,
-        //         Ano_Fabricacao: Number(formulario.querySelector("#Ano_Fabricacao").value),
-        //         Numero: formulario.querySelector("#Numero").value,
-        //         Versao: formulario.querySelector("#Versao").value,
-        //         Cambio: formulario.querySelector("#Cambio").value,
-        //         Placa: formulario.querySelector("#Placa").value,
-        //         Cor: formulario.querySelector("#Cor").value,
-        //         Valor_Diaria: Number(formulario.querySelector("#Valor_Diaria").value)
-        //     },
+        document.getElementById("Versao").value =
+            carro.versao ?? carro.Versao ?? "";
 
-        //     adaptacao: {
-        //         ID: adaptacaoId,
-        //         Nome: formulario.querySelector("#Nome").value,
-        //         Tipo: formulario.querySelector("#Tipo").value
-        //     }
+        document.getElementById("Cambio").value =
+            carro.cambio ?? carro.Cambio ?? "";
 
-        // }),
-        atualizarDados: async (id, payload) => {
+        document.getElementById("Placa").value =
+            carro.placa ?? carro.Placa ?? "";
 
-            console.log("ID do veículo:", id);
-            console.log("Objeto enviado:", payload);
+        document.getElementById("Cor").value =
+            carro.cor ?? carro.Cor ?? "";
 
-            const resCarro = await fetch(`${endpointCarro}/${id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
+        document.getElementById("Valor_Diaria").value =
+            carro.valor_Diaria ?? carro.Valor_Diaria ?? "";
+    }
+
+    // Atualizar veículo
+    async function updateVehicle() {
+        const dados = {
+            Marca: document.getElementById("Marca").value.trim(),
+            Modelo: document.getElementById("Modelo").value.trim(),
+            Ano_Fabricacao: parseInt(
+                document.getElementById("Ano_Fabricacao").value
+            ),
+            Numero: document.getElementById("Numero").value.trim(),
+            Versao: document.getElementById("Versao").value.trim(),
+            Cambio: document.getElementById("Cambio").value,
+            Placa: document.getElementById("Placa").value.trim(),
+            Cor: document.getElementById("Cor").value.trim(),
+            Valor_Diaria: parseFloat(
+                document.getElementById("Valor_Diaria").value
+            )
+        };
+
+        await request("vehicles", dados, "PUT", currentVehicleId);
+
+        showMessage("Veículo atualizado com sucesso.");
+    }
+
+    // Buscar adaptações vinculadas ao veículo
+    async function loadAdaptations() {
+        const adaptations = await request("adaptations");
+
+        const vehicleAdaptations = adaptations.filter(adaptation =>
+            Number(adaptation.carro_ID ?? adaptation.Carro_ID) === currentVehicleId
+        );
+
+        adaptationList.replaceChildren();
+
+        if (vehicleAdaptations.length === 0) {
+            const empty = document.createElement("p");
+
+            empty.textContent =
+                "Este veículo ainda não possui adaptações cadastradas.";
+
+            adaptationList.appendChild(empty);
+            return;
+        }
+
+        vehicleAdaptations.forEach(adaptation => {
+            const adaptationId = adaptation.id ?? adaptation.ID;
+
+            const nome = adaptation.nome ?? adaptation.Nome;
+            const tipo = adaptation.tipo ?? adaptation.Tipo;
+
+            const item = document.createElement("div");
+            item.className = "registration-field";
+
+            const title = document.createElement("strong");
+            title.textContent = nome;
+
+            const description = document.createElement("p");
+            description.textContent = `Tipo: ${tipo}`;
+
+            const actions = document.createElement("div");
+            actions.className = "registration-actions-group";
+
+            const editButton = document.createElement("button");
+
+            editButton.type = "button";
+            editButton.className = "registration-button";
+            editButton.textContent = "Editar";
+
+            editButton.addEventListener("click", () => {
+                editingAdaptationId = adaptationId;
+
+                document.getElementById("Nome").value = nome;
+                document.getElementById("Tipo").value = tipo;
+
+                adaptationSubmit.textContent = "Salvar edição";
+                cancelEditButton.hidden = false;
+
+                document.getElementById("Nome").focus();
             });
 
-            if (!resCarro.ok) {
-                const erro = await resCarro.json();
-                throw new Error(erro.detail ?? erro.message ?? erro.mensagem ?? "Erro ao atualizar veículo.");
-            }
-        },
-        // atualizarDados: async (id, payload) => {
+            actions.appendChild(editButton);
 
-        //     console.log("ID do veículo:", id);
-        //     console.log("Objeto enviado no PUT:", payload.carro);
-        //     console.log("Placa enviada:", payload.carro.Placa);
-        //     const resCarro = await fetch(`${endpointCarro}/${id}`, {
-        //         method: "PUT",
-        //         headers: {
-        //             "Content-Type": "application/json"
-        //         },
-        //         body: JSON.stringify(payload.carro)
-        //     });
+            item.append(title, description, actions);
 
-        //     if (!resCarro.ok) {
-        //         throw new Error("Erro ao atualizar o veículo.");
-        //     }
-
-        //     // Atualizar adaptação
-        //     // A rota e o ID precisam corresponder à sua API.
-        //     const resAdaptacao = await fetch(`${endpointAdaptacao}/...`, {
-        //         method: "PUT",
-        //         headers: {
-        //             "Content-Type": "application/json"
-        //         },
-        //         body: JSON.stringify(payload.adaptacao)
-        //     });
-
-        //     if (!resAdaptacao.ok) {
-        //         throw new Error("Erro ao atualizar a adaptação.");
-        //     }
-        // },
-
-
-    };
-    // return {
-    //     id: carro_Id,
-    //     endpoint: "https://localhost:7240/api/Carro",
-    //     formulario: document.querySelector("#registration-form"),
-    //     mapearDados: (dados) => ({
-    //         carro: {
-    //             Marca: dados.marca,
-    //             Modelo: dados.modelo,
-    //             Ano_Fabricacao: dados.ano_Fabricacao,
-    //             Numero: dados.numero,
-    //             Versao: dados.versao,
-    //             Cambio: dados.cambio,
-    //             Placa: dados.placa,
-    //             Cor: dados.cor,
-    //             Valor_Diaria: dados.valor_Diaria
-    //         },
-
-    //         adaptacao: {
-    //             Nome: dados.nome,
-    //             Tipo: dados.tipo,
-    //             Ativo: true
-    //         }
-    //     }),
-
-    //     montarPayload: (formulario) => ({
-    //         Nome: formulario.querySelector("#Nome").value,
-    //         CPF: formulario.querySelector("#CPF").value,
-    //         Telefone: formulario.querySelector("#Telefone").value,
-    //         Membros: formulario.querySelector("#Membros").value,
-    //         CNH: formulario.querySelector("#CNH").value,
-    //         Email: formulario.querySelector("#Email").value,
-    //         Endereco: formulario.querySelector("#Endereco").value,
-    //         Ativo: true
-    //     })
-    // };
-};
-
-
-async function iniciarEdicaoVeiculo() {
-    const parametros = new URLSearchParams(window.location.search);
-    const carroId = parametros.get("id");
-
-    if (!carroId) {
-        alert("ID do veículo não informado.");
-        return;
+            adaptationList.appendChild(item);
+        });
     }
 
-    const config = configuracaoEdicaoVeiculo(carroId);
+    // Atualizar adaptação
+    async function updateAdaptation() {
+        if (editingAdaptationId === null) {
+            throw new Error("Selecione uma adaptação para editar.");
+        }
 
-    config.formulario.addEventListener("submit", async (event) => {
+        const dados = {
+            Nome: document.getElementById("Nome").value.trim(),
+            Tipo: document.getElementById("Tipo").value.trim(),
+            Carro_ID: currentVehicleId
+        };
+
+        await request(
+            "adaptations",
+            dados,
+            "PUT",
+            editingAdaptationId
+        );
+
+        adaptationForm.reset();
+
+        editingAdaptationId = null;
+
+        adaptationSubmit.textContent = "Cadastrar adaptação";
+        cancelEditButton.hidden = true;
+
+        showAdaptationMessage("Adaptação atualizada com sucesso.");
+
+        await loadAdaptations();
+    }
+
+    // Eventos do formulário do veículo
+    form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
-        await salvarEdicao(config);
+        try {
+            await updateVehicle();
+        } catch (error) {
+            console.error("Erro ao atualizar veículo:", error);
+
+            showMessage(
+                `Não foi possível atualizar o veículo: ${error.message}`,
+                true
+            );
+        }
     });
 
-    try {
-        const dados = await editarRegistro(config);
+    // Eventos do formulário de adaptação
+    adaptationForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
 
+        try {
+            await updateAdaptation();
+        } catch (error) {
+            console.error("Erro ao atualizar adaptação:", error);
 
+            showAdaptationMessage(
+                `Não foi possível atualizar a adaptação: ${error.message}`,
+                true
+            );
+        }
+    });
 
-    } catch (error) {
-        console.error("Erro ao carregar veículo:", error);
-        showMessage("Não foi possível carregar os dados do veículo.", true);
+    // Cancelar edição da adaptação
+    cancelEditButton.addEventListener("click", () => {
+        adaptationForm.reset();
+
+        editingAdaptationId = null;
+
+        adaptationSubmit.textContent = "Editar adaptação";
+        cancelEditButton.hidden = true;
+    });
+
+    // Tema
+    setTheme(localStorage.getItem("acessocar-theme") === "light");
+
+    themeToggle.addEventListener("change", () => {
+        setTheme(themeToggle.checked);
+
+        localStorage.setItem(
+            "acessocar-theme",
+            themeToggle.checked ? "light" : "dark"
+        );
+    });
+
+    // Menu lateral
+    const sidebar = document.querySelector("#sidebar");
+    const menuToggle = document.querySelector("#menu-toggle");
+
+    menuToggle.addEventListener("click", () => {
+        const isOpen = sidebar.classList.toggle("is-open");
+
+        menuToggle.setAttribute("aria-expanded", String(isOpen));
+
+        menuToggle.setAttribute(
+            "aria-label",
+            isOpen ? "Fechar menu" : "Abrir menu"
+        );
+    });
+
+    // Inicialização
+    async function iniciarEdicao() {
+        if (!Number.isInteger(currentVehicleId) || currentVehicleId <= 0) {
+            showMessage("ID do veículo não informado ou inválido.", true);
+            form.querySelector('[type="submit"]').disabled = true;
+            return;
+        }
+
+        try {
+            await loadVehicle();
+            await loadAdaptations();
+        } catch (error) {
+            console.error("Erro ao carregar edição:", error);
+
+            showMessage(
+                `Não foi possível carregar os dados: ${error.message}`,
+                true
+            );
+        }
     }
-}
 
-document.addEventListener("DOMContentLoaded", iniciarEdicaoVeiculo);
+    document.addEventListener("DOMContentLoaded", iniciarEdicao);
+
+})();

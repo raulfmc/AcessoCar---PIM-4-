@@ -129,14 +129,14 @@
 		rentals = rentalData;
 	}
 	async function loadFormData() {
-		
+
 
 		const [customerData, vehicleData] = await Promise.all([
 			request("clientes"),
 			request("carros")
 		]);
 
-		
+
 		if (!Array.isArray(customerData) || !Array.isArray(vehicleData)) {
 			throw new Error("Não foi possível carregar clientes e veículos.");
 		}
@@ -435,7 +435,7 @@
 		menuToggle.setAttribute("aria-expanded", String(isOpen));
 		menuToggle.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
 	});
-	
+
 	// showRentalFormButton.disabled = true;
 	// editRentalButton.disabled = true;
 	// showRentalFormButton.addEventListener("click", () => {
@@ -540,7 +540,7 @@
 						pageMessage.hidden = false;
 					}
 				} else {
-					window.location.href = "locacoes.html";
+					window.location.href = "../locacoes.html";
 				}
 				// newRentalSection.hidden = true;
 				// form.hidden = true;
@@ -598,7 +598,7 @@
 		});
 
 		// Edição de locações.
-		editRentalButton.addEventListener("click", () => {
+		editRentalButton.addEventListener("click", async () => {
 			const rentalId = window.prompt(
 				"Digite o ID da locação que deseja editar:"
 			);
@@ -610,22 +610,16 @@
 				return;
 			}
 
-			const rental = rentals.find(
-				item =>
-					Number(item.id) === Number(rentalId) &&
-					item.ativo === true
-			);
+			const id = rentalId.trim();
+			const endpoint = "https://192.168.100.150:7240/api/Aluguel";
+			const registroAtivo = await window.Edicao.validarRegistroAtivo(endpoint, id);
 
-			if (!rental) {
-				pageMessage.textContent =
-					`Locação ${rentalId} não encontrada.`;
+			if (!registroAtivo) return;
 
-				pageMessage.hidden = false;
-				return;
-			}
+			if (!valido) return;
 
 			window.location.href =
-				`Edicoes/EdicaoLocacao.html?id=${encodeURIComponent(rental.id)}`;
+				`Edicoes/EdicaoLocacao.html?id=${encodeURIComponent(id)}`;
 		});
 
 		// Filtros da listagem.

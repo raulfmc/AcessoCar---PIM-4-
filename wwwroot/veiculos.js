@@ -130,19 +130,23 @@
 			statusMessage.hidden = false;
 		}
 	}
-	function abrirEdicaoVeiculo() {
+	async function abrirEdicaoVeiculo() {
 		const carroId = prompt("Digite o ID do veículo que deseja editar:");
 
-		if (carroId === null || carroId.trim() === "") {
-			return;
-		}
+		if (carroId === null || carroId.trim() === "") return;
 
 		if (!/^[1-9]\d*$/.test(carroId.trim())) {
 			alert("Informe um ID válido.");
 			return;
 		}
 
-		window.location.href = `Edicoes/EdicaoVeiculo.html?id=${carroId.trim()}`;
+		const id = carroId.trim();
+		const endpoint = "https://IP_DA_SUA_MAQUINA:7240/api/Carro";
+		const registroAtivo = await window.Edicao.validarRegistroAtivo(endpoint, id);
+
+		if (!registroAtivo) return;
+
+		window.location.href = `Edicoes/EdicaoVeiculo.html?id=${id}`;
 	}
 	document.querySelector(".btn-edit").addEventListener("click", () => {
 		abrirEdicaoVeiculo();
@@ -185,7 +189,7 @@
 			deleteButton.disabled = true;
 
 			const resposta = await fetchProtegido(
-				`https://localhost:7240/api/Carro/${encodeURIComponent(vehicleId)}`,
+				`https://IP_DA_SUA_MAQUINA:7240/api/Carro/${encodeURIComponent(vehicleId)}`,
 				{
 					method: "DELETE",
 					credentials: "include"
@@ -200,6 +204,16 @@
 			}
 
 			if (!resposta.ok) {
+				if (resposta.status === 409) {
+					throw new Error(
+						body?.detail ||
+						body?.message ||
+						body?.mensagem ||
+						body?.title ||
+						"Não é possível excluir este veículo, pois ele possui aluguéis ou manutenções associados."
+					);
+				}
+
 				throw new Error(
 					body?.detail ||
 					body?.message ||

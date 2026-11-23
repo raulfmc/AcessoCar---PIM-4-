@@ -36,7 +36,6 @@ public class AluguelService : IAluguelService
         var alugueis = await _context.Aluguel
         .Include(Aluguel => Aluguel.carro)
         .Include(Aluguel => Aluguel.cliente)
-        // .Include(Aluguel => Aluguel.Parcelas)
         .Include(Aluguel => Aluguel.ParcelasDetalhes)
         .Where(Aluguel => Aluguel.Ativo == true)
         .ToListAsync();
@@ -287,8 +286,8 @@ public class AluguelService : IAluguelService
         Aluguel aluguel
     )
     {
-        Console.WriteLine($"Aluguel ID: {aluguel.ID}");
-        Console.WriteLine($"Quantidade de parcelas: {aluguel.ParcelasDetalhes?.Count}");
+        // Console.WriteLine($"Aluguel ID: {aluguel.ID}");
+        // Console.WriteLine($"Quantidade de parcelas: {aluguel.ParcelasDetalhes?.Count}");
 
         foreach (var parcela in aluguel.ParcelasDetalhes ?? new List<Parcela>())
         {
@@ -308,6 +307,7 @@ public class AluguelService : IAluguelService
             Forma_Pagamento = aluguel.Forma_Pagamento,
             Parcelas = aluguel.Parcelas,
             Estado = StatusFinanceiro.Calcular(aluguel.ParcelasDetalhes),
+            Primeiro_Vencimento = aluguel.Primeiro_Vencimento,
             Carro_ID = aluguel.Carro_ID,
             Cliente_ID = aluguel.Cliente_ID,
             carro = aluguel.carro,

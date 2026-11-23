@@ -9,6 +9,33 @@ function arquivoParaBase64(arquivo) {
         reader.readAsDataURL(arquivo);
     });
 }
+async function validarRegistroAtivo(endpoint, id) {
+    try {
+        const response = await fetchProtegido(`${endpoint}/${id}`);
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                throw new Error("Registro não encontrado.");
+            }
+
+            throw new Error("Não foi possível consultar o registro.");
+        }
+
+        const dados = await response.json();
+
+        const ativo = dados.Ativo ?? dados.ativo;
+
+        if (ativo !== true) {
+            throw new Error("Este registro está inativo e não pode ser editado.");
+        }
+
+        return true;
+
+    } catch (error) {
+        alert(error.message);
+        return false;
+    }
+}
 async function editarRegistro(config) {
     const {
         id,
@@ -33,6 +60,13 @@ async function editarRegistro(config) {
             dados = await response.json();
         }
 
+        // Verifica se o registro está ativo.
+        const ativo = dados.Ativo ?? dados.ativo;
+
+        if (ativo !== true) {
+            throw new Error("Este registro está inativo e não pode ser editado.");
+        }
+
         const dadosFormulario = mapearDados(dados);
 
         Object.entries(dadosFormulario).forEach(([campo, valor]) => {
@@ -50,6 +84,7 @@ async function editarRegistro(config) {
 
     } catch (error) {
         console.error("Erro na edição:", error);
+        showMessage(error.message, true);
         throw error;
     }
 }
@@ -123,3 +158,10 @@ function showMessage(text, isError = false) {
     message.classList.add("is-visible");
     message.classList.toggle("is-error", isError);
 }
+window.Edicao = {
+    arquivoParaBase64,
+    validarRegistroAtivo,
+    editarRegistro,
+    salvarEdicao,
+    showMessage
+};

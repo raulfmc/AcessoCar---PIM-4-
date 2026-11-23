@@ -60,7 +60,7 @@ function configuracaoEdicaoCliente(cliente_Id) {
 
 	return {
 		id: cliente_Id,
-		endpoint: "https://localhost:7240/api/Cliente",
+		endpoint: "https://IP_DA_SUA_MAQUINA:7240/api/Cliente",
 		formulario: document.querySelector("#registration-form"),
 
 		mapearDados: (dados) => ({

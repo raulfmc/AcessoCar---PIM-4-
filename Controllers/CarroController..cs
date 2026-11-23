@@ -70,9 +70,9 @@ public class CarroController : ControllerBase
         );
     }
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<CarroCompletoRespostaDTO>> Atualizar(int id, AtualizarCarroCompletoDTO dto)
+    public async Task<ActionResult<CarroRespostaDTO>> Atualizar(int id, AtualizarCarroDTO dto)
     {
-        CarroCompletoRespostaDTO? carroAtualizado =
+        CarroRespostaDTO? carroAtualizado =
         await _CarroService.Atualizar(id, dto);
 
         if (carroAtualizado == null)

@@ -8,11 +8,11 @@
 	<title>Manutenção | acessoCar</title>
 	<link rel="stylesheet" href="PG_HOME.css" />
 	<link rel="stylesheet" href="manutencao.css" />
-	<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 	<script src="accessocar-utils.js" defer></script>
-	
+
 	<script src="csrf.js" defer></script>
+	<script src="Edicoes/edicao.js" defer></script>
 	<script src="manutencao.js" defer></script>
 </head>
 
@@ -143,7 +143,8 @@
 						</div>
 						<div class="maintenance-form-actions">
 							<p>Ao salvar, o veículo ficará indisponível para locações até ser liberado.</p>
-							<button class="maintenance-save-button" type="submit" id = "save-maintenance-button">Salvar manutenção</button>
+							<button class="maintenance-save-button" type="submit" id="save-maintenance-button">Salvar
+								manutenção</button>
 						</div>
 					</form>
 				</section>
@@ -163,7 +164,7 @@
 									<th scope="col">Conclusão Prevista</th>
 									<th scope="col">Status</th>
 									<th scope="col">Ação</th>
-									<button type="button" class="btn-edit" onclick = "abrirEdicaoManutencao()">
+									<button type="button" class="btn-edit" onclick="abrirEdicaoManutencao()">
 										<i class="fa-solid fa-pen" aria-hidden="true"></i>
 										<span>Editar</span>
 									</button>

@@ -209,7 +209,7 @@ public class CarroService : ICarroService
     //     // }
     // }
 
-    public async Task<CarroCompletoRespostaDTO?> Atualizar(int id, AtualizarCarroCompletoDTO dto)
+    public async Task<CarroRespostaDTO?> Atualizar(int id, AtualizarCarroDTO dto)
     {
         Carro? carro = await _context.Carro
                .FirstOrDefaultAsync(c => c.ID == id);
@@ -217,45 +217,45 @@ public class CarroService : ICarroService
         if (carro == null)
             return null;
 
-        Adaptacao? adaptacao = await _context.Adaptacao
-            .FirstOrDefaultAsync(a =>
-                a.ID == dto.Adaptacao.ID &&
-                a.Carro_ID == id &&
-                a.Ativo);
+        // Adaptacao? adaptacao = await _context.Adaptacao
+        //     .FirstOrDefaultAsync(a =>
+        //         a.ID == dto.Adaptacao.ID &&
+        //         a.Carro_ID == id &&
+        //         a.Ativo);
 
-        if (adaptacao == null)
-            return null;
+        // if (adaptacao == null)
+        //     return null;
 
-        // Atualiza o carro
-        carro.Marca = dto.Carro.Marca;
-        carro.Modelo = dto.Carro.Modelo;
-        carro.Ano_Fabricacao = dto.Carro.Ano_Fabricacao;
-        carro.Numero = dto.Carro.Numero;
-        carro.Versao = dto.Carro.Versao;
-        carro.Cambio = dto.Carro.Cambio;
-        carro.Placa = dto.Carro.Placa;
-        carro.Cor = dto.Carro.Cor;
-        carro.Valor_Diaria = dto.Carro.Valor_Diaria;
 
-        // Atualiza a adaptação
-        adaptacao.Nome = dto.Adaptacao.Nome;
-        adaptacao.Tipo = dto.Adaptacao.Tipo;
+        carro.Marca = dto.Marca;
+        carro.Modelo = dto.Modelo;
+        carro.Ano_Fabricacao = dto.Ano_Fabricacao;
+        carro.Numero = dto.Numero;
+        carro.Versao = dto.Versao;
+        carro.Cambio = dto.Cambio;
+        carro.Placa = dto.Placa;
+        carro.Cor = dto.Cor;
+        carro.Valor_Diaria = dto.Valor_Diaria;
+
+
+        // adaptacao.Nome = dto.Adaptacao.Nome;
+        // adaptacao.Tipo = dto.Adaptacao.Tipo;
 
         await _context.SaveChangesAsync();
+        return await ConverterParaResposta(carro);
+        // return new CarroCompletoRespostaDTO
+        // {
+        //     Carro = await ConverterParaResposta(carro),
 
-        return new CarroCompletoRespostaDTO
-        {
-            Carro = await ConverterParaResposta(carro),
-
-            Adaptacao = new AdaptacaoRespostaDTO
-            {
-                ID = adaptacao.ID,
-                Nome = adaptacao.Nome,
-                Tipo = adaptacao.Tipo,
-                Carro_ID = carro.ID,
-                carro = carro
-            }
-        };
+        //     Adaptacao = new AdaptacaoRespostaDTO
+        //     {
+        //         ID = adaptacao.ID,
+        //         Nome = adaptacao.Nome,
+        //         Tipo = adaptacao.Tipo,
+        //         Carro_ID = carro.ID,
+        //         carro = carro
+        //     }
+        // };
         // Carro? carro = await _context.Carro
         // .FirstOrDefaultAsync(Carro => Carro.ID == id);
 
@@ -309,8 +309,26 @@ public class CarroService : ICarroService
         {
             return null;
         }
+        bool possuiAluguel = await _context.Aluguel
+        .AnyAsync(a => a.Carro_ID == id);
+
+        bool possuiManutencao = await _context.Manutencao
+            .AnyAsync(m => m.Carro_ID == id);
+        if (possuiAluguel)
+        {
+            throw new AluguelComCarroException(
+                "Não é possível excluir este veículo, pois ele possui aluguéis associados."
+            );
+        }
+
+        if (possuiManutencao)
+        {
+            throw new CarroEmManutencaoException(
+                "Não é possível excluir este veículo, pois ele possui manutenções associadas."
+            );
+        }
         carro.Ativo = false;
-        _context.Carro.Update(carro);
+
         await _context.SaveChangesAsync();
 
         return await ConverterParaResposta(carro);

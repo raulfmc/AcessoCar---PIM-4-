@@ -76,7 +76,7 @@ public class ClienteService : IClienteService
             await _context.SaveChangesAsync();
         }
         catch (DbUpdateException ex) when (ex.InnerException is SqlException sql &&
-        sql.Number == 547 && sql.Message.Contains("UQ_Placa", StringComparison.OrdinalIgnoreCase))
+        sql.Number == 547 && sql.Message.Contains("UQ_CPF", StringComparison.OrdinalIgnoreCase))
         {
             throw new CpfRepetidoException("Esse CPF já existe/é inválido, insira outro CPF");
         }
@@ -124,9 +124,19 @@ public class ClienteService : IClienteService
         {
             return null;
         }
+        bool possuiAluguel = await _context.Aluguel
+        .AnyAsync(a => a.Cliente_ID == id);
+
+        if (possuiAluguel)
+        {
+            throw new AluguelComClienteException(
+                "Não é possível excluir este cliente, pois ele possui aluguéis associados."
+            );
+        }
+
         cliente.Ativo = false;
 
-        _context.Cliente.Update(cliente);
+        
         await _context.SaveChangesAsync();
 
         return await ConverterParaResposta(cliente);
@@ -141,33 +151,7 @@ public class ClienteService : IClienteService
         .ToListAsync();
 
         return StatusFinanceiro.Calcular(parcelas);
-        // DateTime hoje = DateTime.Today;
 
-        // bool atrasado = await _context.Parcela.AnyAsync(p =>
-        //     p.Data_Confirmacao == null &&
-        //     p.Data_Vencimento.Date < hoje &&
-        //     _context.Aluguel.Any(a =>
-        //         a.ID == p.Aluguel_ID &&
-        //         a.Cliente_ID == clienteId
-        //     )
-        // );
-
-        // if (atrasado)
-        //     return "ATRASADO";
-
-        // bool pendente = await _context.Parcela.AnyAsync(p =>
-        //     p.Data_Confirmacao == null &&
-        //     p.Data_Vencimento.Date >= hoje &&
-        //     _context.Aluguel.Any(a =>
-        //         a.ID == p.Aluguel_ID &&
-        //         a.Cliente_ID == clienteId
-        //     )
-        // );
-
-        // if (pendente)
-        //     return "PENDENTE";
-
-        // return "OK";
     }
     private async Task<ClienteRespostaDTO> ConverterParaResposta(
     Cliente cliente

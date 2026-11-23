@@ -280,19 +280,23 @@
 			isOpen ? "Fechar menu" : "Abrir menu"
 		);
 	});
-	function abrirEdicaoManutencao() {
-		const clienteId = prompt("Digite o ID da manutenção que deseja editar:");
+	async function abrirEdicaoManutencao() {
+		const manutencaoId = prompt("Digite o ID da manutenção que deseja editar:");
 
-		if (clienteId === null || clienteId.trim() === "") {
-			return;
-		}
+		if (manutencaoId === null || manutencaoId.trim() === "") return;
 
-		if (!/^[1-9]\d*$/.test(clienteId.trim())) {
+		if (!/^[1-9]\d*$/.test(manutencaoId.trim())) {
 			alert("Informe um ID válido.");
 			return;
 		}
 
-		window.location.href = `Edicoes/EdicaoManutencao.html?id=${clienteId.trim()}`;
+		const id = manutencaoId.trim();
+		const endpoint = "https://192.168.100.150:7240/api/Manutencao";
+		const registroAtivo = await window.Edicao.validarRegistroAtivo(endpoint, id);
+
+		if (!registroAtivo) return;
+
+		window.location.href = `Edicoes/EdicaoManutencao.html?id=${id}`;
 	}
 	document.querySelector(".btn-edit").addEventListener("click", () => {
 		abrirEdicaoManutencao();

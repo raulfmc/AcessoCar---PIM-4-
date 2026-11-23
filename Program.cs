@@ -19,6 +19,18 @@ WebApplication.CreateBuilder(args);
 
 // Adiciona o suporte a controllers. 
 builder.Services.AddControllers();
+// builder.Services.AddControllers(options =>
+// {
+//     options.Filters.Add(
+//         new AutoValidateAntiforgeryTokenAttribute()
+//     );
+// });
+// builder.Services.AddControllersWithViews(options =>
+// {
+//     options.Filters.Add(
+//         new AutoValidateAntiforgeryTokenAttribute()
+//     );
+// });
 // Permite que o Swagger descubra os endpoints. 
 builder.Services.AddEndpointsApiExplorer();
 // Gera a documentação utilizada pelo Swagger. 

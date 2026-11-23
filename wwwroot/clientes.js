@@ -70,7 +70,7 @@
 })();
 const criacaoCliente = "Cadastros/CadastroCliente.html";
 async function loadCustomers() {
-	const resposta = await fetchProtegido('https://localhost:7240/api/Cliente');
+	const resposta = await fetchProtegido('https://IP_DA_SUA_MÁQUINA:7240/api/Cliente');
 
 	if (!resposta.ok) {
 		throw new Error(`Erro HTTP: ${resposta.status}`);
@@ -256,7 +256,7 @@ tableBody.addEventListener("click", async (event) => {
 		deleteButton.disabled = true;
 
 		const resposta = await fetchProtegido(
-			`https://localhost:7240/api/Cliente/${encodeURIComponent(customerId)}`,
+			`https://192.168.100.150:7240/api/Cliente/${encodeURIComponent(customerId)}`,
 			{
 				method: "DELETE",
 				credentials: "include"
@@ -271,6 +271,12 @@ tableBody.addEventListener("click", async (event) => {
 		}
 
 		if (!resposta.ok) {
+			if (resposta.status === 409) {
+				throw new Error(
+					"Não é possível excluir este cliente, pois ele possui um ou mais aluguéis associados."
+				);
+			}
+
 			throw new Error(
 				body?.detail ||
 				body?.message ||
@@ -291,7 +297,7 @@ tableBody.addEventListener("click", async (event) => {
 
 		deleteButton.disabled = false;
 	}
-	
+
 });
 
 setTheme(savedTheme === "light");
@@ -307,19 +313,23 @@ themeToggle.addEventListener("change", () => {
 	localStorage.setItem("acessocar-theme", themeToggle.checked ? "light" : "dark");
 });
 
-function abrirEdicaoCliente() {
+async function abrirEdicaoCliente() {
 	const clienteId = prompt("Digite o ID do cliente que deseja editar:");
 
-	if (clienteId === null || clienteId.trim() === "") {
-		return;
-	}
+	if (clienteId === null || clienteId.trim() === "") return;
 
 	if (!/^[1-9]\d*$/.test(clienteId.trim())) {
 		alert("Informe um ID válido.");
 		return;
 	}
 
-	window.location.href = `Edicoes/EdiçãoCliente.html?id=${clienteId.trim()}`;
+	const id = clienteId.trim();
+	const endpoint = "https://IP_DA_SUA_MAQUINA:7240/api/Cliente";
+	const registroAtivo = await window.Edicao.validarRegistroAtivo(endpoint, id);
+
+	if (!registroAtivo) return;
+
+	window.location.href = `Edicoes/EdiçãoCliente.html?id=${id}`;
 }
 tableBody.addEventListener("click", (event) => {
 	const editButton = event.target.closest("[data-edit-customer]");

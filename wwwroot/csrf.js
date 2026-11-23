@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://localhost:7240";
+const API_BASE_URL = "https://192.168.100.150:7240";
 
 let csrfToken = null;
 
